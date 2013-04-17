@@ -1,23 +1,61 @@
 # -*- coding: utf-8 -*-
-from mongo_notifications.constants import NotificationSource
-from mongo_notifications.documents.models import Notification
-from mongo_testing.auth import User
-from mongo_testing.documents import MockDoc
-from mongo_testing.testcase import MongoTestCase
+import os
+import sys
+# from unittest import TestCase
+
+from django.conf import settings
+
+
+#
+# if not settings.configured:
+#    settings.configure(
+#        DATABASES={
+#            'default': {
+#                'NAME': 'sqlite3.db',
+#                'ENGINE': 'django.db.backends.sqlite3',
+# #                'TEST_NAME': 'django_notifications_test.db'
+#            }
+#        }
+#    )
+
+
+
+from django.contrib.auth.models import User
+from django.contrib.auth.tests import CustomUser
+from django.db import models
+from django.test import TestCase
+# from django.test.utils import setup_test_environment
+# setup_test_environment()
+from django_notifications.models import NotificationReply
+from django_notifications.models import Notification
+from django_tools.models import AbstractBaseModel
+# from mongo_notifications.constants import NotificationSource
+# from mongo_notifications.documents.models import Notification
+# from mongo_testing.auth import User
+# from mongo_testing.documents import MockDoc
+# from mongo_testing.testcase import MongoTestCase
+
 from python_tools.random_utils import random_alphanum_id
 
 
-class NotificationTests(MongoTestCase):
+
+
+
+
+class NotificationTests(TestCase):
 
     @classmethod
     def setUpClass(cls):
         """Run once per test case"""
         super(NotificationTests, cls).setUpClass()
-        cls.usr = User.objects.create(id=random_alphanum_id())
+#        cls.usr = User.objects.create_user(username='johndoe',
+#                                           email='johndoe@example.com',
+#                                           password='himom')
 
     def setUp(self):
         """Run once per test."""
-        self.about_doc = MockDoc()
+#        self.about_doc = MockDoc()
+        pass
 
     def test_add_notification(self):
         """
@@ -25,215 +63,223 @@ class NotificationTests(MongoTestCase):
         """
         notification_text = 'Hello world'
 
-        n = Notification.add(created_user=self.usr,
-                             text=notification_text,
-                             doc=self.about_doc,
-                             source=NotificationSource.ACTIVITY)
-        self.assertEquals(n.text, notification_text)
-        self.assertEquals(n.doc.id, self.about_doc.id)
-        self.assertEquals(n.doc_id, self.about_doc.id)
-        self.assertEquals(n.source, NotificationSource.ACTIVITY)
 
-        self.assertTrue(self.usr in n.related_docs)
-        self.assertTrue(self.about_doc in n.related_docs)
+        hi = Hi()
+        hi.save()
 
-
-    def test_ensure_related_docs(self):
-        """Tests the ensure related docs functionality making sure specific
-        docs receive this notification."""
-        mockdoc_1 = MockDoc()
-        mockdoc_2 = MockDoc()
-        mockdoc_3 = MockDoc()
-
-        n = Notification.add(created_user=self.usr,
-                             text='Hello world',
-                             doc=self.about_doc,
-                             ensure_related_docs=[mockdoc_1,
-                                                  mockdoc_2,
-                                                  mockdoc_3],
-                             source=NotificationSource.ACTIVITY)
-        self.assertEquals(len(n.related_docs), 5)
-        self.assertTrue(self.usr in n.related_docs)
-        self.assertTrue(self.about_doc in n.related_docs)
-        self.assertTrue(mockdoc_1 in n.related_docs)
-        self.assertTrue(mockdoc_2 in n.related_docs)
-        self.assertTrue(mockdoc_3 in n.related_docs)
+        n = Notification()
+        n.about = hi
+        n.save()
+        pass
+#        n = Notification.add(created_user=self.usr,
+#                             text=notification_text,
+#                             doc=self.about_doc,
+#                             source=NotificationSource.ACTIVITY)
+#        self.assertEquals(n.text, notification_text)
+#        self.assertEquals(n.doc.id, self.about_doc.id)
+#        self.assertEquals(n.doc_id, self.about_doc.id)
+#        self.assertEquals(n.source, NotificationSource.ACTIVITY)
+#
+#        self.assertTrue(self.usr in n.related_docs)
+#        self.assertTrue(self.about_doc in n.related_docs)
 
 
-    def test_delete_notification(self):
-        """Test verifying notification was successfully delete."""
-        n = Notification.add(created_user=self.usr,
-                             text='Hello world',
-                             doc=self.about_doc,
-                             source=NotificationSource.ACTIVITY)
-        notification = Notification.get_by_id(n.id)
-
-        self.assertEquals(notification.id, n.id)
-        n.delete()
-
-        notification = Notification.get_by_id(n.id)
-        self.assertIsNone(notification)
-
-
-    def test_add_notification_reply(self):
-        """Test verfiying you can correctly add a reply to a notification"""
-        n = Notification.add(created_user=self.usr,
-                             text='Hello world',
-                             doc=self.about_doc,
-                             source=NotificationSource.ACTIVITY)
-        self.assertEquals(len(n.replies), 0)
-
-        reply_text = 'This is awesome!'
-        n.add_reply(usr=self.usr, text=reply_text)
-
-        self.assertEquals(len(n.replies), 1)
-
-        n2 = Notification.get_by_id(id=n.id)
-
-        reply = n2.replies[0]
-        self.assertEquals(reply.text, reply_text)
-        self.assertEquals(reply.created, self.usr)
-
-    def test_get_reply_by_id(self):
-        """Test for getting a reply by id."""
-        n = Notification.add(created_user=self.usr,
-                             text='Hello world',
-                             doc=self.about_doc,
-                             source=NotificationSource.ACTIVITY)
-        self.assertEquals(len(n.replies), 0)
-
-        reply_text = 'This is awesome!'
-        n.add_reply(usr=self.usr, text='My first reply.')
-        n.add_reply(usr=self.usr, text='My second reply.')
-        reply_check = n.add_reply(usr=self.usr, text=reply_text)
-        n.add_reply(usr=self.usr, text='My fourth reply.')
-        reply_id_check = n.add_reply(usr=self.usr, text='My fifth reply.',
-                                     reply_to_id=reply_check.id)
-
-        reply_actual = n.get_reply_by_id(reply_id=reply_check.id)
-        self.assertEquals(reply_actual.id, reply_check.id)
-        self.assertEquals(reply_id_check.reply_to_id, reply_check.id)
-
-
-    def test_delete_notification_reply(self):
-        """Test for deleting a reply to a notification."""
-        n = Notification.add(created_user=self.usr,
-                             text='Hello world',
-                             doc=self.about_doc,
-                             source=NotificationSource.ACTIVITY)
-
-        reply_text_1 = 'This is awesome 1!'
-        reply_1 = n.add_reply(usr=self.usr, text=reply_text_1)
-
-        reply_text_2 = 'This is awesome 2!'
-        reply_2 = n.add_reply(usr=self.usr, text=reply_text_2)
-
-        self.assertEquals(len(n.replies), 2)
-        self.assertEquals(reply_2.id, n.replies[1].id)
-
-        n.delete_reply(reply_id=reply_2.id)
-
-        self.assertEquals(len(n.replies), 1)
-        self.assertEquals(reply_1.id, n.replies[0].id)
-
-
-    def test_get_by_doc(self):
-        """Test for getting a notification for a speific doc."""
-        doc_2 = MockDoc()
-        usr_2 = User.objects.create(id=random_alphanum_id())
-
-        Notification.add(created_user=self.usr,
-                         text='My first activity',
-                         doc=doc_2,
-                         source=NotificationSource.ACTIVITY)
-
-        Notification.add(created_user=self.usr,
-                         text='This is some comment.',
-                         doc=doc_2,
-                         source=NotificationSource.COMMENT)
-
-        Notification.add(created_user=self.usr,
-                         text='My second activity',
-                         doc=doc_2,
-                         source=NotificationSource.ACTIVITY)
-
-        Notification.add(created_user=usr_2,
-                         text='User 2s first activity',
-                         doc=doc_2,
-                         source=NotificationSource.ACTIVITY)
-
-        Notification.add(created_user=self.usr,
-                         text='My second comment',
-                         doc=doc_2,
-                         source=NotificationSource.COMMENT)
-
-        notifications = Notification.get_by_doc(doc=doc_2)[0]
-        self.assertEquals(len(notifications), 5)
-
-        notifications = Notification.get_by_doc(doc=doc_2,
-                                                source=NotificationSource.ACTIVITY)[0]
-        self.assertEquals(len(notifications), 3)
-
-        notifications = Notification.get_by_doc(doc=doc_2,
-                                                source=NotificationSource.COMMENT)[0]
-        self.assertEquals(len(notifications), 2)
-
-
-    def test_get_by_user(self):
-        """Test for getting notifications by a specific user."""
-        doc_2 = MockDoc()
-        usr_1 = User.objects.create(id=random_alphanum_id())
-        usr_2 = User.objects.create(id=random_alphanum_id())
-
-        Notification.add(created_user=usr_1,
-                         text='My first activity',
-                         doc=doc_2,
-                         source=NotificationSource.ACTIVITY)
-
-        Notification.add(created_user=usr_1,
-                         text='This is some comment.',
-                         doc=doc_2,
-                         source=NotificationSource.COMMENT)
-
-        Notification.add(created_user=usr_1,
-                         text='My second activity',
-                         doc=doc_2,
-                         source=NotificationSource.ACTIVITY)
-
-        Notification.add(created_user=usr_2,
-                         text='User 2s first activity',
-                         doc=doc_2,
-                         source=NotificationSource.ACTIVITY)
-
-        Notification.add(created_user=usr_1,
-                         text='My second comment',
-                         doc=doc_2,
-                         source=NotificationSource.COMMENT)
-
-        Notification.add(created_user=usr_2,
-                         text='User 2s first comment',
-                         doc=doc_2,
-                         source=NotificationSource.COMMENT)
-
-
-        notifications = Notification.get_by_user(usr=usr_1)[0]
-        self.assertEquals(len(notifications), 4)
-
-        notifications = Notification.get_by_user(usr=usr_1,
-                                                 source=NotificationSource.ACTIVITY)[0]
-        self.assertEquals(len(notifications), 2)
-
-        notifications = Notification.get_by_user(usr=usr_1,
-                                                 source=NotificationSource.COMMENT)[0]
-        self.assertEquals(len(notifications), 2)
-
-        notifications = Notification.get_by_user(usr=usr_2)[0]
-        self.assertEquals(len(notifications), 2)
-
-        notifications = Notification.get_by_user(usr=usr_2,
-                                                 source=NotificationSource.ACTIVITY)[0]
-        self.assertEquals(len(notifications), 1)
-
-        notifications = Notification.get_by_user(usr=usr_2,
-                                                 source=NotificationSource.COMMENT)[0]
-        self.assertEquals(len(notifications), 1)
+#    def test_ensure_related_docs(self):
+#        """Tests the ensure related docs functionality making sure specific
+#        docs receive this notification."""
+#        mockdoc_1 = MockDoc()
+#        mockdoc_2 = MockDoc()
+#        mockdoc_3 = MockDoc()
+#
+#        n = Notification.add(created_user=self.usr,
+#                             text='Hello world',
+#                             doc=self.about_doc,
+#                             ensure_related_docs=[mockdoc_1,
+#                                                  mockdoc_2,
+#                                                  mockdoc_3],
+#                             source=NotificationSource.ACTIVITY)
+#        self.assertEquals(len(n.related_docs), 5)
+#        self.assertTrue(self.usr in n.related_docs)
+#        self.assertTrue(self.about_doc in n.related_docs)
+#        self.assertTrue(mockdoc_1 in n.related_docs)
+#        self.assertTrue(mockdoc_2 in n.related_docs)
+#        self.assertTrue(mockdoc_3 in n.related_docs)
+#
+#
+#    def test_delete_notification(self):
+#        """Test verifying notification was successfully delete."""
+#        n = Notification.add(created_user=self.usr,
+#                             text='Hello world',
+#                             doc=self.about_doc,
+#                             source=NotificationSource.ACTIVITY)
+#        notification = Notification.get_by_id(n.id)
+#
+#        self.assertEquals(notification.id, n.id)
+#        n.delete()
+#
+#        notification = Notification.get_by_id(n.id)
+#        self.assertIsNone(notification)
+#
+#
+#    def test_add_notification_reply(self):
+#        """Test verfiying you can correctly add a reply to a notification"""
+#        n = Notification.add(created_user=self.usr,
+#                             text='Hello world',
+#                             doc=self.about_doc,
+#                             source=NotificationSource.ACTIVITY)
+#        self.assertEquals(len(n.replies), 0)
+#
+#        reply_text = 'This is awesome!'
+#        n.add_reply(usr=self.usr, text=reply_text)
+#
+#        self.assertEquals(len(n.replies), 1)
+#
+#        n2 = Notification.get_by_id(id=n.id)
+#
+#        reply = n2.replies[0]
+#        self.assertEquals(reply.text, reply_text)
+#        self.assertEquals(reply.created, self.usr)
+#
+#    def test_get_reply_by_id(self):
+#        """Test for getting a reply by id."""
+#        n = Notification.add(created_user=self.usr,
+#                             text='Hello world',
+#                             doc=self.about_doc,
+#                             source=NotificationSource.ACTIVITY)
+#        self.assertEquals(len(n.replies), 0)
+#
+#        reply_text = 'This is awesome!'
+#        n.add_reply(usr=self.usr, text='My first reply.')
+#        n.add_reply(usr=self.usr, text='My second reply.')
+#        reply_check = n.add_reply(usr=self.usr, text=reply_text)
+#        n.add_reply(usr=self.usr, text='My fourth reply.')
+#        reply_id_check = n.add_reply(usr=self.usr, text='My fifth reply.',
+#                                     reply_to_id=reply_check.id)
+#
+#        reply_actual = n.get_reply_by_id(reply_id=reply_check.id)
+#        self.assertEquals(reply_actual.id, reply_check.id)
+#        self.assertEquals(reply_id_check.reply_to_id, reply_check.id)
+#
+#
+#    def test_delete_notification_reply(self):
+#        """Test for deleting a reply to a notification."""
+#        n = Notification.add(created_user=self.usr,
+#                             text='Hello world',
+#                             doc=self.about_doc,
+#                             source=NotificationSource.ACTIVITY)
+#
+#        reply_text_1 = 'This is awesome 1!'
+#        reply_1 = n.add_reply(usr=self.usr, text=reply_text_1)
+#
+#        reply_text_2 = 'This is awesome 2!'
+#        reply_2 = n.add_reply(usr=self.usr, text=reply_text_2)
+#
+#        self.assertEquals(len(n.replies), 2)
+#        self.assertEquals(reply_2.id, n.replies[1].id)
+#
+#        n.delete_reply(reply_id=reply_2.id)
+#
+#        self.assertEquals(len(n.replies), 1)
+#        self.assertEquals(reply_1.id, n.replies[0].id)
+#
+#
+#    def test_get_by_doc(self):
+#        """Test for getting a notification for a speific doc."""
+#        doc_2 = MockDoc()
+#        usr_2 = User.objects.create(id=random_alphanum_id())
+#
+#        Notification.add(created_user=self.usr,
+#                         text='My first activity',
+#                         doc=doc_2,
+#                         source=NotificationSource.ACTIVITY)
+#
+#        Notification.add(created_user=self.usr,
+#                         text='This is some comment.',
+#                         doc=doc_2,
+#                         source=NotificationSource.COMMENT)
+#
+#        Notification.add(created_user=self.usr,
+#                         text='My second activity',
+#                         doc=doc_2,
+#                         source=NotificationSource.ACTIVITY)
+#
+#        Notification.add(created_user=usr_2,
+#                         text='User 2s first activity',
+#                         doc=doc_2,
+#                         source=NotificationSource.ACTIVITY)
+#
+#        Notification.add(created_user=self.usr,
+#                         text='My second comment',
+#                         doc=doc_2,
+#                         source=NotificationSource.COMMENT)
+#
+#        notifications = Notification.get_by_doc(doc=doc_2)[0]
+#        self.assertEquals(len(notifications), 5)
+#
+#        notifications = Notification.get_by_doc(doc=doc_2,
+#                                                source=NotificationSource.ACTIVITY)[0]
+#        self.assertEquals(len(notifications), 3)
+#
+#        notifications = Notification.get_by_doc(doc=doc_2,
+#                                                source=NotificationSource.COMMENT)[0]
+#        self.assertEquals(len(notifications), 2)
+#
+#
+#    def test_get_by_user(self):
+#        """Test for getting notifications by a specific user."""
+#        doc_2 = MockDoc()
+#        usr_1 = User.objects.create(id=random_alphanum_id())
+#        usr_2 = User.objects.create(id=random_alphanum_id())
+#
+#        Notification.add(created_user=usr_1,
+#                         text='My first activity',
+#                         doc=doc_2,
+#                         source=NotificationSource.ACTIVITY)
+#
+#        Notification.add(created_user=usr_1,
+#                         text='This is some comment.',
+#                         doc=doc_2,
+#                         source=NotificationSource.COMMENT)
+#
+#        Notification.add(created_user=usr_1,
+#                         text='My second activity',
+#                         doc=doc_2,
+#                         source=NotificationSource.ACTIVITY)
+#
+#        Notification.add(created_user=usr_2,
+#                         text='User 2s first activity',
+#                         doc=doc_2,
+#                         source=NotificationSource.ACTIVITY)
+#
+#        Notification.add(created_user=usr_1,
+#                         text='My second comment',
+#                         doc=doc_2,
+#                         source=NotificationSource.COMMENT)
+#
+#        Notification.add(created_user=usr_2,
+#                         text='User 2s first comment',
+#                         doc=doc_2,
+#                         source=NotificationSource.COMMENT)
+#
+#
+#        notifications = Notification.get_by_user(usr=usr_1)[0]
+#        self.assertEquals(len(notifications), 4)
+#
+#        notifications = Notification.get_by_user(usr=usr_1,
+#                                                 source=NotificationSource.ACTIVITY)[0]
+#        self.assertEquals(len(notifications), 2)
+#
+#        notifications = Notification.get_by_user(usr=usr_1,
+#                                                 source=NotificationSource.COMMENT)[0]
+#        self.assertEquals(len(notifications), 2)
+#
+#        notifications = Notification.get_by_user(usr=usr_2)[0]
+#        self.assertEquals(len(notifications), 2)
+#
+#        notifications = Notification.get_by_user(usr=usr_2,
+#                                                 source=NotificationSource.ACTIVITY)[0]
+#        self.assertEquals(len(notifications), 1)
+#
+#        notifications = Notification.get_by_user(usr=usr_2,
+#                                                 source=NotificationSource.COMMENT)[0]
+#        self.assertEquals(len(notifications), 1)

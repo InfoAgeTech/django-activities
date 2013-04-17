@@ -2,9 +2,8 @@
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django_notifications.constants import NotificationSource
 from django_tools.models import AbstractBaseModel
-from mongo_notifications.constants import NotificationSource
-from mongo_notifications.documents.embedded import NotificationReply
 
 
 class NotificationReply(AbstractBaseModel):
@@ -78,8 +77,8 @@ class Notification(AbstractBaseModel):
 
     class Meta:
         db_table = u'notifications'
-        ordering = ['-created_dttm']
-        indexes = [('related_docs', 'source', 'created_dttm')]
+        ordering = ('-created_dttm',)
+#        indexes = [('related_docs', 'source', 'created_dttm')]
 
 #    meta = {'collection': 'notifications',
 #            'indexes': [('related_docs', 'source', 'created_dttm')],
