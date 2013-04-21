@@ -20,7 +20,7 @@ from django.conf import settings
 
 
 
-from django.contrib.auth.models import User
+
 from django.contrib.auth.tests import CustomUser
 from django.db import models
 from django.test import TestCase
@@ -36,8 +36,9 @@ from django_tools.models import AbstractBaseModel
 # from mongo_testing.testcase import MongoTestCase
 
 from python_tools.random_utils import random_alphanum_id
+from django.contrib.auth import get_user_model
 
-
+User = get_user_model()
 
 
 
