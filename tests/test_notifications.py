@@ -1,47 +1,24 @@
 # -*- coding: utf-8 -*-
-import os
-import sys
-# from unittest import TestCase
-
-from django.conf import settings
-
-
-#
-# if not settings.configured:
-#    settings.configure(
-#        DATABASES={
-#            'default': {
-#                'NAME': 'sqlite3.db',
-#                'ENGINE': 'django.db.backends.sqlite3',
-# #                'TEST_NAME': 'django_notifications_test.db'
-#            }
-#        }
-#    )
-
-
-
-
-from django.contrib.auth.tests import CustomUser
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.test import TestCase
-# from django.test.utils import setup_test_environment
-# setup_test_environment()
-from django_notifications.models import NotificationReply
 from django_notifications.models import Notification
-from django_tools.models import AbstractBaseModel
-# from mongo_notifications.constants import NotificationSource
-# from mongo_notifications.documents.models import Notification
-# from mongo_testing.auth import User
-# from mongo_testing.documents import MockDoc
-# from mongo_testing.testcase import MongoTestCase
-
-from python_tools.random_utils import random_alphanum_id
-from django.contrib.auth import get_user_model
+import uuid
+from django_notifications.constants import NotificationSource
 
 User = get_user_model()
+random_string = lambda len = None: uuid.uuid4().hex[:len or 10]
 
 
+def create_user(username=None, email=None):
+    if not username:
+        username = random_string()
 
+    if not email:
+        email = '{0}@{1}.com'.format(random_string(), random_string())
+
+    return User.objects.create_user(username=username,
+                                    email=email)
 
 class NotificationTests(TestCase):
 
@@ -49,9 +26,7 @@ class NotificationTests(TestCase):
     def setUpClass(cls):
         """Run once per test case"""
         super(NotificationTests, cls).setUpClass()
-#        cls.usr = User.objects.create_user(username='johndoe',
-#                                           email='johndoe@example.com',
-#                                           password='himom')
+        cls.user = create_user()
 
     def setUp(self):
         """Run once per test."""
@@ -62,16 +37,15 @@ class NotificationTests(TestCase):
         """
         Testing adding notifications for a user.
         """
-        notification_text = 'Hello world'
+        text = 'Hello world'
+        about_obj = create_user()
 
+        n = Notification.add(created_user=self.user,
+                             text=text,
+                             about=about_obj,
+                             source=NotificationSource.COMMENT)
+        raise NotImplementedError()
 
-        hi = Hi()
-        hi.save()
-
-        n = Notification()
-        n.about = hi
-        n.save()
-        pass
 #        n = Notification.add(created_user=self.usr,
 #                             text=notification_text,
 #                             doc=self.about_doc,

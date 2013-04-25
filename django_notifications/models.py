@@ -4,6 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django_notifications.constants import NotificationSource
 from django_tools.models import AbstractBaseModel
+from django_notifications.managers import NotificationManager
 
 
 class NotificationReply(AbstractBaseModel):
@@ -28,6 +29,8 @@ class NotificationFor(AbstractBaseModel):
     """Defines the generic object a notification is related to.
     
     TODO: Should make this a mixin!
+    TODO: Is this it's own model that basically creates a ManyToMany Relationship
+          to whatever is referencing the object?
     """
 
     class Meta:
@@ -43,19 +46,18 @@ class Notification(AbstractBaseModel):
     
     Attributes: 
     
-    * doc: reference object the notication is referring to.
-    * doc_id: Document id this object pertains to. If the type is "GROUP" then 
-      the doc_id relates to the group.
+    * about: object the notification is referring to.
+    * about_id: id this object the notification pertains to.
+    * about_content_type: the content type of the about object
     * text: the text of the notification.  This can include html.
     * replies: list of replies to this notification
-    * related_docs: list of docs this notification is related to.  For example,
-        if a comment is made on a bill instance which has a group, then this
+    * related_objs: list of docs this notification is related to.  For example,
+        if a comment is made on a object "A" which has an object "B", then this
         list will include references to the::
             
-            1. bill instance
-            2. bill
-            3. bill group (if one exists) 
-            4. users who are sharing the bill
+            1. object "A"
+            2. object "B" 
+            4. users who are sharing this object
             
     * source: the source of notification.  Can be one if NotificationSource 
         choices (i.e. 'user' generated comment, 'activity' on a bill, etc)
@@ -63,33 +65,33 @@ class Notification(AbstractBaseModel):
     """
 
     text = models.CharField()
-    content_type = models.ForeignKey(ContentType)
-    about = generic.GenericForeignKey('content_type', 'about_id')
+    about_content_type = models.ForeignKey(ContentType)
+    about = generic.GenericForeignKey('about_content_type', 'about_id')
     about_id = models.PositiveIntegerField()
     replies = models.ForeignKey(NotificationReply)
-    # TODO: This should be a generic foreign key? Could be related to a user or a
-    # specific model
+
+    # Consider renaming this to "for_objs"
+    # related_objs = models.ManyToManyField('NotificationsFor')
     related_objs = models.ForeignKey('NotificationFor')
 #    related_docs = ListField(GenericReferenceField(),
 #                             required=True,
 #                             db_field='rd')
     source = models.CharField(choices=NotificationSource.CHOICES)
+    objects = NotificationManager()
 
     class Meta:
         db_table = u'notifications'
         ordering = ('-created_dttm',)
-#        indexes = [('related_docs', 'source', 'created_dttm')]
-
-#    meta = {'collection': 'notifications',
-#            'indexes': [('related_docs', 'source', 'created_dttm')],
-#            'ordering': ['-created_dttm'],
-#            'allow_inheritance': True,
-#            'cascade': False
-#            }
+        unique_together = ('content_type', 'object_id',)
+        index_together = [
+            ['content_type', 'object_id'],
+        ]
 
     @classmethod
     def add(cls, created_user, text, about, source, ensure_related_objs=None):
         """Adds a notification.
+        
+        TODO: Should this be on the manager? Notifications.objects.add(...)
         
         :param created_user: the user document who created the notification.
         :param text: the text of the notification
@@ -111,6 +113,8 @@ class Notification(AbstractBaseModel):
                 last_modified_id=created_user.id,
                 source=source)
 
+        # Would have to add this through the related manager after the save
+        # occurs
         related_objs = [about, created_user]
 
         if ensure_related_objs:
