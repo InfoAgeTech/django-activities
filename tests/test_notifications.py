@@ -5,6 +5,7 @@ from django.test import TestCase
 from django_notifications.models import Notification
 import uuid
 from django_notifications.constants import NotificationSource
+from django_notifications.models import NotificationReply
 
 User = get_user_model()
 random_string = lambda len = None: uuid.uuid4().hex[:len or 10]
@@ -44,20 +45,37 @@ class NotificationTests(TestCase):
                              text=text,
                              about=about_obj,
                              source=NotificationSource.COMMENT)
-        raise NotImplementedError()
 
-#        n = Notification.add(created_user=self.usr,
-#                             text=notification_text,
-#                             doc=self.about_doc,
-#                             source=NotificationSource.ACTIVITY)
-#        self.assertEquals(n.text, notification_text)
-#        self.assertEquals(n.doc.id, self.about_doc.id)
-#        self.assertEquals(n.doc_id, self.about_doc.id)
-#        self.assertEquals(n.source, NotificationSource.ACTIVITY)
-#
-#        self.assertTrue(self.usr in n.related_docs)
-#        self.assertTrue(self.about_doc in n.related_docs)
+        self.assertEqual(n.about, about_obj)
+        self.assertEqual(n.about_id, about_obj.id)
+        self.assertEqual(n.source, NotificationSource.COMMENT)
+        self.assertEqual(n.text, text)
+        self.assertEqual(n.created, self.user)
+        self.assertEqual(n.last_modified, self.user)
 
+    def test_add_notification_reply(self):
+
+        n = Notification.add(created_user=self.user,
+                             text='Hello world',
+                             about=create_user(),
+                             source=NotificationSource.COMMENT)
+        replies = n.replies.all()
+        self.assertEqual(len(replies), 0)
+
+        reply_user = create_user()
+        reply_text = 'Some reply comment.'
+
+        reply = n.add_reply(usr=reply_user,
+                            text=reply_text)
+
+        self.assertEqual(reply.notification, n)
+        self.assertEqual(reply.created, reply_user)
+        self.assertEqual(reply.last_modified, reply_user)
+
+        replies = n.get_replies()
+        self.assertEqual(len(replies), 1)
+
+        self.assertEqual(replies[0], reply)
 
 #    def test_ensure_related_docs(self):
 #        """Tests the ensure related docs functionality making sure specific

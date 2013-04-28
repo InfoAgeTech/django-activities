@@ -22,4 +22,4 @@ TODO
 
 Tests
 =====
-run: ``python setup.py test``.
+run: ``python manage.py test``

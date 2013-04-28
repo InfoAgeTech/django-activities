@@ -21,20 +21,49 @@ class NotificationReply(AbstractBaseModel):
       
     """
     text = models.TextField(max_length=500)
+    notification = models.ForeignKey('Notification')
     # TODO: foreignKey or integer field (foreign key to "self")?
-    reply_to_id = models.PositiveIntegerField()
+    reply_to_id = models.PositiveIntegerField(blank=True,
+                                              null=True)
+
+    # TODO: need to impement this.  "get_by_notification(...)"
+    # objects = NotificationReply()
+
+    class Meta:
+        ordering = ('-created_dttm',)
+
+    @classmethod
+    def add(cls, created_user, about_notification, text, reply_to_id=None):
+        """Adds a new notification reply.
+        
+        :param created_user: the user creating the reply.
+        :param about_notification: the notification this reply is about.
+        :param text: the text of the notification.
+        :param reply_to_id: the id of the reply this reply is about.
+        """
+        return cls.objects.create(created=created_user,
+                                  text=text,
+                                  reply_to_id=reply_to_id)
 
 
-class NotificationFor(AbstractBaseModel):
+# Rename this to something like "NotificationRelations" since it includes
+class NotificationFor(models.Model):
     """Defines the generic object a notification is related to.
     
     TODO: Should make this a mixin!
     TODO: Is this it's own model that basically creates a ManyToMany Relationship
           to whatever is referencing the object?
+          - then I could make this a proxy moxel...
+    TODO: prove out performance works for this before making it a separate app (django-generic).
     """
 
     class Meta:
         db_table = u'notifications_for'
+
+    # This is already done through django table name is "notifications_for_objs"
+#    to_object_content_type = models.ForeignKey(ContentType)
+#    to_object_id = models.PositiveIntegerField()
+#    for_object = generic.GenericForeignKey('to_object_content_type', 'to_object_id')
 
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
@@ -51,7 +80,7 @@ class Notification(AbstractBaseModel):
     * about_content_type: the content type of the about object
     * text: the text of the notification.  This can include html.
     * replies: list of replies to this notification
-    * related_objs: list of docs this notification is related to.  For example,
+    * for_objs: list of docs this notification is for. For example,
         if a comment is made on a object "A" which has an object "B", then this
         list will include references to the::
             
@@ -64,31 +93,31 @@ class Notification(AbstractBaseModel):
 
     """
 
-    text = models.CharField()
+    text = models.TextField()
     about_content_type = models.ForeignKey(ContentType)
     about = generic.GenericForeignKey('about_content_type', 'about_id')
     about_id = models.PositiveIntegerField()
-    replies = models.ForeignKey(NotificationReply)
-
-    # Consider renaming this to "for_objs"
-    # related_objs = models.ManyToManyField('NotificationsFor')
-    related_objs = models.ForeignKey('NotificationFor')
-#    related_docs = ListField(GenericReferenceField(),
-#                             required=True,
-#                             db_field='rd')
-    source = models.CharField(choices=NotificationSource.CHOICES)
+    replies = models.ManyToManyField(NotificationReply,
+                                     related_name='replies',
+                                     blank=True,
+                                     null=True)
+    for_objs = models.ManyToManyField('NotificationFor',
+                                      related_name='for_objs',
+                                      blank=True,
+                                      null=True)
+    source = models.CharField(max_length=20, choices=NotificationSource.CHOICES)
     objects = NotificationManager()
 
     class Meta:
         db_table = u'notifications'
         ordering = ('-created_dttm',)
-        unique_together = ('content_type', 'object_id',)
+        unique_together = ('about_content_type', 'about_id',)
         index_together = [
-            ['content_type', 'object_id'],
+            ['about_content_type', 'about_id'],
         ]
 
     @classmethod
-    def add(cls, created_user, text, about, source, ensure_related_objs=None):
+    def add(cls, created_user, text, about, source, ensure_for_objs=None):
         """Adds a notification.
         
         TODO: Should this be on the manager? Notifications.objects.add(...)
@@ -98,53 +127,56 @@ class Notification(AbstractBaseModel):
         :param obj: the document this notification is for.
         :param source: the source of the notifications. Can be one of 
             NotificationSource values.
-        :param ensure_related_objs: list of docs to ensure will receive the 
+        :param ensure_for_objs: list of object to ensure will receive the 
             notification.
         :return: if notification is successfully added this returns True.  
             Doesn't return entire object because the could potentially be a ton
             of notifications and I won't want to return all of them.
         
         """
-        n = cls(text=text.strip(),
-                about=about,
-                created=created_user,
-                created_id=created_user.id,
-                last_modified=created_user,
-                last_modified_id=created_user.id,
-                source=source)
+        n = cls.objects.create(text=text.strip(),
+                               about=about,
+                               created=created_user,
+                               last_modified=created_user,
+                               source=source)
 
-        # Would have to add this through the related manager after the save
-        # occurs
-        related_objs = [about, created_user]
+        for_objs = [about, created_user]
 
-        if ensure_related_objs:
-            for obj in ensure_related_objs:
-                related_objs.append(obj)
+        if ensure_for_objs:
+            for_objs += ensure_for_objs
 
-        n.related_objs.add(related_objs)
-        n.save()
+        # This is a bit annoying.  So I have to loop through these 1 by 1 instead
+        # of using the bulk_create from the object manager because the bulk_create
+        # statement doesn't return primary keys which is needed for for_objs
+        # related manager add function call. See:
+        # https://code.djangoproject.com/ticket/19527
+        for_objs = [NotificationFor.objects.create(for_object=obj)
+                    for obj in set(for_objs)]
 
+        # for_objs = NotificationFor.objects.bulk_create(for_objs)
+        n.for_objs.add(*for_objs)
         return n
 
+    def get_for_object(self):
+        """Gets the actual object the notification is for."""
+        return [obj.for_object for obj in self.for_objs.all()]
 
     def add_reply(self, usr, text, reply_to_id=None):
-        """
-        Adds a reply to a Notification
+        """Adds a reply to a Notification
         
         :param usr: the user the reply is from.
+        :param text: the text for the reply.
         :param reply_to_id: is a reply to a specific reply.
         
         """
-        kwargs = {'text':text,
-                  'created': usr,
-                  'created_id': usr.id,
-                  'last_modified_id':usr.id}
+        return self.notificationreply_set.create(created=usr,
+                                                 last_modified=usr,
+                                                 text=text,
+                                                 reply_to_id=reply_to_id)
 
-        if reply_to_id:
-            kwargs['reply_to_id'] = reply_to_id
-
-        return self.replies.create(**kwargs)
-
+    def get_replies(self):
+        """Gets the notification reply objects for this notification."""
+        return self.notificationreply_set.all()
 
     def get_reply_by_id(self, reply_id):
         """Gets the reply for a notification by it's id."""
@@ -181,7 +213,7 @@ class Notification(AbstractBaseModel):
         :param source: the source of the notification.
         
         """
-        criteria = {'related_objs': obj}
+        criteria = {'for_objs': obj}
 
         if source:
             criteria['source'] = source
@@ -201,3 +233,35 @@ class Notification(AbstractBaseModel):
         """
         self.replies.__class__.objects.get(id=reply_id).delete()
         return True
+
+
+"""
+The issue here is how you access all objects.  Could add a method of 
+"get_for_objects(self, ...)" that get's all the object for me.
+
+Or, just use for objects as more of a way to query vs actually show what's 
+the objects are.
+
+
+In [17]: n.for_objs
+Out[17]: <django.db.models.fields.related.ManyRelatedManager at 0x102fd7990>
+
+In [18]: n.for_objs.all()
+Out[18]: [<NotificationFor: NotificationFor object>, <NotificationFor: NotificationFor object>]
+
+In [19]: n.for_objs.all()[0].for_object
+Out[19]: <User: f0a8e1f8d12046528824b29447d244e1>
+
+In [20]: [obj.for_object for obj in n.for_objs.all()[0]]
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+/Users/troy/.virtualenvs/bb_pg/lib/python2.7/site-packages/django/core/management/commands/shell.pyc in <module>()
+----> 1 [obj.for_object for obj in n.for_objs.all()[0]]
+
+TypeError: 'NotificationFor' object is not iterable
+
+In [21]: [obj.for_object for obj in n.for_objs.all()]
+Out[21]:
+[<User: f0a8e1f8d12046528824b29447d244e1>,
+ <User: c3750f8f6ed6488598f6dca47d621b12>]
+"""

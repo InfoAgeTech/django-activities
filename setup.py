@@ -15,7 +15,7 @@ setup(
     name='django-notifications',
     version='0.0.1',
     description='Notifications app for django',
-    long_description=open('README.md').read(),
+    # long_description=open('README.md').read(),
     author='Troy Grosfield',
     author_email='troy.grosfield@gmail.com',
     url='https://github.com/troygrosfield/django-notifications',
