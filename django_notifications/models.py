@@ -157,10 +157,6 @@ class Notification(AbstractBaseModel):
         n.for_objs.add(*for_objs)
         return n
 
-    def get_for_object(self):
-        """Gets the actual object the notification is for."""
-        return [obj.for_object for obj in self.for_objs.all()]
-
     def add_reply(self, usr, text, reply_to_id=None):
         """Adds a reply to a Notification
         
@@ -174,16 +170,17 @@ class Notification(AbstractBaseModel):
                                                  text=text,
                                                  reply_to_id=reply_to_id)
 
+    def get_for_object(self):
+        """Gets the actual object the notification is for."""
+        return [obj.for_object for obj in self.for_objs.all()]
+
     def get_replies(self):
         """Gets the notification reply objects for this notification."""
         return self.notificationreply_set.all()
 
     def get_reply_by_id(self, reply_id):
         """Gets the reply for a notification by it's id."""
-        for reply in self.replies:
-            if reply.id == reply_id:
-                return reply
-
+        return self.notificationreply_set.get(id=reply_id)
 
     @classmethod
     def get_by_user(cls, usr, source=None, page=1, page_size=25,

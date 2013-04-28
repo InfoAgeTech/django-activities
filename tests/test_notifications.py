@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth import get_user_model
-from django.db import models
 from django.test import TestCase
+from django_notifications.constants import NotificationSource
 from django_notifications.models import Notification
 import uuid
-from django_notifications.constants import NotificationSource
-from django_notifications.models import NotificationReply
 
 User = get_user_model()
 random_string = lambda len = None: uuid.uuid4().hex[:len or 10]
@@ -54,7 +52,7 @@ class NotificationTests(TestCase):
         self.assertEqual(n.last_modified, self.user)
 
     def test_add_notification_reply(self):
-
+        """Test for adding notification replies."""
         n = Notification.add(created_user=self.user,
                              text='Hello world',
                              about=create_user(),
@@ -74,8 +72,44 @@ class NotificationTests(TestCase):
 
         replies = n.get_replies()
         self.assertEqual(len(replies), 1)
-
         self.assertEqual(replies[0], reply)
+
+    def test_get_notification_reply_by_id(self):
+        """Test for adding notification replies."""
+        n = Notification.add(created_user=self.user,
+                             text='Hello world',
+                             about=create_user(),
+                             source=NotificationSource.COMMENT)
+
+        reply_user = create_user()
+        reply_text = 'Some reply comment.'
+
+        reply = n.add_reply(usr=reply_user,
+                            text=reply_text)
+
+        reply_db = n.get_reply_by_id(reply_id=reply.id)
+
+        self.assertEqual(reply, reply_db)
+
+    def test_get_replies(self):
+        """Test for adding notification replies."""
+        n = Notification.add(created_user=self.user,
+                             text='Hello world',
+                             about=create_user(),
+                             source=NotificationSource.COMMENT)
+
+        reply1 = n.add_reply(usr=create_user(), text='Some reply comment.')
+        reply2 = n.add_reply(usr=create_user(), text='Some reply comment.')
+        reply3 = n.add_reply(usr=create_user(), text='Some reply comment.')
+        reply4 = n.add_reply(usr=create_user(), text='Some reply comment.')
+
+        replies = list(n.get_replies())
+
+        self.assertEqual(len(replies), 4)
+        self.assertTrue(reply1 in replies)
+        self.assertTrue(reply2 in replies)
+        self.assertTrue(reply3 in replies)
+        self.assertTrue(reply4 in replies)
 
 #    def test_ensure_related_docs(self):
 #        """Tests the ensure related docs functionality making sure specific
