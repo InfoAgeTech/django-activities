@@ -74,6 +74,21 @@ class NotificationTests(TestCase):
         self.assertEqual(len(replies), 1)
         self.assertEqual(replies[0], reply)
 
+    def test_get_for_objects(self):
+        """Test getting the actual for objects."""
+        text = 'Hello world'
+        about_obj = create_user()
+
+        n = Notification.add(created_user=self.user,
+                             text=text,
+                             about=about_obj,
+                             source=NotificationSource.COMMENT)
+        for_objects = n.get_for_objects()
+
+        self.assertEqual(len(for_objects), 2)
+        self.assertTrue(about_obj in for_objects)
+        self.assertTrue(self.user in for_objects)
+
     def test_get_notification_reply_by_id(self):
         """Test for adding notification replies."""
         n = Notification.add(created_user=self.user,
@@ -110,6 +125,35 @@ class NotificationTests(TestCase):
         self.assertTrue(reply2 in replies)
         self.assertTrue(reply3 in replies)
         self.assertTrue(reply4 in replies)
+
+    def test_get_by_user(self):
+        """Test get notifications for a user."""
+        about_obj = create_user()
+        for_user = create_user()
+
+        n1 = Notification.add(created_user=self.user,
+                              text='Hello world 1',
+                              about=about_obj,
+                              source=NotificationSource.COMMENT,
+                              ensure_for_objs=for_user)
+        n2 = Notification.add(created_user=self.user,
+                              text='Hello world 2',
+                              about=about_obj,
+                              source=NotificationSource.COMMENT,
+                              ensure_for_objs=for_user)
+        n3 = Notification.add(created_user=self.user,
+                              text='Hello world 3',
+                              about=about_obj,
+                              source=NotificationSource.COMMENT,
+                              ensure_for_objs=for_user)
+
+        notifications = Notification.objects.get_by_user(user=for_user)
+
+        self.assertEqual(len(notifications), 3)
+        self.assertTrue(n1 in notifications)
+        self.assertTrue(n2 in notifications)
+        self.assertTrue(n3 in notifications)
+
 
 #    def test_ensure_related_docs(self):
 #        """Tests the ensure related docs functionality making sure specific

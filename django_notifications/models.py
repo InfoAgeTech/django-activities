@@ -5,6 +5,8 @@ from django.db import models
 from django_notifications.constants import NotificationSource
 from django_tools.models import AbstractBaseModel
 from django_notifications.managers import NotificationManager
+from django_notifications.managers import NotificationForManager
+from django_notifications.managers import NotificationReplyManager
 
 
 class NotificationReply(AbstractBaseModel):
@@ -22,12 +24,8 @@ class NotificationReply(AbstractBaseModel):
     """
     text = models.TextField(max_length=500)
     notification = models.ForeignKey('Notification')
-    # TODO: foreignKey or integer field (foreign key to "self")?
-    reply_to_id = models.PositiveIntegerField(blank=True,
-                                              null=True)
-
-    # TODO: need to impement this.  "get_by_notification(...)"
-    # objects = NotificationReply()
+    reply_to_id = models.PositiveIntegerField(blank=True, null=True)
+    objects = NotificationReplyManager()
 
     class Meta:
         ordering = ('-created_dttm',)
@@ -46,11 +44,12 @@ class NotificationReply(AbstractBaseModel):
                                   reply_to_id=reply_to_id)
 
 
-# Rename this to something like "NotificationRelations" since it includes
+# TODO: Rename this to something like "NotificationRelations" since it includes the
+# objects that are related to a notification.
 class NotificationFor(models.Model):
     """Defines the generic object a notification is related to.
     
-    TODO: Should make this a mixin!
+    TODO: Should make this a mixin! Or,
     TODO: Is this it's own model that basically creates a ManyToMany Relationship
           to whatever is referencing the object?
           - then I could make this a proxy moxel...
@@ -60,14 +59,10 @@ class NotificationFor(models.Model):
     class Meta:
         db_table = u'notifications_for'
 
-    # This is already done through django table name is "notifications_for_objs"
-#    to_object_content_type = models.ForeignKey(ContentType)
-#    to_object_id = models.PositiveIntegerField()
-#    for_object = generic.GenericForeignKey('to_object_content_type', 'to_object_id')
-
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
     for_object = generic.GenericForeignKey('content_type', 'object_id')
+    objects = NotificationForManager()
 
 
 class Notification(AbstractBaseModel):
@@ -97,7 +92,7 @@ class Notification(AbstractBaseModel):
     about_content_type = models.ForeignKey(ContentType)
     about = generic.GenericForeignKey('about_content_type', 'about_id')
     about_id = models.PositiveIntegerField()
-    replies = models.ManyToManyField(NotificationReply,
+    replies = models.ManyToManyField('NotificationReply',
                                      related_name='replies',
                                      blank=True,
                                      null=True)
@@ -111,7 +106,6 @@ class Notification(AbstractBaseModel):
     class Meta:
         db_table = u'notifications'
         ordering = ('-created_dttm',)
-        unique_together = ('about_content_type', 'about_id',)
         index_together = [
             ['about_content_type', 'about_id'],
         ]
@@ -143,6 +137,9 @@ class Notification(AbstractBaseModel):
         for_objs = [about, created_user]
 
         if ensure_for_objs:
+            if not isinstance(ensure_for_objs, (list, tuple)):
+                ensure_for_objs = [ensure_for_objs]
+
             for_objs += ensure_for_objs
 
         # This is a bit annoying.  So I have to loop through these 1 by 1 instead
@@ -150,7 +147,7 @@ class Notification(AbstractBaseModel):
         # statement doesn't return primary keys which is needed for for_objs
         # related manager add function call. See:
         # https://code.djangoproject.com/ticket/19527
-        for_objs = [NotificationFor.objects.create(for_object=obj)
+        for_objs = [NotificationFor.objects.get_or_create_generic(obj=obj)[0]
                     for obj in set(for_objs)]
 
         # for_objs = NotificationFor.objects.bulk_create(for_objs)
@@ -165,13 +162,15 @@ class Notification(AbstractBaseModel):
         :param reply_to_id: is a reply to a specific reply.
         
         """
+        # If the user isn't part of the for_objs they should be added because
+        # they are not part of the conversation
         return self.notificationreply_set.create(created=usr,
                                                  last_modified=usr,
                                                  text=text,
                                                  reply_to_id=reply_to_id)
 
-    def get_for_object(self):
-        """Gets the actual object the notification is for."""
+    def get_for_objects(self):
+        """Gets the actual objects the notification is for."""
         return [obj.for_object for obj in self.for_objs.all()]
 
     def get_replies(self):
@@ -182,53 +181,15 @@ class Notification(AbstractBaseModel):
         """Gets the reply for a notification by it's id."""
         return self.notificationreply_set.get(id=reply_id)
 
-    @classmethod
-    def get_by_user(cls, usr, source=None, page=1, page_size=25,
-                    select_related=False):
-        """Gets notifications for a user.
-
-        :param user: the user to get the notifications for
-        :param source: the source of the notifications. Can be one of
-            NotificationSource values.
-        :return: tuple first part a boolean if there's more notification or not
-            the second part the notifications.
-
-        """
-        return cls.get_by_obj(obj=usr,
-                              source=source,
-                              page=page,
-                              page_size=page_size,
-                              select_related=select_related)
-
-
-    @classmethod
-    def get_by_obj(cls, obj, source=None, page=1, page_size=25,
-                   select_related=False):
-        """Gets notifications for a specific object.
-        
-        :param obj: the object the notifications are for
-        :param source: the source of the notification.
-        
-        """
-        criteria = {'for_objs': obj}
-
-        if source:
-            criteria['source'] = source
-
-        return cls._get_many(criteria,
-                             page=page,
-                             page_size=page_size,
-                             select_related=select_related)
-
-
     def delete_reply(self, reply_id):
-        """Delete an individual notification for a user.
+        """Delete an individual notification reply.
         
-        :param user_id: user to remove the notification for
-        :param notification_id: ID of the notification to delete
+        :param notification_id: ID of the notification reply to delete
         
         """
-        self.replies.__class__.objects.get(id=reply_id).delete()
+        # TODO: this might be:
+        # self.notificationreplies_set.remove(id=reply_id)
+        self.replies.remove(id=reply_id)
         return True
 
 
