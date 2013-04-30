@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from django.db import models
 from django.contrib.contenttypes.models import ContentType
+from django.db import models
 
 
 class NotificationManager(models.Manager):
@@ -70,30 +70,6 @@ class NotificationManager(models.Manager):
                            **kwargs)
 
 
-# class NotificationForManager(models.Manager):
-#
-#    def get_or_create_generic(self, obj, **kwargs):
-#        """Gets or creates a generic object.  This is a wrapper for
-#        get_or_create(...) when you need to get or create a generic object.
-#
-#        :param obj: the object to get or create
-#        :param kwargs: any other kwargs that the model accepts.
-#        """
-#        content_type = ContentType.objects.get_for_model(obj)
-#        return self.get_or_create(content_type=content_type,
-#                                  object_id=obj.id,
-#                                  **kwargs)
-#
-#    def get_by_content_type(self, content_type):
-#        """Gets all objects by a content type."""
-#        return self.filter(content_type=content_type)
-#
-#    def get_by_model(self, model):
-#        """Gets all object by a specific model."""
-#        content_type = ContentType.objects.get_for_model(model)
-#        return self.filter(content_type=content_type)
-
-
 class NotificationReplyManager(models.Manager):
 
     def create(self, created, notification, text, reply_to_id=None,
@@ -124,4 +100,3 @@ class NotificationReplyManager(models.Manager):
             return self.get(notification_id=notification_id)
         except self.model.DoesNotExist:
             return None
-

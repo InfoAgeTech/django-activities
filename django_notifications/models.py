@@ -9,49 +9,6 @@ from django_notifications.managers import NotificationReplyManager
 from django_generic.models import GenericObject
 
 
-class NotificationReply(AbstractBaseModel):
-    """Represents a notification reply object.
-    
-    Attributes:
-    
-    * text: the text of the notification.  This can include html.
-    * created_id: the person the notification was from.  This is the user who
-            caused the notification to change.  This can be the same user as the 
-            notification is intended for (users can create notifications for 
-            themselves)
-    * reply_to_id: this is a reply to a reply and is the id of the reply.
-      
-    """
-    text = models.TextField(max_length=500)
-    notification = models.ForeignKey('Notification')
-    reply_to_id = models.PositiveIntegerField(blank=True, null=True)
-    objects = NotificationReplyManager()
-
-    class Meta:
-        ordering = ('-created_dttm',)
-
-
-# TODO: Rename this to something like "NotificationRelations" since it includes the
-# objects that are related to a notification.
-class NotificationFor(GenericObject):
-    """Defines the generic object a notification is for.
-    
-    TODO: Should make this a mixin! Or,
-    TODO: Is this it's own model that basically creates a ManyToMany Relationship
-          to whatever is referencing the object?
-          - then I could make this a proxy moxel...
-    TODO: prove out performance works for this before making it a separate app (django-generic).
-    """
-
-    class Meta:
-        proxy = True
-
-#    content_type = models.ForeignKey(ContentType)
-#    object_id = models.PositiveIntegerField()
-#    content_object = generic.GenericForeignKey('content_type', 'object_id')
-#    objects = NotificationForManager()
-
-
 class Notification(AbstractBaseModel):
     """Notifications.
     
@@ -105,8 +62,8 @@ class Notification(AbstractBaseModel):
         :param reply_to_id: is a reply to a specific reply.
         
         """
-        # If the user isn't part of the for_objs they should be added because
-        # they are not part of the conversation
+        # TODO: If the user isn't part of the for_objs they should be added because
+        #       they are not part of the conversation
         return self.notificationreply_set.create(created=usr,
                                                  last_modified=usr,
                                                  text=text,
@@ -133,3 +90,32 @@ class Notification(AbstractBaseModel):
         """
         self.notificationreply_set.filter(id=reply_id).delete()
         return True
+
+
+class NotificationReply(AbstractBaseModel):
+    """Represents a notification reply object.
+    
+    Attributes:
+    
+    * text: the text of the notification.  This can include html.
+    * created_id: the person the notification was from.  This is the user who
+            caused the notification to change.  This can be the same user as the 
+            notification is intended for (users can create notifications for 
+            themselves)
+    * reply_to_id: this is a reply to a reply and is the id of the reply.
+      
+    """
+    text = models.TextField(max_length=500)
+    notification = models.ForeignKey('Notification')
+    reply_to_id = models.PositiveIntegerField(blank=True, null=True)
+    objects = NotificationReplyManager()
+
+    class Meta:
+        ordering = ('-created_dttm',)
+
+
+class NotificationFor(GenericObject):
+    """Defines the generic object a notification is for."""
+
+    class Meta:
+        proxy = True
