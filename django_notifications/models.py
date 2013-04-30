@@ -5,8 +5,8 @@ from django.db import models
 from django_notifications.constants import NotificationSource
 from django_tools.models import AbstractBaseModel
 from django_notifications.managers import NotificationManager
-from django_notifications.managers import NotificationForManager
 from django_notifications.managers import NotificationReplyManager
+from django_generic.models import GenericObject
 
 
 class NotificationReply(AbstractBaseModel):
@@ -33,7 +33,7 @@ class NotificationReply(AbstractBaseModel):
 
 # TODO: Rename this to something like "NotificationRelations" since it includes the
 # objects that are related to a notification.
-class NotificationFor(models.Model):
+class NotificationFor(GenericObject):
     """Defines the generic object a notification is for.
     
     TODO: Should make this a mixin! Or,
@@ -44,12 +44,12 @@ class NotificationFor(models.Model):
     """
 
     class Meta:
-        db_table = u'notifications_for'
+        proxy = True
 
-    content_type = models.ForeignKey(ContentType)
-    object_id = models.PositiveIntegerField()
-    for_object = generic.GenericForeignKey('content_type', 'object_id')
-    objects = NotificationForManager()
+#    content_type = models.ForeignKey(ContentType)
+#    object_id = models.PositiveIntegerField()
+#    content_object = generic.GenericForeignKey('content_type', 'object_id')
+#    objects = NotificationForManager()
 
 
 class Notification(AbstractBaseModel):
@@ -114,8 +114,8 @@ class Notification(AbstractBaseModel):
 
     def get_for_objects(self):
         """Gets the actual objects the notification is for."""
-        return [obj.for_object
-                for obj in self.for_objs.all().prefetch_related('for_object')]
+        return [obj.content_object
+                for obj in self.for_objs.all().prefetch_related('content_object')]
 
     def get_replies(self):
         """Gets the notification reply objects for this notification."""

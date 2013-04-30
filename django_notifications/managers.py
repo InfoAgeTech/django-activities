@@ -42,7 +42,7 @@ class NotificationManager(models.Manager):
         # statement doesn't return primary keys which is needed for for_objs
         # related manager add function call. See:
         # https://code.djangoproject.com/ticket/19527
-        for_objs = [for_model.objects.get_or_create_generic(obj=obj)[0]
+        for_objs = [for_model.objects.get_or_create_generic(content_object=obj)[0]
                     for obj in set(for_objs)]
 
         # for_objs = NotificationFor.objects.bulk_create(for_objs)
@@ -70,28 +70,28 @@ class NotificationManager(models.Manager):
                            **kwargs)
 
 
-class NotificationForManager(models.Manager):
-
-    def get_or_create_generic(self, obj, **kwargs):
-        """Gets or creates a generic object.  This is a wrapper for 
-        get_or_create(...) when you need to get or create a generic object.
-        
-        :param obj: the object to get or create
-        :param kwargs: any other kwargs that the model accepts.
-        """
-        content_type = ContentType.objects.get_for_model(obj)
-        return self.get_or_create(content_type=content_type,
-                                  object_id=obj.id,
-                                  **kwargs)
-
-    def get_by_content_type(self, content_type):
-        """Gets all objects by a content type."""
-        return self.filter(content_type=content_type)
-
-    def get_by_model(self, model):
-        """Gets all object by a specific model."""
-        content_type = ContentType.objects.get_for_model(model)
-        return self.filter(content_type=content_type)
+# class NotificationForManager(models.Manager):
+#
+#    def get_or_create_generic(self, obj, **kwargs):
+#        """Gets or creates a generic object.  This is a wrapper for
+#        get_or_create(...) when you need to get or create a generic object.
+#
+#        :param obj: the object to get or create
+#        :param kwargs: any other kwargs that the model accepts.
+#        """
+#        content_type = ContentType.objects.get_for_model(obj)
+#        return self.get_or_create(content_type=content_type,
+#                                  object_id=obj.id,
+#                                  **kwargs)
+#
+#    def get_by_content_type(self, content_type):
+#        """Gets all objects by a content type."""
+#        return self.filter(content_type=content_type)
+#
+#    def get_by_model(self, model):
+#        """Gets all object by a specific model."""
+#        content_type = ContentType.objects.get_for_model(model)
+#        return self.filter(content_type=content_type)
 
 
 class NotificationReplyManager(models.Manager):
