@@ -121,7 +121,7 @@ class NotificationManagerTests(BaseNotificationTests):
 class NotificationTests(BaseNotificationTests):
     """Tests for notifications."""
 
-    def test_add_notification_reply(self):
+    def test_add_reply(self):
         """Test for adding notification replies."""
         n = Notification.objects.create(created_user=self.user,
                                         text='Hello world',
@@ -137,6 +137,7 @@ class NotificationTests(BaseNotificationTests):
                             text=reply_text)
 
         self.assertEqual(reply.notification, n)
+        self.assertEqual(reply.text, reply_text)
         self.assertEqual(reply.created, reply_user)
         self.assertEqual(reply.last_modified, reply_user)
 

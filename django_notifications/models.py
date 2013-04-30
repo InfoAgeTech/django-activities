@@ -2,11 +2,12 @@
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+
+from django_generic.models import GenericObject
 from django_notifications.constants import NotificationSource
-from django_tools.models import AbstractBaseModel
 from django_notifications.managers import NotificationManager
 from django_notifications.managers import NotificationReplyManager
-from django_generic.models import GenericObject
+from django_tools.models import AbstractBaseModel
 
 
 class Notification(AbstractBaseModel):
@@ -62,12 +63,14 @@ class Notification(AbstractBaseModel):
         :param reply_to_id: is a reply to a specific reply.
         
         """
-        # TODO: If the user isn't part of the for_objs they should be added because
-        #       they are not part of the conversation
-        return self.notificationreply_set.create(created=usr,
-                                                 last_modified=usr,
-                                                 text=text,
-                                                 reply_to_id=reply_to_id)
+        reply = self.notificationreply_set.create(created=usr,
+                                                  last_modified=usr,
+                                                  text=text,
+                                                  reply_to_id=reply_to_id)
+        # TODO: If the user isn't part of the for_objs they should be added
+        #       because they are not part of the conversation?
+        # self.notificationfor_set.get_or_create_generic(content_object=usr)
+        return reply
 
     def get_for_objects(self):
         """Gets the actual objects the notification is for."""
