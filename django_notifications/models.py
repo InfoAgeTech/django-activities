@@ -4,10 +4,11 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
 from django_generic.models import GenericObject
-from django_notifications.constants import NotificationSource
-from django_notifications.managers import NotificationManager
-from django_notifications.managers import NotificationReplyManager
 from django_tools.models import AbstractBaseModel
+
+from .constants import NotificationSource
+from .managers import NotificationManager
+from .managers import NotificationReplyManager
 
 
 class Notification(AbstractBaseModel):
