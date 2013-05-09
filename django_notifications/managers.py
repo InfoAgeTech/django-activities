@@ -6,7 +6,8 @@ from django.db import models
 
 class NotificationManager(models.Manager):
 
-    def create(self, created_user, text, about, source, ensure_for_objs=None):
+    def create(self, created_user, text, about, source, ensure_for_objs=None,
+               **kwargs):
         """Creates a notification.
         
         :param created_user: the user document who created the notification.
@@ -25,7 +26,8 @@ class NotificationManager(models.Manager):
                                                     about=about,
                                                     created=created_user,
                                                     last_modified=created_user,
-                                                    source=source)
+                                                    source=source,
+                                                    **kwargs)
 
         for_objs = [about, created_user]
 
