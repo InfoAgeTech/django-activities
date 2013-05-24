@@ -8,6 +8,7 @@ install:
   - pip install -q Django==$DJANGO_VERSION
   - pip install https://github.com/InfoAgeTech/django-generic/tarball/master
   - pip install https://github.com/InfoAgeTech/django-tools/tarball/master
+  - pip install https://github.com/InfoAgeTech/python-tools/tarball/master
   - pip install django_nose
   - python setup.py -q install
 script:
