@@ -51,15 +51,15 @@ class NotificationManager(models.Manager):
         n.for_objs.add(*for_objs)
         return n
 
-    def get_by_user(self, user, **kwargs):
+    def get_for_user(self, user, **kwargs):
         """Gets notifications for a user.
 
         :param user: the user to get the notifications for
 
         """
-        return self.get_by_object(obj=user, **kwargs)
+        return self.get_for_object(obj=user, **kwargs)
 
-    def get_by_object(self, obj, **kwargs):
+    def get_for_object(self, obj, **kwargs):
         """Gets notifications for a specific object.
         
         :param obj: the object the notifications are for
