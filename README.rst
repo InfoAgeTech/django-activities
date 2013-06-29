@@ -3,17 +3,16 @@ NOTE: This is not stable yet and will likely change!  Please don't use in produc
 ====================
 django-notifications
 ====================
-:Info: django-notifications is a python notifications module written for django.
-:Build Url: http://travis-ci.org/InfoAgeTech/django-notifications
-:Build Status: .. image:: https://travis-ci.org/InfoAgeTech/django-notifications.png?branch=master 
-  
-About
-=====
 django-notifications is a generic python notifications module written for django.  You can create notifications about any object type and share that comment with any object type.
+
+Build Status
+============
+.. image:: https://travis-ci.org/InfoAgeTech/django-notifications.png?branch=master
+  :target: http://travis-ci.org/InfoAgeTech/django-notifications 
 
 Intallation
 ===========
-Download the source from Github and run:
+Download the source from Github and run::
 
     python setup.py install
 
@@ -24,6 +23,8 @@ Dependencies
 
 Examples
 ========
+Below are some basic examples on how to user django-notifications::
+
     >>> from django.contrib.auth import get_user_model
     >>> from django_notifications.models import Notification
     >>>
@@ -47,6 +48,6 @@ Examples
 
 Tests
 =====
-From the project root where the manage.py file is, run:
+From the project root where the manage.py file is, run::
 
     python manage.py test
