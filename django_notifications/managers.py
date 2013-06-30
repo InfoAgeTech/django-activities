@@ -24,8 +24,8 @@ class NotificationManager(models.Manager):
         """
         n = super(NotificationManager, self).create(text=text.strip(),
                                                     about=about,
-                                                    created=created_user,
-                                                    last_modified=created_user,
+                                                    created_user=created_user,
+                                                    last_modified_user=created_user,
                                                     source=source,
                                                     **kwargs)
 
@@ -74,7 +74,7 @@ class NotificationManager(models.Manager):
 
 class NotificationReplyManager(models.Manager):
 
-    def create(self, created, notification, text, reply_to_id=None,
+    def create(self, created_user, notification, text, reply_to_id=None,
                **kwargs):
         """Creates a new notification reply.
         
@@ -83,7 +83,7 @@ class NotificationReplyManager(models.Manager):
         :param text: the text of the notification.
         :param reply_to_id: the id of the reply this reply is about.
         """
-        return super(NotificationReplyManager, self).create(created=created,
+        return super(NotificationReplyManager, self).create(created_user=created_user,
                                                             text=text,
                                                             notification=notification,
                                                             reply_to_id=reply_to_id,

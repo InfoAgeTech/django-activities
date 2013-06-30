@@ -64,8 +64,8 @@ class Notification(AbstractBaseModel):
         :param reply_to_id: is a reply to a specific reply.
         
         """
-        reply = self.notificationreply_set.create(created=usr,
-                                                  last_modified=usr,
+        reply = self.notificationreply_set.create(created_user=usr,
+                                                  last_modified_user=usr,
                                                   text=text,
                                                   reply_to_id=reply_to_id)
         # TODO: If the user isn't part of the for_objs they should be added
