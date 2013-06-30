@@ -58,8 +58,8 @@ class NotificationManagerTests(BaseNotificationTests):
         self.assertEqual(n.about_id, about_obj.id)
         self.assertEqual(n.source, NotificationSource.COMMENT)
         self.assertEqual(n.text, text)
-        self.assertEqual(n.created, self.user)
-        self.assertEqual(n.last_modified, self.user)
+        self.assertEqual(n.created_user, self.user)
+        self.assertEqual(n.last_modified_user, self.user)
 
     def test_get_for_user(self):
         """Test get notifications for a user."""
@@ -138,8 +138,8 @@ class NotificationTests(BaseNotificationTests):
 
         self.assertEqual(reply.notification, n)
         self.assertEqual(reply.text, reply_text)
-        self.assertEqual(reply.created, reply_user)
-        self.assertEqual(reply.last_modified, reply_user)
+        self.assertEqual(reply.created_user, reply_user)
+        self.assertEqual(reply.last_modified_user, reply_user)
 
         replies = n.get_replies()
         self.assertEqual(len(replies), 1)
