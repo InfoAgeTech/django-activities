@@ -102,7 +102,7 @@ class NotificationReply(AbstractBaseModel):
     Attributes:
     
     * text: the text of the notification.  This can include html.
-    * created_id: the person the notification was from.  This is the user who
+    * created_user: the person the notification was from.  This is the user who
             caused the notification to change.  This can be the same user as the 
             notification is intended for (users can create notifications for 
             themselves)
