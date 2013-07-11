@@ -4,7 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
 from django_generic.models import GenericObject
-from django_tools.models import AbstractBaseModel
+from django_core.models import AbstractBaseModel
 
 from .constants import NotificationSource
 from .managers import NotificationManager

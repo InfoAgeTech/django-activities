@@ -26,7 +26,7 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django_notifications',
     'django_generic',
-    'django_tools',
+    'django_core',
     'django_nose',
 )
 
