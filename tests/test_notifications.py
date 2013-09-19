@@ -133,7 +133,7 @@ class NotificationTests(BaseNotificationTests):
         reply_user = create_user()
         reply_text = 'Some reply comment.'
 
-        reply = n.add_reply(usr=reply_user,
+        reply = n.add_reply(user=reply_user,
                             text=reply_text)
 
         self.assertEqual(reply.notification, n)
@@ -170,7 +170,7 @@ class NotificationTests(BaseNotificationTests):
         reply_user = create_user()
         reply_text = 'Some reply comment.'
 
-        reply = n.add_reply(usr=reply_user,
+        reply = n.add_reply(user=reply_user,
                             text=reply_text)
 
         reply_db = n.get_reply_by_id(reply_id=reply.id)
@@ -184,10 +184,10 @@ class NotificationTests(BaseNotificationTests):
                                         about=create_user(),
                                         source=NotificationSource.COMMENT)
 
-        reply1 = n.add_reply(usr=create_user(), text='Some reply comment.')
-        reply2 = n.add_reply(usr=create_user(), text='Some reply comment.')
-        reply3 = n.add_reply(usr=create_user(), text='Some reply comment.')
-        reply4 = n.add_reply(usr=create_user(), text='Some reply comment.')
+        reply1 = n.add_reply(user=create_user(), text='Some reply comment.')
+        reply2 = n.add_reply(user=create_user(), text='Some reply comment.')
+        reply3 = n.add_reply(user=create_user(), text='Some reply comment.')
+        reply4 = n.add_reply(user=create_user(), text='Some reply comment.')
 
         replies = list(n.get_replies())
 
@@ -204,10 +204,10 @@ class NotificationTests(BaseNotificationTests):
                                         about=create_user(),
                                         source=NotificationSource.COMMENT)
 
-        reply1 = n.add_reply(usr=create_user(), text='Some reply comment.')
-        reply2 = n.add_reply(usr=create_user(), text='Some reply comment.')
-        reply3 = n.add_reply(usr=create_user(), text='Some reply comment.')
-        reply4 = n.add_reply(usr=create_user(), text='Some reply comment.')
+        reply1 = n.add_reply(user=create_user(), text='Some reply comment.')
+        reply2 = n.add_reply(user=create_user(), text='Some reply comment.')
+        reply3 = n.add_reply(user=create_user(), text='Some reply comment.')
+        reply4 = n.add_reply(user=create_user(), text='Some reply comment.')
 
         n.delete_reply(reply_id=reply3.id)
 

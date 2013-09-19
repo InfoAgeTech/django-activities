@@ -2,27 +2,29 @@
 
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.utils.html import escape
+from django_core.managers import CommonManager
 
 
-class NotificationManager(models.Manager):
+class NotificationManager(CommonManager):
 
     def create(self, created_user, text, about, source, ensure_for_objs=None,
                **kwargs):
         """Creates a notification.
-        
+
         :param created_user: the user document who created the notification.
         :param text: the text of the notification
         :param obj: the document this notification is for.
-        :param source: the source of the notifications. Can be one of 
+        :param source: the source of the notifications. Can be one of
             NotificationSource values.
-        :param ensure_for_objs: list of object to ensure will receive the 
+        :param ensure_for_objs: list of object to ensure will receive the
             notification.
-        :return: if notification is successfully added this returns True.  
+        :return: if notification is successfully added this returns True.
             Doesn't return entire object because the could potentially be a ton
             of notifications and I won't want to return all of them.
-        
+
         """
-        n = super(NotificationManager, self).create(text=text.strip(),
+        n = super(NotificationManager, self).create(text=escape(text.strip()),
                                                     about=about,
                                                     created_user=created_user,
                                                     last_modified_user=created_user,
@@ -61,10 +63,10 @@ class NotificationManager(models.Manager):
 
     def get_for_object(self, obj, **kwargs):
         """Gets notifications for a specific object.
-        
+
         :param obj: the object the notifications are for
         :param kwargs: any key value pair fields that are on the model.
-        
+
         """
         content_type = ContentType.objects.get_for_model(obj)
         return self.filter(for_objs__content_type=content_type,
@@ -77,7 +79,7 @@ class NotificationReplyManager(models.Manager):
     def create(self, created_user, notification, text, reply_to_id=None,
                **kwargs):
         """Creates a new notification reply.
-        
+
         :param created: the user creating the reply.
         :param notification: the notification this reply is about.
         :param text: the text of the notification.

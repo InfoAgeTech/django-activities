@@ -13,9 +13,9 @@ from .managers import NotificationReplyManager
 
 class Notification(AbstractBaseModel):
     """Notifications.
-    
-    Attributes: 
-    
+
+    Attributes:
+
     * about: object the notification is referring to.
     * about_id: id this object the notification pertains to.
     * about_content_type: the content type of the about object
@@ -24,12 +24,12 @@ class Notification(AbstractBaseModel):
     * for_objs: list of docs this notification is for. For example,
         if a comment is made on a object "A" which has an object "B", then this
         list will include references to the::
-            
+
             1. object "A"
-            2. object "B" 
+            2. object "B"
             4. users who are sharing this object
-            
-    * source: the source of notification.  Can be one if NotificationSource 
+
+    * source: the source of notification.  Can be one if NotificationSource
         choices (i.e. 'user' generated comment, 'activity' on a bill, etc)
 
     """
@@ -56,21 +56,22 @@ class Notification(AbstractBaseModel):
             ['about_content_type', 'about_id'],
         ]
 
-    def add_reply(self, usr, text, reply_to_id=None):
+    def add_reply(self, user, text, reply_to_id=None):
         """Adds a reply to a Notification
-        
-        :param usr: the user the reply is from.
+
+        :param user: the user the reply is from.
         :param text: the text for the reply.
         :param reply_to_id: is a reply to a specific reply.
-        
+
         """
-        reply = self.notificationreply_set.create(created_user=usr,
-                                                  last_modified_user=usr,
-                                                  text=text,
-                                                  reply_to_id=reply_to_id)
+        reply = self.replies.create(created_user=user,
+                                    last_modified_user=user,
+                                    text=text,
+                                    reply_to_id=reply_to_id,
+                                    notification=self)
         # TODO: If the user isn't part of the for_objs they should be added
         #       because they are not part of the conversation?
-        # self.notificationfor_set.get_or_create_generic(content_object=usr)
+        # self.notificationfor_set.get_or_create_generic(content_object=user)
         return reply
 
     def get_for_objects(self):
@@ -88,9 +89,9 @@ class Notification(AbstractBaseModel):
 
     def delete_reply(self, reply_id):
         """Delete an individual notification reply.
-        
+
         :param notification_id: ID of the notification reply to delete
-        
+
         """
         self.notificationreply_set.filter(id=reply_id).delete()
         return True
@@ -98,16 +99,16 @@ class Notification(AbstractBaseModel):
 
 class NotificationReply(AbstractBaseModel):
     """Represents a notification reply object.
-    
+
     Attributes:
-    
+
     * text: the text of the notification.  This can include html.
     * created_user: the person the notification was from.  This is the user who
-            caused the notification to change.  This can be the same user as the 
-            notification is intended for (users can create notifications for 
+            caused the notification to change.  This can be the same user as the
+            notification is intended for (users can create notifications for
             themselves)
     * reply_to_id: this is a reply to a reply and is the id of the reply.
-      
+
     """
     text = models.TextField(max_length=500)
     notification = models.ForeignKey('Notification')
