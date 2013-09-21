@@ -6,7 +6,7 @@ from .constants import NotificationSource
 from .models import Notification
 
 
-class NotificationViewMixin(object):
+class NotificationsViewMixin(object):
     """Notifications view mixin that returns the notification_obj's paginator
     and current page.
 
@@ -20,13 +20,14 @@ class NotificationViewMixin(object):
     Note: This mixin requires the django_core.mixins.paging.PagingViewMixin
     to be called before this view is called.
     """
-    notifications_about_object = None
+    # notifications_about_object = None
     # notification_page_size_default = 15
 
     def get_context_data(self, **kwargs):
-        context = super(NotificationViewMixin, self).get_context_data(**kwargs)
+        context = super(NotificationsViewMixin, self).get_context_data(**kwargs)
 
-        notification_kwargs = {'obj': self.notifications_about_object}
+        notifications_about_object = self.get_notifications_about_object()
+        notification_kwargs = {'obj': notifications_about_object}
         notification_source = NotificationSource.check(
                                                     self.request.GET.get('ns'))
 
@@ -47,5 +48,12 @@ class NotificationViewMixin(object):
         except EmptyPage:
             context['notifications_page'] = paginator.page(paginator.num_pages)
 
-        context['notifications_about_object'] = self.notifications_about_object
+        context['notifications_about_object'] = notifications_about_object
         return context
+
+    def get_notifications_about_object(self):
+        """Gets the object to get notifications for. The default is to return
+        self.object which will be set if using a DetailView.  Otherwise, the
+        consuming View can override this method.
+        """
+        return self.object
