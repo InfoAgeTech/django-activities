@@ -20,8 +20,6 @@ class NotificationsViewMixin(object):
     Note: This mixin requires the django_core.mixins.paging.PagingViewMixin
     to be called before this view is called.
     """
-    # notifications_about_object = None
-    # notification_page_size_default = 15
 
     def get_context_data(self, **kwargs):
         context = super(NotificationsViewMixin, self).get_context_data(**kwargs)
@@ -56,4 +54,4 @@ class NotificationsViewMixin(object):
         self.object which will be set if using a DetailView.  Otherwise, the
         consuming View can override this method.
         """
-        return self.object
+        return self.object or self.get_object()

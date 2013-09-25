@@ -24,12 +24,13 @@ class NotificationManager(CommonManager):
             of notifications and I won't want to return all of them.
 
         """
-        n = super(NotificationManager, self).create(text=escape(text.strip()),
-                                                    about=about,
-                                                    created_user=created_user,
-                                                    last_modified_user=created_user,
-                                                    source=source,
-                                                    **kwargs)
+        n = super(NotificationManager, self).create(
+                                            text=escape(text.strip()),
+                                            about=about,
+                                            created_user=created_user,
+                                            last_modified_user=created_user,
+                                            source=source,
+                                            **kwargs)
 
         for_objs = [about, created_user]
 
@@ -41,15 +42,15 @@ class NotificationManager(CommonManager):
 
         for_model = self.model._get_many_to_many_model(field_name='for_objs')
 
-        # This is a bit annoying.  So I have to loop through these 1 by 1 instead
-        # of using the bulk_create from the object manager because the bulk_create
-        # statement doesn't return primary keys which is needed for for_objs
-        # related manager add function call. See:
+        # This is a bit annoying.  So I have to loop through these 1 by 1
+        # instead of using the bulk_create from the object manager because the
+        # bulk_create statement doesn't return primary keys which is needed for
+        # for_objs related manager add function call. See:
         # https://code.djangoproject.com/ticket/19527
-        for_objs = [for_model.objects.get_or_create_generic(content_object=obj)[0]
+        for_objs = [for_model.objects.get_or_create_generic(
+                                                        content_object=obj)[0]
                     for obj in set(for_objs)]
 
-        # for_objs = NotificationFor.objects.bulk_create(for_objs)
         n.for_objs.add(*for_objs)
         return n
 
