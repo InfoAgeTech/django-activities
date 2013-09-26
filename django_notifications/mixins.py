@@ -36,6 +36,7 @@ class NotificationsViewMixin(object):
                            .get_for_object(**notification_kwargs)
                            .prefetch_related('about',
                                              'replies',
+                                             'replies__created_user',
                                              'created_user'))
 
         paginator = Paginator(notifications, self.page_size)
