@@ -2,7 +2,6 @@
 
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django.utils.html import escape
 from django_core.managers import CommonManager
 
 
@@ -25,7 +24,7 @@ class NotificationManager(CommonManager):
 
         """
         n = super(NotificationManager, self).create(
-                                            text=escape(text.strip()),
+                                            text=text.strip(),
                                             about=about,
                                             created_user=created_user,
                                             last_modified_user=created_user,
