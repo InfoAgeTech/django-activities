@@ -31,13 +31,13 @@ class NotificationManager(CommonManager):
                                             source=source,
                                             **kwargs)
 
-        for_objs = [about, created_user]
+        for_objs = set([about, created_user])
 
         if ensure_for_objs:
-            if not isinstance(ensure_for_objs, (list, tuple)):
-                ensure_for_objs = [ensure_for_objs]
+            if not isinstance(ensure_for_objs, (list, tuple, set)):
+                ensure_for_objs = set([ensure_for_objs])
 
-            for_objs += ensure_for_objs
+            for_objs.update(ensure_for_objs)
 
         for_model = self.model._get_many_to_many_model(field_name='for_objs')
 
@@ -48,7 +48,7 @@ class NotificationManager(CommonManager):
         # https://code.djangoproject.com/ticket/19527
         for_objs = [for_model.objects.get_or_create_generic(
                                                         content_object=obj)[0]
-                    for obj in set(for_objs)]
+                    for obj in for_objs if obj != None]
 
         n.for_objs.add(*for_objs)
         return n

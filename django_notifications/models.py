@@ -124,3 +124,6 @@ class NotificationFor(GenericObject):
 
     class Meta:
         proxy = True
+
+    def __unicode__(self):
+        return u'{0} {1}'.format(self.content_type, self.object_id)
