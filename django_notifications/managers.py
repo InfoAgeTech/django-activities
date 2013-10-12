@@ -8,7 +8,7 @@ from django_core.managers import CommonManager
 class NotificationManager(CommonManager):
 
     def create(self, created_user, text, about, source, ensure_for_objs=None,
-               **kwargs):
+               exclude_objs=None, **kwargs):
         """Creates a notification.
 
         :param created_user: the user document who created the notification.
@@ -17,6 +17,8 @@ class NotificationManager(CommonManager):
         :param source: the source of the notifications. Can be one of
             NotificationSource values.
         :param ensure_for_objs: list of object to ensure will receive the
+            notification.
+        :param exclude_objs: exclude these objects from receiving the
             notification.
         :return: if notification is successfully added this returns True.
             Doesn't return entire object because the could potentially be a ton
@@ -38,6 +40,12 @@ class NotificationManager(CommonManager):
                 ensure_for_objs = set([ensure_for_objs])
 
             for_objs.update(ensure_for_objs)
+
+        # Remove any objects that should be excluded from the notification
+        if exclude_objs:
+            for obj in exclude_objs:
+                if obj in for_objs:
+                    for_objs.remove(obj)
 
         for_model = self.model._get_many_to_many_model(field_name='for_objs')
 
