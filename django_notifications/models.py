@@ -51,7 +51,7 @@ class Notification(AbstractBaseModel):
 
     class Meta:
         db_table = u'notifications'
-        ordering = ('-created_dttm',)
+        ordering = ('-id',)
         index_together = [
             ['about_content_type', 'about_id'],
         ]
