@@ -33,11 +33,6 @@ class BaseNotificationTests(TestCase):
         super(BaseNotificationTests, cls).tearDownClass()
         cls.user.delete()
 
-#    def setUp(self):
-#        """Run once per test."""
-# #        self.about_doc = MockDoc()
-#        pass
-
 
 class NotificationManagerTests(BaseNotificationTests):
     """Tests for the notification manager."""
@@ -217,3 +212,21 @@ class NotificationTests(BaseNotificationTests):
         self.assertTrue(reply1 in replies)
         self.assertTrue(reply2 in replies)
         self.assertTrue(reply4 in replies)
+
+    def test_reply_to_reply(self):
+        """Test replying to a reply."""
+        n = Notification.objects.create(created_user=self.user,
+                                        text='Hello world',
+                                        about=create_user(),
+                                        source=NotificationSource.COMMENT)
+
+        reply1 = n.add_reply(user=create_user(), text='Some reply comment.')
+        reply2 = n.add_reply(user=create_user(),
+                             reply_to=reply1,
+                             text='Some reply comment.')
+
+        replies = list(n.get_replies())
+
+        self.assertEqual(len(replies), 2)
+        self.assertTrue(replies[1], reply2)
+        self.assertTrue(replies[1].reply_to, reply1)

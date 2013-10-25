@@ -56,18 +56,18 @@ class Notification(AbstractBaseModel):
             ['about_content_type', 'about_id'],
         ]
 
-    def add_reply(self, user, text, reply_to_id=None):
+    def add_reply(self, user, text, reply_to=None):
         """Adds a reply to a Notification
 
         :param user: the user the reply is from.
         :param text: the text for the reply.
-        :param reply_to_id: is a reply to a specific reply.
+        :param reply_to: is a reply to a specific reply.
 
         """
         reply = self.replies.create(created_user=user,
                                     last_modified_user=user,
                                     text=text,
-                                    reply_to_id=reply_to_id,
+                                    reply_to=reply_to,
                                     notification=self)
         # TODO: If the user isn't part of the for_objs they should be added
         #       because they are not part of the conversation?
@@ -107,12 +107,12 @@ class NotificationReply(AbstractBaseModel):
             caused the notification to change.  This can be the same user as the
             notification is intended for (users can create notifications for
             themselves)
-    * reply_to_id: this is a reply to a reply and is the id of the reply.
+    * reply_to: this is a reply to a reply and is a recursive reference.
 
     """
     text = models.TextField(max_length=500)
     notification = models.ForeignKey('Notification')
-    reply_to_id = models.PositiveIntegerField(blank=True, null=True)
+    reply_to = models.ForeignKey('self', blank=True, null=True)
     objects = NotificationReplyManager()
 
     class Meta:

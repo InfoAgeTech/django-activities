@@ -84,20 +84,21 @@ class NotificationManager(CommonManager):
 
 class NotificationReplyManager(models.Manager):
 
-    def create(self, created_user, notification, text, reply_to_id=None,
+    def create(self, created_user, notification, text, reply_to=None,
                **kwargs):
         """Creates a new notification reply.
 
         :param created: the user creating the reply.
         :param notification: the notification this reply is about.
         :param text: the text of the notification.
-        :param reply_to_id: the id of the reply this reply is about.
+        :param reply_to: the reply this reply is about.
         """
-        return super(NotificationReplyManager, self).create(created_user=created_user,
-                                                            text=text,
-                                                            notification=notification,
-                                                            reply_to_id=reply_to_id,
-                                                            **kwargs)
+        return super(NotificationReplyManager, self).create(
+                                                created_user=created_user,
+                                                text=text,
+                                                notification=notification,
+                                                reply_to=reply_to,
+                                                **kwargs)
 
     def get_by_notification(self, notification):
         """Gets all objects for a notification object."""
