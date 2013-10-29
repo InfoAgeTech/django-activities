@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth import get_user_model
 from django.test import TestCase
+from django_notifications import get_notification_model
 from django_notifications.constants import NotificationSource
-from django_notifications.models import Notification
 import uuid
 
 User = get_user_model()
+Notification = get_notification_model()
 random_string = lambda len = None: uuid.uuid4().hex[:len or 10]
 
 

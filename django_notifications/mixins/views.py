@@ -3,7 +3,9 @@ from django.core.paginator import EmptyPage
 from django.core.paginator import Paginator
 
 from ..constants import NotificationSource
-from ..models import Notification
+from django_notifications import get_notification_model
+
+Notification = get_notification_model()
 
 
 class NotificationsViewMixin(object):
