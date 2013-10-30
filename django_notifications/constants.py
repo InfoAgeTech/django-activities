@@ -1,16 +1,25 @@
 # -*- coding: utf-8 -*-
 
+
 class NotificationSource():
     """The notification source represents what generated the notification
 
-    comment - a user comment
-    activity - this is some activity performed on a document (i.e. a field
+
+    ACTIVITY - this is some activity performed on an object (i.e. a field
         update)
+    COMMENT - a user comment
+    CREATED - represents an object being created
+    DELETED - represents an object being deleted
     """
-    COMMENT = 'COMMENT'
     ACTIVITY = 'ACTIVITY'
-    CHOICES = ((COMMENT, 'Comment'),
-               (ACTIVITY, 'Activity'))
+    COMMENT = 'COMMENT'
+    CREATED = 'CREATED'
+    DELETED = 'DELETED'
+    CHOICES = ((ACTIVITY, 'Activity'),
+               (CREATED, 'Created'),
+               (COMMENT, 'Comment'),
+               (DELETED, 'Deleted')
+               )
 
     @classmethod
     def check(cls, source):
@@ -20,10 +29,10 @@ class NotificationSource():
         if not source:
             return None
 
-        source = source.lower()
+        source = source.upper()
 
-        for s in (cls.COMMENT, cls.ACTIVITY):
-            if s == source:
-                return s
+        for s in cls.CHOICES:
+            if s[0] == source:
+                return s[0]
 
         return None
