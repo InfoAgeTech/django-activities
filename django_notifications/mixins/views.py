@@ -57,4 +57,7 @@ class NotificationsViewMixin(object):
         self.object which will be set if using a DetailView.  Otherwise, the
         consuming View can override this method.
         """
-        return self.object or self.get_object()
+        if hasattr(self, 'object') and self.object != None:
+            return self.object
+
+        return self.get_object()
