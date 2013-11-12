@@ -33,7 +33,7 @@ class NotificationManager(CommonManager):
                                             source=source,
                                             **kwargs)
 
-        for_objs = set([about, created_user])
+        for_objs = set([about])
 
         if ensure_for_objs:
             if not isinstance(ensure_for_objs, (list, tuple, set)):
