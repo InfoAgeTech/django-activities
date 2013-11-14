@@ -117,7 +117,7 @@ class NotificationReply(AbstractBaseModel):
     objects = NotificationReplyManager()
 
     class Meta:
-        ordering = ('created_dttm',)
+        ordering = ('id',)
 
 
 class NotificationFor(GenericObject):
