@@ -46,7 +46,8 @@ class Notification(AbstractBaseModel):
                                       related_name='for_objs',
                                       blank=True,
                                       null=True)
-    source = models.CharField(max_length=20, choices=NotificationSource.CHOICES)
+    source = models.CharField(max_length=20,
+                              choices=NotificationSource.CHOICES)
     objects = NotificationManager()
 
     class Meta:

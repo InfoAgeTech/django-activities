@@ -5,6 +5,7 @@ from django.core.paginator import Paginator
 from ..constants import NotificationSource
 from django_notifications import get_notification_model
 from django.views.generic.detail import SingleObjectMixin
+from django_notifications.models import NotificationReply
 
 Notification = get_notification_model()
 
@@ -13,11 +14,10 @@ class NotificationViewMixin(object):
     """View mixin for a single notification object."""
 
     notification = None
+    notification_pk_url_kwarg = 'notification_id'
 
     def dispatch(self, *args, **kwargs):
-
-        self.notification = Notification.objects.get_by_id_or_404(
-                                            id=kwargs.get('notification_id'))
+        self.notification = self.get_notification(**kwargs)
         return super(NotificationViewMixin, self).dispatch(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -25,18 +25,74 @@ class NotificationViewMixin(object):
         context['notification'] = self.notification
         return context
 
+    def get_notification(self, **kwargs):
+        if self.notification:
+            return self.notification
+
+        self.notification = Notification.objects.get_by_id_or_404(
+                                id=kwargs.get(self.notification_pk_url_kwarg))
+        return self.notification
+
 
 class NotificationSingleObjectViewMixin(NotificationViewMixin,
                                         SingleObjectMixin):
     """Mixin for when the notification represents what the page is about."""
 
-    def get_object(self):
+    def dispatch(self, *args, **kwargs):
+        self.object = self.get_notification(**kwargs)
+        return super(NotificationSingleObjectViewMixin,
+                     self).dispatch(*args, **kwargs)
+
+    def get_object(self, **kwargs):
         return self.notification
+
+
+class NotificationReplyViewMixin(NotificationViewMixin):
+    """View mixin for a notification reply."""
+
+    notification_reply = None
+    notification_reply_pk_url_kwarg = 'reply_id'
+
+    def dispatch(self, *args, **kwargs):
+        self.notification_reply = self.get_notification_reply(**kwargs)
+        # I do this do the correct notification proxy model is used.
+        self.notification_reply.notification = self.get_notification(**kwargs)
+        return super(NotificationReplyViewMixin,
+                     self).dispatch(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(NotificationReplyViewMixin,
+                        self).get_context_data(**kwargs)
+        context['notification_reply'] = self.notification_reply
+        return context
+
+    def get_notification_reply(self, **kwargs):
+        if self.notification_reply:
+            return self.notification_reply
+
+        self.notification_reply = NotificationReply.objects.get_by_id_or_404(
+                        id=kwargs.get(self.notification_reply_pk_url_kwarg),
+                        select_related=True)
+        return self.notification_reply
+
+
+class NotificationReplySingleObjectViewMixin(NotificationReplyViewMixin,
+                                             SingleObjectMixin):
+    """Mixin for when the notification reply represents what the page is about.
+    """
+
+    def dispatch(self, *args, **kwargs):
+        self.object = self.get_notification_reply(**kwargs)
+        return super(NotificationReplySingleObjectViewMixin,
+                     self).dispatch(*args, **kwargs)
+
+    def get_object(self, **kwargs):
+        return self.notification_reply
 
 
 class NotificationsViewMixin(object):
     """Notifications view mixin that returns the notification_obj's paginator
-    and current page.
+    and current page the the authenticated user is able to see.
 
     Filtering
     =========
@@ -89,8 +145,10 @@ class NotificationsViewMixin(object):
         """Get's the queryset for the notifications."""
         notifications_about_object = self.get_notifications_about_object()
 
+        notification_kwargs = {'for_user': self.request.user}
+
         if notifications_about_object:
-            notification_kwargs = {'obj': notifications_about_object}
+            notification_kwargs['obj'] = notifications_about_object
 
         notification_source = NotificationSource.check(
                                                     self.request.GET.get('ns'))

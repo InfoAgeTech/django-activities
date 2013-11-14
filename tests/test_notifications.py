@@ -94,17 +94,17 @@ class NotificationManagerTests(BaseNotificationTests):
                                          text='Hello world 1',
                                          about=about_obj,
                                          source=NotificationSource.COMMENT,
-                                         ensure_for_objs=for_user)
+                                         ensure_for_objs=[self.user, for_user])
         n2 = Notification.objects.create(created_user=self.user,
                                          text='Hello world 2',
                                          about=about_obj,
                                          source=NotificationSource.COMMENT,
-                                         ensure_for_objs=for_user)
+                                         ensure_for_objs=[self.user, for_user])
         n3 = Notification.objects.create(created_user=self.user,
                                          text='Hello world 3',
                                          about=about_obj,
                                          source=NotificationSource.COMMENT,
-                                         ensure_for_objs=for_user)
+                                         ensure_for_objs=[self.user, for_user])
 
         notifications = Notification.objects.get_for_object(obj=for_user)
 
@@ -149,7 +149,8 @@ class NotificationTests(BaseNotificationTests):
         n = Notification.objects.create(created_user=self.user,
                                         text=text,
                                         about=about_obj,
-                                        source=NotificationSource.COMMENT)
+                                        source=NotificationSource.COMMENT,
+                                        ensure_for_objs=self.user)
         for_objects = n.get_for_objects()
 
         self.assertEqual(len(for_objects), 2)

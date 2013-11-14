@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from django.contrib.contenttypes.models import ContentType
-from django.db import models
 from django_core.managers import CommonManager
 
 
@@ -69,20 +68,28 @@ class NotificationManager(CommonManager):
         """
         return self.get_for_object(obj=user, **kwargs)
 
-    def get_for_object(self, obj, **kwargs):
+    def get_for_object(self, obj, for_user=None, **kwargs):
         """Gets notifications for a specific object.
 
         :param obj: the object the notifications are for
+        :param for_user: only notifications that this user can see
         :param kwargs: any key value pair fields that are on the model.
 
         """
         content_type = ContentType.objects.get_for_model(obj)
-        return self.filter(for_objs__content_type=content_type,
-                           for_objs__object_id=obj.id,
-                           **kwargs)
+        queryset = self.filter(for_objs__content_type=content_type,
+                               for_objs__object_id=obj.id,
+                               **kwargs)
+
+        if for_user == None:
+            return queryset
+
+        user_content_type = ContentType.objects.get_for_model(for_user)
+        return queryset.filter(for_objs__content_type=user_content_type,
+                               for_objs__object_id=for_user.id)
 
 
-class NotificationReplyManager(models.Manager):
+class NotificationReplyManager(CommonManager):
 
     def create(self, created_user, notification, text, reply_to=None,
                **kwargs):
