@@ -8,7 +8,7 @@ django-notifications is a generic python notifications module written for django
 Build Status
 ============
 .. image:: https://travis-ci.org/InfoAgeTech/django-notifications.png?branch=master
-  :target: http://travis-ci.org/InfoAgeTech/django-notifications 
+  :target: http://travis-ci.org/InfoAgeTech/django-notifications
 
 Intallation
 ===========
@@ -19,7 +19,7 @@ Download the source from Github and run::
 Dependencies
 ============
 * `django-generic <https://github.com/InfoAgeTech/django-generic>`_
-* `django-tools <https://github.com/InfoAgeTech/django-tools>`_ 
+* `django-tools <https://github.com/InfoAgeTech/django-tools>`_
 
 Examples
 ========
