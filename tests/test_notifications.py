@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+import uuid
+
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django_notifications import get_notification_model
 from django_notifications.constants import NotificationSource
-import uuid
+
 
 User = get_user_model()
 Notification = get_notification_model()
