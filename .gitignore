@@ -1,6 +1,6 @@
 .project
 .pydevproject
 .DS_Store
-*.pyc
 .settings/
-/django_notifications.db
+*.pyc
+*.db

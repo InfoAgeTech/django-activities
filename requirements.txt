@@ -1,1 +1,5 @@
-django
+# Will need to update this to pypi versions once I've tagged releases for everything
+
+git+git://github.com/InfoAgeTech/django-generic.git@master
+git+git://github.com/InfoAgeTech/django-tools.git@master
+git+git://github.com/InfoAgeTech/python-tools.git@master
