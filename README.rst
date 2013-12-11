@@ -1,14 +1,14 @@
 NOTE: This is not stable yet and will likely change!  Please don't use in production until the 1.0 release.
 
-====================
-django-notifications
-====================
-django-notifications is a generic python notifications module written for django.  You can create notifications about any object type and share that comment with any object type.
-
-Build Status
-============
-.. image:: https://travis-ci.org/InfoAgeTech/django-notifications.png?branch=master
+.. |travisci| image:: https://travis-ci.org/InfoAgeTech/django-notifications.png?branch=master
   :target: http://travis-ci.org/InfoAgeTech/django-notifications
+.. |coveralls| image:: https://coveralls.io/repos/InfoAgeTech/django-notifications/badge.png
+  :target: https://coveralls.io/r/InfoAgeTech/django-notifications
+
+===========================================
+django-notifications |travisci| |coveralls|
+===========================================
+django-notifications is a generic python notifications module written for django.  You can create notifications about any object type and share that comment with any object type.
 
 Intallation
 ===========
@@ -48,6 +48,6 @@ Below are some basic examples on how to user django-notifications::
 
 Tests
 =====
-From the project root where the manage.py file is, run::
+From the ``tests`` directory where the manage.py file is, run::
 
-    python manage.py test
+   python manage.py test
