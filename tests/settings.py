@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 import os
 
+NOTIFICATION_MODEL_MIXIN = 'tests.test_models.AbstractNotificationMixin'
+NOTIFICATION_MANAGER = 'tests.test_models.managers.NotificationManager'
+
 # Do not run in DEBUG in production!!!
 DEBUG = False
 
@@ -28,6 +31,7 @@ INSTALLED_APPS = (
     'django_generic',
     'django_core',
     'django_nose',
+    'test_models'  # adding as an installed app so testing models get picked up.
 )
 
 # Added in django 1.5 secret key is required.  This is a random generated string

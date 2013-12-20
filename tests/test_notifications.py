@@ -234,3 +234,18 @@ class NotificationTests(BaseNotificationTests):
         self.assertEqual(len(replies), 2)
         self.assertTrue(replies[1], reply2)
         self.assertTrue(replies[1].reply_to, reply1)
+
+
+class NotificationExtensionTests(BaseNotificationTests):
+
+    def test_method_added_to_notification_model(self):
+        n = Notification.objects.create(created_user=self.user,
+                                        text='Hello world',
+                                        about=create_user(),
+                                        source=NotificationSource.COMMENT)
+        self.assertTrue(hasattr(n, 'my_test_method'))
+        self.assertEqual(n.my_test_method(), 'worked')
+
+    def test_model_manager_extended(self):
+        self.assertTrue(hasattr(Notification.objects, 'my_new_manager_method'))
+        self.assertEqual(Notification.objects.my_new_manager_method(), 'works')

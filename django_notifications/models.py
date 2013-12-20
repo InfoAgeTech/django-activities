@@ -3,15 +3,26 @@ from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django_core.models import AbstractBaseModel
+from django_core.utils.loading import get_class_from_settings
 from django_generic.models import GenericObject
 
 from .constants import NotificationSource
-from .managers import NotificationManager
 from .managers import NotificationReplyManager
 
 
-class Notification(AbstractBaseModel):
-    """Notifications.
+try:
+    AbstractNotificationMixin = get_class_from_settings(settings_key='NOTIFICATION_MODEL_MIXIN')
+except NotImplementedError:
+    from .mixins.models import AbstractNotificationMixin
+
+try:
+    NotificationManager = get_class_from_settings(settings_key='NOTIFICATION_MANAGER')
+except NotImplementedError:
+    from .managers import NotificationManager
+
+
+class AbstractNotification(AbstractBaseModel):
+    """Abstract extensible model for Notifications.
 
     Attributes:
 
@@ -50,11 +61,7 @@ class Notification(AbstractBaseModel):
     objects = NotificationManager()
 
     class Meta:
-        db_table = u'notifications'
-        ordering = ('-id',)
-        index_together = [
-            ['about_content_type', 'about_id'],
-        ]
+        abstract = True
 
     def add_reply(self, user, text, reply_to=None):
         """Adds a reply to a Notification
@@ -96,6 +103,17 @@ class Notification(AbstractBaseModel):
         """
         self.notificationreply_set.filter(id=reply_id).delete()
         return True
+
+
+class Notification(AbstractNotificationMixin, AbstractNotification):
+    """Concrete model for notifications."""
+
+    class Meta:
+        db_table = u'notifications'
+        ordering = ('-id',)
+        index_together = [
+            ['about_content_type', 'about_id'],
+        ]
 
 
 class NotificationReply(AbstractBaseModel):
