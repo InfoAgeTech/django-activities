@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.contrib.contenttypes.models import ContentType
-from django_core.managers import CommonManager
+from django_core.models.managers import CommonManager
 
 
 class NotificationManager(CommonManager):
