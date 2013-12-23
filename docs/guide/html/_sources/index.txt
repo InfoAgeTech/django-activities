@@ -6,8 +6,10 @@
 Welcome to django-notifications's documentation!
 ================================================
 
-:doc:`apireference`
-  The complete API documentation.
+.. toctree::
+   :maxdepth: 2
+   
+   apireference
 
 Indices and tables
 ==================

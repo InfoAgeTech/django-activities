@@ -2,14 +2,12 @@
 
 
 class NotificationSource():
-    """The notification source represents what generated the notification
+    """The notification source represents what generated the notification.
 
-
-    ACTIVITY - this is some activity performed on an object (i.e. a field
-        update)
-    COMMENT - a user comment
-    CREATED - represents an object being created
-    DELETED - represents an object being deleted
+    * ACTIVITY - some activity performed on an object (i.e. a field update)
+    * COMMENT - a user comment
+    * CREATED - represents an object being created
+    * DELETED - represents an object being deleted
     """
     ACTIVITY = 'ACTIVITY'
     COMMENT = 'COMMENT'

@@ -5,6 +5,7 @@ from django_core.models.managers import CommonManager
 
 
 class NotificationManager(CommonManager):
+    """Manager for notifications."""
 
     def create(self, created_user, text, about, source, ensure_for_objs=None,
                exclude_objs=None, **kwargs):
@@ -90,6 +91,7 @@ class NotificationManager(CommonManager):
 
 
 class NotificationReplyManager(CommonManager):
+    """Manager for notification replies."""
 
     def create(self, created_user, notification, text, reply_to=None,
                **kwargs):

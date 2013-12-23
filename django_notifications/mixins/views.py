@@ -94,8 +94,8 @@ class NotificationsViewMixin(object):
     """Notifications view mixin that returns the notification_obj's paginator
     and current page the the authenticated user is able to see.
 
-    Filtering
-    =========
+    Filtering:
+
     You can further filter the notifications by passing the following query
     string params:
 
