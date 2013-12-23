@@ -4,3 +4,5 @@
 .settings/
 *.pyc
 *.db
+
+docs/guide
