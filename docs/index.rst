@@ -9,7 +9,7 @@ Welcome to django-notifications's documentation!
 .. toctree::
    :maxdepth: 2
    
-   apireference
+   api
 
 Indices and tables
 ==================
