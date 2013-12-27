@@ -45,9 +45,10 @@ class AbstractNotification(AbstractBaseModel):
     """
 
     text = models.TextField()
-    about_content_type = models.ForeignKey(ContentType)
-    about = generic.GenericForeignKey('about_content_type', 'about_id')
-    about_id = models.PositiveIntegerField()
+    about = generic.GenericForeignKey(ct_field='about_content_type',
+                                      fk_field='about_id')
+    about_content_type = models.ForeignKey(ContentType, null=True, blank=True)
+    about_id = models.PositiveIntegerField(null=True, blank=True)
     replies = models.ManyToManyField('NotificationReply',
                                      related_name='replies',
                                      blank=True,

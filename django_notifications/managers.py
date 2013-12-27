@@ -3,11 +3,14 @@
 from django.contrib.contenttypes.models import ContentType
 from django_core.models.managers import CommonManager
 
+from .constants import NotificationSource
+
 
 class NotificationManager(CommonManager):
     """Manager for notifications."""
 
-    def create(self, created_user, text, about, source, ensure_for_objs=None,
+    def create(self, created_user, text, about=None,
+               source=NotificationSource.ACTIVITY, ensure_for_objs=None,
                exclude_objs=None, **kwargs):
         """Creates a notification.
 
@@ -25,9 +28,11 @@ class NotificationManager(CommonManager):
             of notifications and I won't want to return all of them.
 
         """
+        if about != None:
+            kwargs['about'] = about
+
         n = super(NotificationManager, self).create(
                                             text=text.strip(),
-                                            about=about,
                                             created_user=created_user,
                                             last_modified_user=created_user,
                                             source=source,
