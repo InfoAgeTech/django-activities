@@ -235,6 +235,18 @@ class NotificationTests(BaseNotificationTests):
         self.assertTrue(replies[1], reply2)
         self.assertTrue(replies[1].reply_to, reply1)
 
+    def test_is_comment(self):
+        """Test indicating if the notification is a comment."""
+        n = Notification(source=NotificationSource.COMMENT)
+        self.assertTrue(n.is_comment())
+        self.assertFalse(n.is_activity())
+
+    def test_is_activity(self):
+        """Test indicating if the notification is a comment."""
+        n = Notification(source=NotificationSource.ACTIVITY)
+        self.assertTrue(n.is_activity())
+        self.assertFalse(n.is_comment())
+
 
 class NotificationExtensionTests(BaseNotificationTests):
 

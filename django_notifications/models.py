@@ -68,6 +68,14 @@ class AbstractNotification(AbstractBaseModel):
     class Meta:
         abstract = True
 
+    def is_comment(self):
+        """Boolean indicating if the notification type is a comment."""
+        return self.source == NotificationSource.COMMENT
+
+    def is_activity(self):
+        """Boolean indicating if the notification type is an activity."""
+        return self.source == NotificationSource.ACTIVITY
+
     def add_reply(self, user, text, reply_to=None):
         """Adds a reply to a Notification
 
