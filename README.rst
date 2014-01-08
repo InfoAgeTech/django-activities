@@ -19,11 +19,11 @@ Download the source from Github and run::
 Dependencies
 ============
 * `django-generic <https://github.com/InfoAgeTech/django-generic>`_
-* `django-tools <https://github.com/InfoAgeTech/django-tools>`_
+* `django-core <https://github.com/InfoAgeTech/django-core>`_
 
 Examples
 ========
-Below are some basic examples on how to user django-notifications::
+Below are some basic examples on how to use django-notifications::
 
     >>> from django.contrib.auth import get_user_model
     >>> from django_notifications.models import Notification

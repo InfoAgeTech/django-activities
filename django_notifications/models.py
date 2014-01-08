@@ -11,12 +11,15 @@ from .managers import NotificationReplyManager
 
 
 try:
-    AbstractNotificationMixin = get_class_from_settings(settings_key='NOTIFICATION_MODEL_MIXIN')
+    AbstractNotificationMixin = get_class_from_settings(
+                                    settings_key='NOTIFICATION_MODEL_MIXIN')
 except NotImplementedError:
-    from .mixins.models import AbstractNotificationMixin
+    from django_core.models.mixins.hooks import AbstractHookModelMixin \
+                                             as AbstractNotificationMixin
 
 try:
-    NotificationManager = get_class_from_settings(settings_key='NOTIFICATION_MANAGER')
+    NotificationManager = get_class_from_settings(
+                                    settings_key='NOTIFICATION_MANAGER')
 except NotImplementedError:
     from .managers import NotificationManager
 

@@ -1,43 +1,16 @@
 # -*- coding: utf-8 -*-
-import uuid
-
 from django.contrib.auth import get_user_model
-from django.test import TestCase
 from django_notifications import get_notification_model
 from django_notifications.constants import NotificationSource
+from django_testing.testcases.users import SingleUserTestCase
+from django_testing.user_utils import create_user
 
 
 User = get_user_model()
 Notification = get_notification_model()
-random_string = lambda len = None: uuid.uuid4().hex[:len or 10]
 
 
-def create_user(username=None, email=None):
-    if not username:
-        username = random_string()
-
-    if not email:
-        email = '{0}@{1}.com'.format(random_string(), random_string())
-
-    return User.objects.create_user(username=username,
-                                    email=email)
-
-
-class BaseNotificationTests(TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        """Run once per test case"""
-        super(BaseNotificationTests, cls).setUpClass()
-        cls.user = create_user()
-
-    @classmethod
-    def tearDownClass(cls):
-        super(BaseNotificationTests, cls).tearDownClass()
-        cls.user.delete()
-
-
-class NotificationManagerTests(BaseNotificationTests):
+class NotificationManagerTests(SingleUserTestCase):
     """Tests for the notification manager."""
 
     def test_create_notification(self):
@@ -116,7 +89,7 @@ class NotificationManagerTests(BaseNotificationTests):
         self.assertTrue(n3 in notifications)
 
 
-class NotificationTests(BaseNotificationTests):
+class NotificationTests(SingleUserTestCase):
     """Tests for notifications."""
 
     def test_add_reply(self):
@@ -248,7 +221,7 @@ class NotificationTests(BaseNotificationTests):
         self.assertFalse(n.is_comment())
 
 
-class NotificationExtensionTests(BaseNotificationTests):
+class NotificationExtensionTests(SingleUserTestCase):
 
     def test_method_added_to_notification_model(self):
         n = Notification.objects.create(created_user=self.user,
