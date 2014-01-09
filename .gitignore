@@ -7,3 +7,4 @@
 *.db
 
 docs/guide
+__pycache__
