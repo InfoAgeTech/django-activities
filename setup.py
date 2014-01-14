@@ -31,18 +31,12 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
-    install_requires=[
-        'https://github.com/InfoAgeTech/django-generic/tarball/master',
-        'https://github.com/InfoAgeTech/django-core/tarball/master',
-        'https://github.com/InfoAgeTech/python-tools/tarball/master'
-    ],
     setup_requires=[
         'django >= 1.5.5',
     ],
     test_suite='nose.collector',
     tests_require=[
-        'django_nose',
-        'https://github.com/InfoAgeTech/django-testing/tarball/master'
+        'django_nose'
     ],
     classifiers=classifiers
 )
