@@ -1,1 +1,2 @@
+django_nose
 https://github.com/InfoAgeTech/django-testing/tarball/master
