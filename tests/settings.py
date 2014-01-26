@@ -28,7 +28,7 @@ INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django_notifications',
-    'django_generic',
+    'django_generics',
     'django_core',
     'django_nose',
     'test_models'  # adding as an installed app so testing models get picked up.

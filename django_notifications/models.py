@@ -4,7 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django_core.models.mixins.base import AbstractBaseModel
 from django_core.utils.loading import get_class_from_settings
-from django_generic.models import GenericObject
+from django_generics.models import GenericObject
 
 from .constants import NotificationSource
 from .managers import NotificationReplyManager
