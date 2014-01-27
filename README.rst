@@ -1,13 +1,13 @@
 NOTE: This is not stable yet and will likely change!  Please don't use in production until the 1.0 release.
 
-.. |travisci| image:: https://travis-ci.org/InfoAgeTech/django-notifications.png?branch=master
-  :target: http://travis-ci.org/InfoAgeTech/django-notifications
-.. |coveralls| image:: https://coveralls.io/repos/InfoAgeTech/django-notifications/badge.png
-  :target: https://coveralls.io/r/InfoAgeTech/django-notifications
+.. image:: https://travis-ci.org/InfoAgeTech/django-notifications.png?branch=master
+    :target: http://travis-ci.org/InfoAgeTech/django-notifications
+.. image:: https://coveralls.io/repos/InfoAgeTech/django-notifications/badge.png
+    :target: https://coveralls.io/r/InfoAgeTech/django-notifications
 
-===========================================
-django-notifications |travisci| |coveralls|
-===========================================
+====================
+django-notifications
+====================
 django-notifications is a generic python notifications module written for django.  You can create notifications about any object type and share that comment with any object type.
 
 Intallation
