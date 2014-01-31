@@ -2,7 +2,7 @@
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django_core.db.models.mixins.base import AbstractBaseModel
+from django_core.db.models import AbstractBaseModel
 from django_core.utils.loading import get_class_from_settings
 from django_generics.models import GenericObject
 
@@ -14,8 +14,8 @@ try:
     AbstractNotificationMixin = get_class_from_settings(
                                     settings_key='NOTIFICATION_MODEL_MIXIN')
 except NotImplementedError:
-    from django_core.db.models.mixins.hooks import AbstractHookModelMixin \
-                                             as AbstractNotificationMixin
+    from django_core.db.models import AbstractHookModelMixin \
+                                   as AbstractNotificationMixin
 
 try:
     NotificationManager = get_class_from_settings(
