@@ -25,7 +25,7 @@ setup(
     long_description=README,
     author='Troy Grosfield',
     maintainer='Troy Grosfield',
-    url='https://github.com/InfoAgeTech/django-notifications',
+    url='https://github.com/infoagetech/django-notifications',
     license='MIT',
     packages=find_packages(),
     include_package_data=True,
