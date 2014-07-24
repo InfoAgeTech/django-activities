@@ -21,6 +21,60 @@ Dependencies
 * `django-generic <https://github.com/InfoAgeTech/django-generic>`_
 * `django-core <https://github.com/InfoAgeTech/django-core>`_
 
+Configuration
+=============
+Config steps:
+
+1. Add to installed apps. django-notifications has two dependencies which are listed above. Both need to be added to the installed apps in your settings file.::
+
+    INSTALLED_APPS += (
+        ...
+        'django_core',
+        'django_generic',
+        'django_notifications',
+        ...
+    )
+
+
+By default, django-notifications comes with builtin views.  You can use them if you like or totally write your own.
+
+To use the views here are a few configuration steps to follow:
+
+1. Create the html file that will be used as the gateway between your application templates and django-notifications templates.  A simple template would look something like::
+    
+    # base_notifications.html
+    {% extends request.base_template %}
+
+    {% block content %}
+      {% block notifications_content %}{% endblock %}
+    {% endblock %}
+
+2. Once you're created the base notifications html file, you need to link to it in your settings.  In your settings file add the following setting that points to your template you just created::
+
+    NOTIFICATIONS_BASE_TEMPLATE = 'path/to/your/template/base_notifications.html'
+
+3. Add the context processor in your settings that's used to retrieve your custom base template::
+
+    TEMPLATE_CONTEXT_PROCESSORS = (
+        ...
+        'django_notifications.context_processors.template_name',
+        ...
+    )
+
+4. Add the urls::
+
+    urlpatterns = patterns('',
+        ...
+        url(r'^notifications', include('django_notifications.urls')),
+        ...
+    )
+
+5. There are also default .less and .js files that will assist the notifications as well.  These are optional and the js requires jquery.  The files are located at::
+
+    /static/django_notifications/js/notifications.js
+    /static/django_notifications/less/notifications.less
+
+
 Examples
 ========
 Below are some basic examples on how to use django-notifications::
