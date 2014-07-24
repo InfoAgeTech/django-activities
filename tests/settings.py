@@ -50,7 +50,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
 )
 
-SITE_ROOT = SITE_ROOT = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../')
+SITE_ROOT = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../')
 TEMPLATE_DIRS = (
     os.path.join(SITE_ROOT, 'templates')
 )
