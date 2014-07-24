@@ -1,11 +1,13 @@
-# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 from django.core.paginator import EmptyPage
 from django.core.paginator import Paginator
+from django.views.generic.detail import SingleObjectMixin
+from django_notifications import get_notification_model
+from django_notifications.models import NotificationReply
 
 from ..constants import NotificationSource
-from django_notifications import get_notification_model
-from django.views.generic.detail import SingleObjectMixin
-from django_notifications.models import NotificationReply
+
 
 Notification = get_notification_model()
 

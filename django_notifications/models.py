@@ -1,7 +1,9 @@
-# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.utils.encoding import python_2_unicode_compatible
 from django_core.db.models.mixins.base import AbstractBaseModel
 from django_core.utils.loading import get_class_from_settings
 from django_generics.models import GenericObject
@@ -127,9 +129,7 @@ class Notification(AbstractNotificationMixin, AbstractNotification):
     class Meta:
         db_table = u'notifications'
         ordering = ('-id',)
-        index_together = [
-            ['about_content_type', 'about_id'],
-        ]
+        index_together = (('about_content_type', 'about_id'),)
 
 
 class NotificationReply(AbstractBaseModel):
@@ -154,11 +154,12 @@ class NotificationReply(AbstractBaseModel):
         ordering = ('id',)
 
 
+@python_2_unicode_compatible
 class NotificationFor(GenericObject):
     """Defines the generic object a notification is for."""
 
     class Meta:
         proxy = True
 
-    def __unicode__(self):
-        return u'{0} {1}'.format(self.content_type, self.object_id)
+    def __str__(self):
+        return '{0} {1}'.format(self.content_type, self.object_id)
