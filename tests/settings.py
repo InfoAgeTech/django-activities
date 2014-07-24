@@ -50,6 +50,11 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
 )
 
+SITE_ROOT = SITE_ROOT = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../')
+TEMPLATE_DIRS = (
+    os.path.join(SITE_ROOT, 'templates')
+)
+
 ROOT_URLCONF = 'urls'
 
 # Added in django 1.5 secret key is required.  This is a random generated string
