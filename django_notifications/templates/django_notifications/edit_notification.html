@@ -1,14 +1,14 @@
-{% extends 'notifications/base_notification.html' %}
-{% load i18n url_tags bootstrap %}
-{% block page_title %}Edit Notification Reply - {% endblock %}
+{% extends 'django_notifications/base_notification.html' %}
+{% load bootstrap %}
+{% block page_title %}Edit Notification - {% endblock %}
 
 {% block breadcrumb %}
-    <li><a href="{% url 'notification_reply_edit' notification.id notification_reply.id %}">Edit</a></li>
+    <li>{{ notification.get_edit_url_link }}</li>
 {% endblock %}
 
 {% block notification_content %}
-    <h1>Edit Notification Reply</h1>
-    <form method="post" action="{% url 'notification_reply_edit' notification.id notification_reply.id %}">
+    <h1>Edit Notification</h1>
+    <form method="post" action="{{ notification.get_edit_url }}" class="form-horizontal">
         {% csrf_token %}
         {{ form|bootstrap_horizontal }}
         <div class="form-group">

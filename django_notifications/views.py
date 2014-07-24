@@ -24,7 +24,7 @@ class NotificationsView(LoginRequiredViewMixin, PagingViewMixin,
                         NotificationContentTypeObjectViewMixin,
                         NotificationsViewMixin, NotificationFormView):
 
-    template_name = 'notifications/view_notifications.html'
+    template_name = 'django_notifications/view_notifications.html'
 
     def get_notifications_about_object(self):
         return self.content_object
@@ -41,20 +41,20 @@ class NotificationsForUserView(LoginRequiredViewMixin, PagingViewMixin,
                                UserNotificationsViewMixin,
                                NotificationFormView):
 
-    template_name = 'notifications/view_notifications.html'
+    template_name = 'django_notifications/view_notifications.html'
 
 
 class NotificationView(LoginRequiredViewMixin,
                        NotificationSingleObjectViewMixin,
                        TemplateView):
 
-    template_name = 'notifications/view_notification.html'
+    template_name = 'django_notifications/view_notification.html'
 
 
 class NotificationEditView(LoginRequiredViewMixin,
                            NotificationSingleObjectViewMixin,
                            UpdateView):
-    template_name = 'notifications/edit_notification.html'
+    template_name = 'django_notifications/edit_notification.html'
     form_class = NotificationEditForm
 
     def get_form_kwargs(self):
@@ -76,7 +76,7 @@ class NotificationDeleteView(LoginRequiredViewMixin,
                              NotificationSingleObjectViewMixin,
                              FormView):
 
-    template_name = 'notifications/delete_notification.html'
+    template_name = 'django_notifications/delete_notification.html'
     form_class = NotificationDeleteForm
 
     def form_valid(self, form):
@@ -102,19 +102,19 @@ class NotificationDeleteView(LoginRequiredViewMixin,
 class NotificationRepliesView(LoginRequiredViewMixin,
                               NotificationSingleObjectViewMixin,
                               TemplateView):
-    template_name = 'notifications/view_notification_replies.html'
+    template_name = 'django_notifications/view_notification_replies.html'
 
 
 class NotificationReplyView(LoginRequiredViewMixin,
                             NotificationReplySingleObjectViewMixin,
                             TemplateView):
-    template_name = 'notifications/view_notification_reply.html'
+    template_name = 'django_notifications/view_notification_reply.html'
 
 
 class NotificationReplyEditView(LoginRequiredViewMixin,
                            NotificationReplySingleObjectViewMixin,
                            UpdateView):
-    template_name = 'notifications/edit_notification_reply.html'
+    template_name = 'django_notifications/edit_notification_reply.html'
     form_class = NotificationReplyEditForm
 
     def get_form_kwargs(self):
@@ -137,7 +137,7 @@ class NotificationReplyDeleteView(LoginRequiredViewMixin,
                                   NotificationReplySingleObjectViewMixin,
                                   DeleteView):
 
-    template_name = 'notifications/delete_notification_reply.html'
+    template_name = 'django_notifications/delete_notification_reply.html'
 
     def get_success_url(self):
         return self.notification.about.get_absolute_url()

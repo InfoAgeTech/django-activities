@@ -25,7 +25,7 @@ def render_notifications(context, page, obj, notification_url,
     if notification_source is not None:
         template_context['notification_source'] = notification_source
 
-    return render_to_string('notifications/snippets/notifications.html',
+    return render_to_string('django_notifications/snippets/notifications.html',
                             template_context,
                             context_instance=context)
 
@@ -37,6 +37,6 @@ def render_notification(context, notification, show_reference_obj=False):
         'show_reference_obj': show_reference_obj
     }
 
-    return render_to_string('notifications/snippets/notification.html',
+    return render_to_string('django_notifications/snippets/notification.html',
                             template_context,
                             context_instance=context)

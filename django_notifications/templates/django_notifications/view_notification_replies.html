@@ -1,10 +1,10 @@
-{% extends 'notifications/base_notification.html' %}
+{% extends 'django_notifications/base_notification.html' %}
 {% block page_title %}Notification Replies - {% endblock %}
 
 {% block notification_content %}
     <h1>Notification Replies</h1>
     
     <ul class="data-list notifications">
-        {% include 'notifications/snippets/notification.html' with notification=notification %}
+        {% include 'django_notifications/snippets/notification.html' with notification=notification %}
     </ul>
 {% endblock %}
