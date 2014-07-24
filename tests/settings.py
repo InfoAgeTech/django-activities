@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 import os
 
-NOTIFICATION_MODEL_MIXIN = 'tests.test_models.AbstractNotificationMixin'
-NOTIFICATION_MANAGER = 'tests.test_models.managers.NotificationManager'
+NOTIFICATION_MODEL_MIXIN = 'test_models.AbstractNotificationMixin'
+NOTIFICATION_MANAGER = 'test_models.managers.NotificationManager'
+NOTIFICATIONS_BASE_TEMPLATE = 'base_notifications.html'
 
 # Do not run in DEBUG in production!!!
 DEBUG = False
@@ -27,12 +28,29 @@ USE_I18N = True
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.humanize',
+    'bootstrapform',
     'django_notifications',
     'django_generics',
     'django_core',
     'django_nose',
     'test_models'  # adding as an installed app so testing models get picked up.
 )
+
+MIDDLEWARE_CLASSES = (
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+)
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.core.context_processors.request',
+    'django.core.context_processors.media',
+    'django_notifications.context_processors.template_name',
+    'django.contrib.auth.context_processors.auth',
+)
+
+ROOT_URLCONF = 'urls'
 
 # Added in django 1.5 secret key is required.  This is a random generated string
 SECRET_KEY = '12345abcd'

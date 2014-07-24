@@ -19,7 +19,7 @@
     <ul class="item notification clearfix">
         
         <li class="avatar">
-            <a href="{% if user.id == notification.created_user_id %}{% url 'home' %}{% else %}{{ notification.created_user.get_absolute_url }}{% endif %}">
+            <a href="{{ notification.created_user.get_absolute_url }}">
                 <img src="{{ notification.created_user.get_avatar_url }}" alt="Avatar" class="avatar" />
             </a>
         </li>
@@ -31,7 +31,7 @@
         </li>
         <li class="name">
             <strong>
-                <a href="{% if user.id == notification.created_user_id %}{% url 'home' %}{% else %}{{ notification.created_user.get_absolute_url }}{% endif %}">{{ notification.created_user.get_full_name }}</a>
+                <a href="{{ notification.created_user.get_absolute_url }}">{{ notification.created_user.get_full_name }}</a>
             </strong>
             
             {% comment %}If this is passed in a template, I can only pass strings which is why 'True' check exists{% endcomment %}
@@ -66,7 +66,7 @@
                 <li class="reply">
                     <ul>
                         <li class="avatar">
-                            <a href="{% if user.id == reply.created_user_id %}{% url 'home' %}{% else %}{{ reply.created_user.get_absolute_url }}{% endif %}">
+                            <a href="{{ reply.created_user.get_absolute_url }}">
                                 <img src="{{ reply.created_user.get_avatar_url }}" alt="Avatar" class="avatar" />
                             </a>
                         </li>
@@ -78,7 +78,7 @@
                         </li>
                         <li class="name">
                             <strong>
-                                <a href="{% if user.id == reply.created_user_id %}{% url 'home' %}{% else %}{{ reply.created_user.get_absolute_url }}{% endif %}">{{ reply.created_user.get_full_name }}</a>
+                                <a href="{{ reply.created_user.get_absolute_url }}">{{ reply.created_user.get_full_name }}</a>
                             </strong>
                         </li>
                         <li class="msg">{{ reply.text|safe|linebreaks }}</li>
