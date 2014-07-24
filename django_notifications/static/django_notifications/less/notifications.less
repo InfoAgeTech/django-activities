@@ -1,0 +1,140 @@
+.notifications-container {
+    
+    .comment-form {
+        margin-bottom: 7px; 
+        
+        textarea[name="text"] { 
+            height: 31px; 
+            width: 100%; 
+        }
+        
+        .btn-primary { 
+            width: 100%; 
+        }
+    }
+    
+    .notifications {
+        margin-bottom: 0;
+        padding-left: 0;
+        
+        li {
+            list-style: none;
+        }
+        
+        ul {
+            padding-left: 0;
+        }
+        
+        .avatar {
+            float:left; 
+            margin-left: 0;
+        }
+        
+        .comment-reply-form {
+            
+            input[type="text"] { 
+                height: 25px; 
+                padding: 2px 4px; 
+            }
+            
+            .comment-holder { 
+                margin-left: 32px 
+            }
+            
+            .comment-reply-form { 
+                margin-bottom: 0 
+            }
+        }
+        
+        .comment-reply-form .avatar, .reply .avatar { 
+            height: 24px; 
+            width: 24px; 
+        }
+        
+        
+        .item {
+            border-bottom: 1px solid #F2F2F2;
+            padding: 10px 0;
+            
+            .actions { 
+                float: right;
+                
+                .action { 
+                    padding: 0 2px;
+                }
+            }
+            
+            .msg {
+                
+                ul li {
+                    list-style: disc;
+                }
+                
+                ul, ol { 
+                    margin-left: 20px;
+                    
+                }
+            }
+            
+            .name {
+                 
+                .about-obj { 
+                    color: silver; 
+                    margin-left: 5px;
+                    
+                    a { 
+                        color: gray;
+                    }
+                    
+                }
+                
+            }
+            
+            .name, .msg, .date, .replies { 
+                display: block; 
+                margin-left: 40px;
+            }
+             
+        }
+        
+        .reply {
+            
+            .name, .msg, .date { 
+                margin-left: 32px; 
+            }
+
+        }
+        
+    }
+    
+}
+
+.notifications-paging { 
+    text-align: center;
+    
+    .progress, .progress .bar { 
+        display: inline-block; 
+        width: 100px; 
+    }
+}
+
+.notification {
+    .actions {
+        float: right;
+        
+        a {
+            margin-left: 5px
+        }
+        
+        .date { 
+            color: silver; 
+        }
+        
+        .msg {
+            
+            .field-name, .field-value { 
+                font-weight: bold; 
+            }
+        }
+    }
+}

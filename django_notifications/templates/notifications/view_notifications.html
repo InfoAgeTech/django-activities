@@ -1,0 +1,8 @@
+{% extends NOTIFICATIONS_BASE_TEMPLATE %}
+{% load notification_tags %}
+{% block page_title %}Notifications - {% endblock %}
+
+{% block notifications_content %}
+    <h1>Notifications</h1>
+    {% render_notifications page=notifications_page obj=notifications_about_object notification_url=notification_url %}
+{% endblock %}

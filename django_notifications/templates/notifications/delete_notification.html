@@ -1,0 +1,28 @@
+{% extends 'notifications/base_notification.html' %}
+{% load i18n url_tags %}
+{% block page_title %}Delete Notification - {% endblock %}
+
+{% block breadcrumb %}
+    <li>{% delete_url_link obj=notification auth_user=user %}</li>
+{% endblock %}
+
+{% block notification_content %}
+    <h1>Confirm delete for notification</h1>
+    <dl class="dl-horizontal">
+        <dt>Created by</dt>
+        <dd>{{ notification.created_user.get_absolute_url_link }}</dd>
+        <dt>Created on</dt>
+        <dd>{{ notification.created_dttm|date:'Y-n-j' }}</dd>
+        <dt>Notification</dt>
+        <dd>{{ notification.text|safe }}</dd>
+    </dl>
+    <form method="post" action="{{ notification.get_delete_url }}">
+        {% csrf_token %}
+        <div class="form-group">
+            <div>
+                <button type="submit" class="btn btn-primary">Delete</button>
+                <a href="{{ notification.about.get_absolute_url }}">cancel</a>
+            </div>
+        </div>
+    </form>
+{% endblock %}

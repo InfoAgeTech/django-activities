@@ -1,0 +1,66 @@
+{% comment %}
+    This snippet is used for user notifications or activity feed.
+    
+    Variables:
+    
+    notifications_page: the page django.core.paginator.Page of notifications
+    notification_url: the url for the object's notifications
+    obj: the obj the notifications are for.
+    notification_source: the source of the notifications (optional).  Default
+        is to show all.  Can be 'user' or 'activity'.
+    
+{% endcomment %}
+
+{% load humanize notification_tags %}
+{% spaceless %}
+
+{% with notifications_object_list=notifications_page.object_list %}
+
+  {% if notifications_object_list %}
+  
+	<div class="notifications-container" data-ajax="notifications">
+	
+	  {% if not request.is_ajax %}
+	    <form class="comment-form" action="{{ notification_url }}" method="post">{% csrf_token %}
+	        <input type="hidden" name="next" value="{{ request.path}}" />
+	        <div class="row">
+	            <div class="col-md-9">
+	                <textarea name="text" rows="2" cols="20" class="form-control" placeholder="Make a comment..."></textarea>
+	            </div>
+	            <div class="col-md-3">
+	                <button class="btn btn-primary btn-sm" type="submit">Comment</button>
+	            </div>
+	        </div>
+	    </form>
+	    <ul class="nav nav-tabs notification-type">
+            <li{% if not notification_source or notification_source == 'all' %} class="active"{% endif %}><a href="{{ notification_url }}?ns=all">All</a></li>
+	        <li{% if notification_source == 'user' %} class="active"{% endif %}><a href="{{ notification_url }}?ns=comment">Comments</a></li>
+	        <li{% if notification_source == 'activity' %} class="active"{% endif %}><a href="{{ notification_url }}?ns=activity">Activity</a></li>
+	    </ul>
+	  {% endif %}
+	   
+	   <ul class="notifications">
+	   {% for n in notifications_object_list %}
+	      {% if obj == n.about %}
+	        {% render_notification notification=n %}
+	      {% else %}
+	        {% render_notification notification=n show_reference_obj=True %}
+	      {% endif %}
+	   {% endfor %}
+	   </ul>
+	   
+	   {% if notifications_page.has_next %}
+	   <div class="notifications-paging">
+	       <a href="{{ notification_url }}?np={{ notifications_page.next_page_number }}&nps={{ notifications_page.paginator.per_page }}{% if notification_source %}&ns={{ notification_source }}{% endif %}" class="has-more">more</a>
+	   </div>
+	   {% endif %}
+	   
+	</div>
+
+  {% else %}
+    <p>No notifications found.</p>
+  {% endif %}
+
+{% endwith %}
+
+{% endspaceless %}

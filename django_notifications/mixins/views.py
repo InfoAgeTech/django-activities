@@ -1,12 +1,21 @@
 from __future__ import unicode_literals
 
+from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import EmptyPage
 from django.core.paginator import Paginator
+from django.core.urlresolvers import reverse
+from django.http.response import Http404
+from django.http.response import HttpResponse
+from django.shortcuts import render_to_response
+from django.template.context import RequestContext
 from django.views.generic.detail import SingleObjectMixin
-from django_notifications import get_notification_model
-from django_notifications.models import NotificationReply
+from django.views.generic.edit import FormView
 
+from .. import get_notification_model
 from ..constants import NotificationSource
+from ..forms import BasicCommentForm
+from ..http import NotificationResponse
+from ..models import NotificationReply
 
 
 Notification = get_notification_model()
@@ -141,13 +150,17 @@ class NotificationsViewMixin(object):
         context['notifications_about_object'] = \
             self.get_notifications_about_object()
 
+        if 'notification_url' not in context:
+            context['notification_url'] = self.get_notification_url()
+
         return context
 
     def get_notifications_queryset(self):
         """Get's the queryset for the notifications."""
         notifications_about_object = self.get_notifications_about_object()
 
-        notification_kwargs = {'for_user': self.request.user}
+        # notification_kwargs = {'for_user': self.request.user}
+        notification_kwargs = {}
 
         if notifications_about_object:
             notification_kwargs['obj'] = notifications_about_object
@@ -175,6 +188,15 @@ class NotificationsViewMixin(object):
             return self.object
 
         return self.get_object()
+
+    def get_notification_url(self):
+        """Get the notification url for the notification object."""
+        # TODO: Would be nice to try and optimize this so I don't have to query
+        #       for the content type if possible.
+        about_obj = self.get_notifications_about_object()
+        content_type = ContentType.objects.get_for_model(about_obj)
+        return reverse('notifications_view', args=[content_type.id,
+                                                   about_obj.id])
 
     def get_notifications_paging(self):
         """Gets the paging values passed through the query string params.
@@ -208,3 +230,133 @@ class NotificationsViewMixin(object):
             page_size = orig_page_size
 
         return page_num, page_size
+
+
+class UserNotificationsViewMixin(NotificationsViewMixin):
+    """Notifications for the authenticated user."""
+
+    def get_notifications_about_object(self):
+        return self.request.user
+
+
+class NotificationFormView(FormView):
+    """This is a form view that handles adding and displaying notifications
+    for an object.
+
+    This must be called after after any subclass of
+    django_notifications.mixins.NotificationsViewMixin so this mixin has access
+    to the `notifications_about_object` attribute.
+    """
+    form_class = BasicCommentForm
+
+    def get(self, request, *args, **kwargs):
+        # TODO: do I need to make an additional check here to make sure this is
+        #       an ajax get request for notifications?
+        if self.request.is_ajax():
+            return render_to_response(
+                                'notifications/snippets/notifications.html',
+                                self.get_context_data(),
+                                context_instance=RequestContext(self.request))
+
+        return super(NotificationFormView, self).get(request=request,
+                                                     *args,
+                                                     **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(NotificationFormView, self).get_context_data(**kwargs)
+
+        if self.request.is_ajax():
+            context['obj'] = self.get_notifications_about_object()
+
+        return context
+
+    def form_valid(self, form):
+
+        # TODO: Need to make sure the user has the ability to comment on this
+        #       object (they are sharing or authorized to do so.  Also,
+        #       probably want to require ajax here?
+        text = form.cleaned_data.get('text').strip()
+
+        # if "pid" (parent_notification_id) exists, then this is a reply to a notification.
+        parent_notification_id = form.cleaned_data.get('pid')
+
+        if parent_notification_id:
+            # reply to an existing notification
+            notification = Notification.objects.get_by_id(id=parent_notification_id)
+
+            if not notification:
+                raise HttpResponse(status=400)
+
+            notification.add_reply(user=self.request.user,
+                                   text=text)
+
+        else:
+            # New notification for an object
+            notification = Notification.objects.create(
+                created_user=self.request.user,
+                text=text,
+                about=self.get_notifications_about_object(),
+                source=NotificationSource.COMMENT
+            )
+
+        if self.request.is_ajax():
+            return NotificationResponse(request=self.request,
+                                        notification=notification)
+
+        # TODO: Where do I redirect to if it's not an ajax request?
+        # return ''  # safe_redirect(self.request.POST.get('next') or '/')
+        return super(NotificationFormView, self).form_valid(form=form)
+
+    def form_invalid(self, form):
+        # TODO: what do I want to do here?
+        return super(NotificationFormView, self).form_invalid(form=form)
+
+
+# TODO: This isn't Notifications specific and could be moved elsewhere.
+class ContentTypeObjectViewMixin(object):
+    """View mixin that takes the content type id and object id from the url
+    and it gets the object it refers to.
+    """
+    def dispatch(self, *args, **kwargs):
+        try:
+            # TODO: Do I want to accept a content type id or name?
+            content_type_id = kwargs['content_type_id']
+            object_id = kwargs['object_id']
+        except:
+            raise Http404
+
+        try:
+            self.content_type = ContentType.objects.get_for_id(
+                id=content_type_id
+            )
+        except:
+            raise Http404
+
+        content_model = self.content_type.model_class()
+
+        try:
+            self.content_object = content_model.objects.get(id=object_id)
+        except:
+            raise Http404
+
+        return super(ContentTypeObjectViewMixin, self).dispatch(*args,
+                                                                **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(ContentTypeObjectViewMixin,
+                        self).get_context_data(**kwargs)
+        context['content_type'] = self.content_type
+        context['content_object'] = self.content_object
+        return context
+
+
+class NotificationContentTypeObjectViewMixin(ContentTypeObjectViewMixin):
+    """Notification content type mixin."""
+
+    def get_context_data(self, **kwargs):
+        context = super(NotificationContentTypeObjectViewMixin,
+                        self).get_context_data(**kwargs)
+        context['notification_url'] = reverse('notifications_view',
+                                              args=[self.content_type.id,
+                                                    self.content_object.id])
+        return context

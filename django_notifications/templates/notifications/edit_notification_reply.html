@@ -1,0 +1,21 @@
+{% extends 'notifications/base_notification.html' %}
+{% load i18n breadcrumb_tags url_tags bootstrap %}
+{% block page_title %}Edit Notification Reply - {% endblock %}
+
+{% block breadcrumb %}
+    <li><a href="{% url 'notification_reply_edit' notification.id notification_reply.id %}">Edit</a></li>
+{% endblock %}
+
+{% block notification_content %}
+    <h1>Edit Notification Reply</h1>
+    <form method="post" action="{% url 'notification_reply_edit' notification.id notification_reply.id %}">
+        {% csrf_token %}
+        {{ form|bootstrap_horizontal }}
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a href="{{ notification.about.get_absolute_url }}">cancel</a>
+            </div>
+        </div>
+    </form>
+{% endblock %}

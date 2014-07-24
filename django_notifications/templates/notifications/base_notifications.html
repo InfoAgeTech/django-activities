@@ -1,0 +1,30 @@
+{% extends request.base_template %}
+{% load breadcrumb_tags action_tags %}
+
+{% block breadcrumb_main %}
+    <ul class="breadcrumb">
+        {% if notification_reply %}
+            {{ notification_reply|breadcrumbs }}
+        {% elif notification %}
+            {{ notification|breadcrumbs }}
+        {% else %}
+            <li>{{ user.get_absolute_url_link}}</li>
+            <li><a href="{% url 'notifications_view' %}">Notifications</a></li>
+        {% endif %}
+        
+        {% block breadcrumb %}{% endblock %}
+    </ul>
+{% endblock %}
+
+{% block sidebar_action_links %}
+    {% if notification_reply %}
+        {% action_links obj=notification_reply auth_user=user %}
+    {% elif notification %}
+        {% action_links obj=notification auth_user=user %}
+    {% endif %}
+{% endblock %}
+
+
+{% block content %}
+    {% block notifications_content %}{% endblock %}
+{% endblock %}

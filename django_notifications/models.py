@@ -2,9 +2,11 @@ from __future__ import unicode_literals
 
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from django_core.db.models.mixins.base import AbstractBaseModel
+from django_core.db.models.mixins.urls import AbstractUrlLinkModelMixin
 from django_core.utils.loading import get_class_from_settings
 from django_generics.models import GenericObject
 
@@ -123,7 +125,8 @@ class AbstractNotification(AbstractBaseModel):
         return True
 
 
-class Notification(AbstractNotificationMixin, AbstractNotification):
+class Notification(AbstractUrlLinkModelMixin, AbstractNotificationMixin,
+                   AbstractNotification):
     """Concrete model for notifications."""
 
     class Meta:
@@ -131,8 +134,17 @@ class Notification(AbstractNotificationMixin, AbstractNotification):
         ordering = ('-id',)
         index_together = (('about_content_type', 'about_id'),)
 
+    def get_absolute_url(self):
+        return reverse('notification_view', args=[self.id])
 
-class NotificationReply(AbstractBaseModel):
+    def get_edit_url(self):
+        return reverse('notification_edit', args=[self.id])
+
+    def get_delete_url(self):
+        return reverse('notification_delete', args=[self.id])
+
+
+class NotificationReply(AbstractUrlLinkModelMixin, AbstractBaseModel):
     """Represents a notification reply object.
 
     Attributes:
@@ -152,6 +164,18 @@ class NotificationReply(AbstractBaseModel):
 
     class Meta:
         ordering = ('id',)
+
+    def get_absolute_url(self):
+        return reverse('notification_reply', args=[self.notification_id,
+                                                   self.id])
+
+    def get_edit_url(self):
+        return reverse('notification_reply_edit', args=[self.notification_id,
+                                                        self.id])
+
+    def get_delete_url(self):
+        return reverse('notification_reply_delete', args=[self.notification_id,
+                                                          self.id])
 
 
 @python_2_unicode_compatible
