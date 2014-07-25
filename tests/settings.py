@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import sys
 
 NOTIFICATION_MODEL_MIXIN = 'test_models.AbstractNotificationMixin'
 NOTIFICATION_MANAGER = 'test_models.managers.NotificationManager'
@@ -74,3 +75,7 @@ DATABASES = {
         'NAME': here('test_db.db')
     }
 }
+
+if 'test' in sys.argv:
+    NOSE_ARGS = ('--cover-package=', '--nocapture',
+                 '--with-doctest', '--testmatch=^test')
