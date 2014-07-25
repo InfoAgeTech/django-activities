@@ -68,6 +68,10 @@
   display: block;
   margin-left: 40px;
 }
+.notifications-container .notifications .no-notifications-found {
+  text-align: center;
+  margin: 25px 0 5px;
+}
 .notifications-container .notifications .reply .name,
 .notifications-container .notifications .reply .msg,
 .notifications-container .notifications .reply .date {

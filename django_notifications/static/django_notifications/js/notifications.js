@@ -95,9 +95,11 @@ $(document).ready(function(){
             form_data = $this.serialize();
         
         $.post($this.attr('action'), form_data, function(resp_text, success_fail, resp){
+            var $notifications = $notificationsContainer.find('.notifications:first');
             
-            if (resp.status == 200 || resp.status == 202){
-                $notificationsContainer.find('.notifications:first').prepend(resp_text.notification);
+            if (resp.status == 200 || resp.status == 202) {
+                $notifications.find('.no-notifications-found').remove();
+                $notifications.prepend(resp_text.notification);
                 $text_input.val('');
                 $text_input.blur();
             } else {
