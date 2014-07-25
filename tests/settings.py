@@ -37,6 +37,7 @@ INSTALLED_APPS = (
     'django_generics',
     'django_core',
     'django_nose',
+    'tests',
     'test_models'  # adding as an installed app so testing models get picked up.
 )
 
@@ -56,7 +57,7 @@ SITE_ROOT = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../')
 print(SITE_ROOT)
 TEMPLATE_DIRS = (
     'templates',
-    os.path.join(SITE_ROOT, 'templates')
+    os.path.join(SITE_ROOT, 'django_notifications/templates')
 )
 print(TEMPLATE_DIRS)
 
