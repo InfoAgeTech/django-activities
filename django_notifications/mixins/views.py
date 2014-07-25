@@ -254,9 +254,9 @@ class NotificationFormView(FormView):
         #       an ajax get request for notifications?
         if self.request.is_ajax():
             return render_to_response(
-                                'notifications/snippets/notifications.html',
-                                self.get_context_data(),
-                                context_instance=RequestContext(self.request))
+                            'django_notifications/snippets/notifications.html',
+                            self.get_context_data(),
+                            context_instance=RequestContext(self.request))
 
         return super(NotificationFormView, self).get(request=request,
                                                      *args,

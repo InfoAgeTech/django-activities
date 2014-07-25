@@ -33,6 +33,6 @@ def get_notification_html(request, notification):
         notification_url not in current_url):
         context['show_reference_obj'] = True
 
-    return render_to_string('notifications/snippets/notification.html',
+    return render_to_string('django_notifications/snippets/notification.html',
                             context,
                             context_instance=RequestContext(request)).strip()
