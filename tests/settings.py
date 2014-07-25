@@ -1,13 +1,14 @@
-# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 import os
 import sys
+
 
 NOTIFICATION_MODEL_MIXIN = 'test_models.AbstractNotificationMixin'
 NOTIFICATION_MANAGER = 'test_models.managers.NotificationManager'
 NOTIFICATIONS_BASE_TEMPLATE = 'base_notifications.html'
 
-# Do not run in DEBUG in production!!!
-DEBUG = False
+DEBUG = True
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -54,6 +55,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 SITE_ROOT = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../')
 print(SITE_ROOT)
 TEMPLATE_DIRS = (
+    'templates',
     os.path.join(SITE_ROOT, 'templates')
 )
 
