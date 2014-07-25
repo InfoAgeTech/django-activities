@@ -8,14 +8,14 @@ from django.views.generic.edit import FormView
 from django.views.generic.edit import UpdateView
 from django_core.views import LoginRequiredViewMixin
 from django_core.views import PagingViewMixin
-from django_notifications.mixins.views import NotificationReplySingleObjectViewMixin
-from django_notifications.mixins.views import NotificationSingleObjectViewMixin
 
 from .forms import NotificationDeleteForm
 from .forms import NotificationEditForm
 from .forms import NotificationReplyEditForm
 from .mixins.views import NotificationContentTypeObjectViewMixin
 from .mixins.views import NotificationFormView
+from .mixins.views import NotificationReplySingleObjectViewMixin
+from .mixins.views import NotificationSingleObjectViewMixin
 from .mixins.views import NotificationsViewMixin
 from .mixins.views import UserNotificationsViewMixin
 
