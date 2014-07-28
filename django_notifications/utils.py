@@ -20,18 +20,18 @@ def get_notification_html(request, notification):
 
     # TODO: Need to fix all the url logic checking below since the
     #       absolute url != to the http referrer.
-    try:
-        about_obj_absolute_url = notification.about.get_absolute_url()
-        notification_url = '{0}/notifications'.format(about_obj_absolute_url)
-    except:
-        about_obj_absolute_url = None
-        notification_url = None
-
-    current_url = parse.urlsplit(request.META.get('HTTP_REFERER', '')).path
-
-    if (about_obj_absolute_url != current_url and
-        notification_url not in current_url):
-        context['show_reference_obj'] = True
+#     try:
+#         about_obj_absolute_url = notification.about.get_absolute_url()
+#         notification_url = '{0}/notifications'.format(about_obj_absolute_url)
+#     except:
+#         about_obj_absolute_url = None
+#         notification_url = None
+#
+#     current_url = parse.urlsplit(request.META.get('HTTP_REFERER', '')).path
+#
+#     if (about_obj_absolute_url != current_url and
+#         notification_url not in current_url):
+#         context['show_reference_obj'] = True
 
     return render_to_string('django_notifications/snippets/notification.html',
                             context,

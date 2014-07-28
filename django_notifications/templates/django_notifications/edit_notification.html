@@ -1,5 +1,5 @@
 {% extends 'django_notifications/base_notification.html' %}
-{% load bootstrap %}
+{% load notification_tags %}
 {% block page_title %}Edit Notification - {% endblock %}
 
 {% block breadcrumb %}
@@ -10,7 +10,7 @@
     <h1>Edit Notification</h1>
     <form method="post" action="{{ notification.get_edit_url }}" class="form-horizontal">
         {% csrf_token %}
-        {{ form|bootstrap_horizontal }}
+        {{ form|render_notification_form }}
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
                 <button type="submit" class="btn btn-primary">Save</button>
