@@ -32,7 +32,6 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.humanize',
-    'bootstrapform',
     'django_notifications',
     'django_generics',
     'django_core',

@@ -80,13 +80,13 @@ Different apps render forms differently. With that in mind, this app lets you de
 
 For example,  if I want to use the `django-bootstrap-form <https://github.com/tzangms/django-bootstrap-form>`_ app to render forms, I would provide the following setting to the template tag form rendering function::
 
-    NOTIFICATIONS_FORM_RENDER = 'bootstrapform.templatetags.bootstrap.bootstrap'
+    NOTIFICATIONS_FORM_RENDERER = 'bootstrapform.templatetags.bootstrap.bootstrap'
 
 Then all forms will render using the django-bootstrap-form library.  You can optionally provide the following strings that will render that form using table, paragraph or list tags::
 
-    NOTIFICATIONS_FORM_RENDER = 'as_p'     # render form using <p> tags
-    NOTIFICATIONS_FORM_RENDER = 'as_table' # render form using <table>
-    NOTIFICATIONS_FORM_RENDER = 'as_ul'    # render form using <ul>
+    NOTIFICATIONS_FORM_RENDERER = 'as_p'     # render form using <p> tags
+    NOTIFICATIONS_FORM_RENDERER = 'as_table' # render form using <table>
+    NOTIFICATIONS_FORM_RENDERER = 'as_ul'    # render form using <ul>
 
 This will default to rending the form to however the form's ``__str__`` method is defined.
 

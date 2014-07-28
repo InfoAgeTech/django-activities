@@ -46,7 +46,7 @@ def render_notification(context, notification, show_reference_obj=False):
 
 @register.filter
 def render_notification_form(form):
-    """Renders a form based on settings ``NOTIFICATIONS_FORM_RENDER``
+    """Renders a form based on settings ``NOTIFICATIONS_FORM_RENDERER``
     setting.  This allows users to plug in different 3rd party form rendering
     apps while being able to maintain a consistent look and feel across their
     site.
@@ -59,20 +59,20 @@ def render_notification_form(form):
     app to render forms, I would provide the following setting to the template
     tag form rendering function::
 
-        NOTIFICATIONS_FORM_RENDER = 'bootstrapform.templatetags.bootstrap.bootstrap'
+        NOTIFICATIONS_FORM_RENDERER = 'bootstrapform.templatetags.bootstrap.bootstrap'
 
     Then all forms will render using the django-bootstrap-form library.  You
     can optionally provide the following strings that will render that form
     using table, paragraph or list tags::
 
-        NOTIFICATIONS_FORM_RENDER = 'as_p'     # render form using <p> tags
-        NOTIFICATIONS_FORM_RENDER = 'as_table' # render form using <table>
-        NOTIFICATIONS_FORM_RENDER = 'as_ul'    # render form using <ul>
+        NOTIFICATIONS_FORM_RENDERER = 'as_p'     # render form using <p> tags
+        NOTIFICATIONS_FORM_RENDERER = 'as_table' # render form using <table>
+        NOTIFICATIONS_FORM_RENDERER = 'as_ul'    # render form using <ul>
 
     This will default to rending the form to however the form's ``__str__``
     method is defined.
     """
-    renderer_func = get_function_from_settings('NOTIFICATIONS_FORM_RENDER')
+    renderer_func = get_function_from_settings('NOTIFICATIONS_FORM_RENDERER')
     if not renderer_func:
         return form
 
