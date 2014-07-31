@@ -15,6 +15,6 @@ install:
   - pip install coveralls
   - python setup.py -q install
 script:
-  - cd tests && coverage run manage.py test
+  - coverage run tests/manage.py test
 after_success: 
   - coveralls
