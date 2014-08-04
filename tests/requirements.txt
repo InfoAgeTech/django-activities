@@ -1,4 +1,3 @@
 django_nose
 https://github.com/InfoAgeTech/django-core/tarball/master
-https://github.com/InfoAgeTech/django-generics/tarball/master
 https://github.com/InfoAgeTech/django-testing/tarball/master

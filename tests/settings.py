@@ -33,7 +33,6 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.humanize',
     'django_notifications',
-    'django_generics',
     'django_core',
     'django_nose',
     'tests',
