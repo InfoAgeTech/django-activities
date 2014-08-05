@@ -41,7 +41,8 @@ class NotificationViewMixin(object):
             return self.notification
 
         self.notification = Notification.objects.get_by_id_or_404(
-                                id=kwargs.get(self.notification_pk_url_kwarg))
+            id=kwargs.get(self.notification_pk_url_kwarg)
+        )
         return self.notification
 
 
@@ -82,8 +83,9 @@ class NotificationReplyViewMixin(NotificationViewMixin):
             return self.notification_reply
 
         self.notification_reply = NotificationReply.objects.get_by_id_or_404(
-                        id=kwargs.get(self.notification_reply_pk_url_kwarg),
-                        select_related=True)
+            id=kwargs.get(self.notification_reply_pk_url_kwarg),
+            select_related=True
+        )
         return self.notification_reply
 
 
@@ -166,7 +168,8 @@ class NotificationsViewMixin(object):
             notification_kwargs['obj'] = notifications_about_object
 
         notification_source = NotificationSource.check(
-                                                    self.request.GET.get('ns'))
+            self.request.GET.get('ns')
+        )
 
         if notification_source:
             notification_kwargs['source'] = notification_source
@@ -222,7 +225,8 @@ class NotificationsViewMixin(object):
         try:
             orig_page_size = self.notifications_page_size
             page_size = int(self.request.GET.get(
-                                        self.notifications_page_size_kwarg))
+                self.notifications_page_size_kwarg)
+            )
 
             if page_size < 1:
                 page_size = orig_page_size
@@ -254,9 +258,10 @@ class NotificationFormView(FormView):
         #       an ajax get request for notifications?
         if self.request.is_ajax():
             return render_to_response(
-                            'django_notifications/snippets/notifications.html',
-                            self.get_context_data(),
-                            context_instance=RequestContext(self.request))
+                'django_notifications/snippets/notifications.html',
+                self.get_context_data(),
+                context_instance=RequestContext(self.request)
+            )
 
         return super(NotificationFormView, self).get(request=request,
                                                      *args,
@@ -277,12 +282,15 @@ class NotificationFormView(FormView):
         #       probably want to require ajax here?
         text = form.cleaned_data.get('text').strip()
 
-        # if "pid" (parent_notification_id) exists, then this is a reply to a notification.
+        # if "pid" (parent_notification_id) exists, then this is a reply to a
+        # notification.
         parent_notification_id = form.cleaned_data.get('pid')
 
         if parent_notification_id:
             # reply to an existing notification
-            notification = Notification.objects.get_by_id(id=parent_notification_id)
+            notification = Notification.objects.get_by_id(
+                id=parent_notification_id
+            )
 
             if not notification:
                 raise HttpResponse(status=400)
