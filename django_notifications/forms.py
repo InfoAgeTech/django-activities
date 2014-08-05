@@ -1,10 +1,14 @@
 from __future__ import unicode_literals
 
 from django import forms
-from django_core.forms.widgets import ReadonlyWidget
+from django.core.exceptions import ValidationError
+from django.utils.translation import ugettext as _
 from django_core.forms.fields import CharFieldStripped
-from django_notifications.models import Notification
-from django_notifications.models import NotificationReply
+from django_core.forms.mixins.users import UserFormMixin
+from django_core.forms.widgets import ReadonlyWidget
+
+from .models import Notification
+from .models import NotificationReply
 
 
 class BasicCommentForm(forms.Form):
@@ -16,7 +20,7 @@ class BasicCommentForm(forms.Form):
     next = CharFieldStripped(max_length=999999, required=False)
 
 
-class BaseNotificationEditForm(forms.ModelForm):
+class BaseNotificationEditForm(UserFormMixin, forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(BaseNotificationEditForm, self).__init__(*args, **kwargs)
@@ -35,28 +39,23 @@ class BaseNotificationEditForm(forms.ModelForm):
     def clean_created_dttm(self):
         return self.instance.created_dttm
 
-    def clean(self):
-        cleaned_data = super(BaseNotificationEditForm, self).clean()
-        # Ignore errors for created user and last_modified_user since they are
-        # readonly and can't be changed.
-        cleaned_data['created_user'] = self.instance.created_user
-        cleaned_data['last_modified_user'] = self.instance.last_modified_user
+    def clean_created_user(self):
+        return self.instance.created_user
 
-        if 'created_user' in self._errors:
-            del self._errors['created_user']
+    def clean_last_modified_user(self):
 
-        if 'last_modified_user' in self._errors:
-            del self._errors['last_modified_user']
+        if not self.user.is_authenticated():
+            raise ValidationError(_('User must be logged in.'))
 
-        return cleaned_data
+        return self.user
 
 
 class NotificationEditForm(BaseNotificationEditForm):
 
     class Meta:
         model = Notification
-        fields = ['created_user', 'created_dttm', 'last_modified_user',
-                  'last_modified_dttm', 'text']
+        fields = ('created_user', 'created_dttm', 'last_modified_user',
+                  'last_modified_dttm', 'text')
         widgets = {
             'created_user': ReadonlyWidget(),
             'last_modified_user': ReadonlyWidget()
@@ -67,8 +66,8 @@ class NotificationReplyEditForm(BaseNotificationEditForm):
 
     class Meta:
         model = NotificationReply
-        fields = ['created_user', 'created_dttm', 'last_modified_user',
-                  'last_modified_dttm', 'text']
+        fields = ('created_user', 'created_dttm', 'last_modified_user',
+                  'last_modified_dttm', 'text')
         widgets = {
             'created_user': ReadonlyWidget(),
             'last_modified_user': ReadonlyWidget()

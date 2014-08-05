@@ -19,6 +19,7 @@
 <div class="notifications-container" data-ajax="notifications">
 
   {% if not request.is_ajax %}
+    {% if request.user.is_authenticated %}
     <form class="comment-form" action="{{ notification_url }}" method="post">{% csrf_token %}
         <input type="hidden" name="next" value="{{ request.path}}" />
         <div class="row">
@@ -30,6 +31,10 @@
             </div>
         </div>
     </form>
+    {% else %}
+    <div>Please log in to comment.</div>
+    {% endif %}
+    
     <ul class="nav nav-tabs notification-type">
         <li{% if not notification_source or notification_source == 'all' %} class="active"{% endif %}><a href="{{ notification_url }}?ns=all">All</a></li>
         <li{% if notification_source == 'user' %} class="active"{% endif %}><a href="{{ notification_url }}?ns=comment">Comments</a></li>

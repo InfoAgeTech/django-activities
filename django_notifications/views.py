@@ -60,13 +60,8 @@ class NotificationEditView(LoginRequiredViewMixin,
     def get_form_kwargs(self):
         kwargs = super(NotificationEditView, self).get_form_kwargs()
         kwargs['instance'] = self.notification
+        kwargs['user'] = self.request.user
         return kwargs
-
-    def form_valid(self, form):
-        # Ensure that the created user doesn't change
-        form.instance.created_user = self.notification.created_user
-        form.instance.last_modified_user = self.request.user
-        return super(NotificationEditView, self).form_valid(form)
 
     def get_success_url(self):
         return self.notification.get_absolute_url()
@@ -112,21 +107,16 @@ class NotificationReplyView(LoginRequiredViewMixin,
 
 
 class NotificationReplyEditView(LoginRequiredViewMixin,
-                           NotificationReplySingleObjectViewMixin,
-                           UpdateView):
+                                NotificationReplySingleObjectViewMixin,
+                                UpdateView):
     template_name = 'django_notifications/edit_notification_reply.html'
     form_class = NotificationReplyEditForm
 
     def get_form_kwargs(self):
         kwargs = super(NotificationReplyEditView, self).get_form_kwargs()
         kwargs['instance'] = self.notification_reply
+        kwargs['user'] = self.request.user
         return kwargs
-
-    def form_valid(self, form):
-        # Ensure that the created user doesn't change
-        form.instance.created_user = self.notification_reply.created_user
-        form.instance.last_modified_user = self.request.user
-        return super(NotificationReplyEditView, self).form_valid(form)
 
     def get_success_url(self):
         return reverse('notification_reply_edit',
