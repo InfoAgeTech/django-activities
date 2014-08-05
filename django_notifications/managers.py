@@ -28,7 +28,7 @@ class NotificationManager(CommonManager):
             of notifications and I won't want to return all of them.
 
         """
-        if about != None:
+        if about is not None:
             kwargs['about'] = about
 
         n = super(NotificationManager, self).create(
@@ -61,7 +61,7 @@ class NotificationManager(CommonManager):
         # https://code.djangoproject.com/ticket/19527
         for_objs = [for_model.objects.get_or_create_generic(
                                                         content_object=obj)[0]
-                    for obj in for_objs if obj != None]
+                    for obj in for_objs if obj is not None]
 
         n.for_objs.add(*for_objs)
         return n

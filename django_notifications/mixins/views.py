@@ -184,7 +184,7 @@ class NotificationsViewMixin(object):
 
         This can be a single object or a list, tuple or set of objects.
         """
-        if hasattr(self, 'object') and self.object != None:
+        if hasattr(self, 'object') and self.object is not None:
             return self.object
 
         return self.get_object()
