@@ -231,7 +231,7 @@ class NotificationTests(SingleUserTestCase):
                                         about=create_user(),
                                         action=Action.COMMENTED,
                                         source=Source.USER)
-        self.assertIsNotNone(n.get_activity_text())
+        self.assertIsNotNone(n.get_text())
 
     def test_get_activity_html(self):
         """Test the get_activity_html method to ensure it properly creates the
@@ -241,7 +241,7 @@ class NotificationTests(SingleUserTestCase):
                                         about=create_user(),
                                         action=Action.COMMENTED,
                                         source=Source.USER)
-        self.assertIsNotNone(n.get_activity_html())
+        self.assertIsNotNone(n.get_html())
 
 
 class NotificationExtensionTests(SingleUserTestCase):
