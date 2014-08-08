@@ -2,7 +2,8 @@ from __future__ import unicode_literals
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
-from django_notifications.constants import NotificationSource
+from django_notifications.constants import Action
+from django_notifications.constants import Source
 from django_notifications.models import Notification
 from django_testing.user_utils import create_user
 
@@ -36,16 +37,19 @@ class NotificationManagerTests(TestCase):
     def test_create_notification(self):
         """Testing creating notifications for a user."""
         text = 'hello world'
-        source = NotificationSource.COMMENT
+        source = Source.USER
+        action = Action.COMMENTED
         notification = Notification.objects.create(created_user=self.user,
-                                                     text=text,
-                                                     about=self.user,
-                                                     source=source)
+                                                   text=text,
+                                                   about=self.user,
+                                                   source=source,
+                                                   action=action)
         for_objs = list(notification.get_for_objects())
 
         self.assertEqual(notification.about, self.user)
         self.assertEqual(notification.text, text)
         self.assertEqual(notification.source, source)
+        self.assertEqual(notification.action, action)
         self.assertEqual(len(for_objs), 1)
         self.assertEqual(for_objs[0], self.user)
 
@@ -55,12 +59,12 @@ class NotificationManagerTests(TestCase):
         """
         user_2 = create_user()
         notification = Notification.objects.create(
-                                            created_user=self.user,
-                                            text='hello world',
-                                            about=user_2,
-                                            source=NotificationSource.COMMENT,
-                                            ensure_for_objs=[self.user,
-                                                             user_2])
+            created_user=self.user,
+            text='hello world',
+            about=user_2,
+            action=Action.COMMENTED,
+            ensure_for_objs=[self.user, user_2]
+        )
         for_objs = list(notification.get_for_objects())
 
         self.assertEqual(len(for_objs), 2)
@@ -74,13 +78,11 @@ class NotificationManagerTests(TestCase):
         user_2 = create_user()
         user_3 = create_user()
         notification = Notification.objects.create(
-                                            created_user=self.user,
-                                            text='hello world',
-                                            about=user_2,
-                                            source=NotificationSource.COMMENT,
-                                            ensure_for_objs=[self.user,
-                                                             user_2,
-                                                             user_3])
+            created_user=self.user,
+            text='hello world',
+            about=user_2,
+            action=Action.COMMENTED,
+            ensure_for_objs=[self.user, user_2, user_3])
 
         for_objs = list(notification.get_for_objects())
         self.assertEqual(len(for_objs), 3)

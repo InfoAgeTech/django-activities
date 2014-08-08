@@ -3,22 +3,25 @@ from __future__ import unicode_literals
 from django.contrib.contenttypes.models import ContentType
 from django_core.db.models import CommonManager
 
-from .constants import NotificationSource
+from .constants import Action
+from .constants import Source
 
 
 class NotificationManager(CommonManager):
     """Manager for notifications."""
 
     def create(self, created_user, text, about=None,
-               source=NotificationSource.ACTIVITY, ensure_for_objs=None,
-               exclude_objs=None, **kwargs):
+               source=Source.SYSTEM, action=Action.CREATED,
+               ensure_for_objs=None, exclude_objs=None, **kwargs):
         """Creates a notification.
 
         :param created_user: the user document who created the notification.
         :param text: the text of the notification
         :param obj: the document this notification is for.
         :param source: the source of the notifications. Can be one of
-            NotificationSource values.
+            contant.Source values.
+        :param action: the action verb.  In this instance, it should almost
+            always be CREATED
         :param ensure_for_objs: list of object to ensure will receive the
             notification.
         :param exclude_objs: exclude these objects from receiving the
@@ -32,11 +35,13 @@ class NotificationManager(CommonManager):
             kwargs['about'] = about
 
         n = super(NotificationManager, self).create(
-                                            text=text.strip(),
-                                            created_user=created_user,
-                                            last_modified_user=created_user,
-                                            source=source,
-                                            **kwargs)
+            text=text.strip(),
+            created_user=created_user,
+            last_modified_user=created_user,
+            source=source,
+            action=action,
+            **kwargs
+        )
 
         for_objs = set([about])
 
@@ -87,7 +92,7 @@ class NotificationManager(CommonManager):
                                for_objs__object_id=obj.id,
                                **kwargs)
 
-        if for_user == None:
+        if for_user is None:
             return queryset
 
         user_content_type = ContentType.objects.get_for_model(for_user)
@@ -108,11 +113,12 @@ class NotificationReplyManager(CommonManager):
         :param reply_to: the reply this reply is about.
         """
         return super(NotificationReplyManager, self).create(
-                                                created_user=created_user,
-                                                text=text,
-                                                notification=notification,
-                                                reply_to=reply_to,
-                                                **kwargs)
+            created_user=created_user,
+            text=text,
+            notification=notification,
+            reply_to=reply_to,
+            **kwargs
+        )
 
     def get_by_notification(self, notification):
         """Gets all objects for a notification object."""

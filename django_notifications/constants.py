@@ -1,36 +1,71 @@
 from __future__ import unicode_literals
 
+from django.utils.translation import ugettext as _
 
-class NotificationSource():
-    """The notification source represents what generated the notification.
 
-    * ACTIVITY - some activity performed on an object (i.e. a field update)
-    * COMMENT - a user comment
-    * CREATED - represents an object being created
-    * DELETED - represents an object being deleted
+class EnumCheck():
+    """Adds a method to check if the enumeration value is a valid value.  If
+    it is, then this returns the value.
     """
-    ACTIVITY = 'ACTIVITY'
-    COMMENT = 'COMMENT'
-    CREATED = 'CREATED'
-    DELETED = 'DELETED'
-    CHOICES = ((ACTIVITY, 'Activity'),
-               (CREATED, 'Created'),
-               (COMMENT, 'Comment'),
-               (DELETED, 'Deleted')
-               )
 
     @classmethod
-    def check(cls, source):
-        """Checks to see if a notification source string is an actual source.
-        If yes, return the notification source.  Otherwise, return None.
+    def check(cls, str_check):
+        """Checks to see if a string is a value enum value. If yes, return the
+        enum value.  Otherwise, return None.
         """
-        if not source:
+        if not str_check:
             return None
 
-        source = source.upper()
+        str_check = str_check.upper()
 
         for s in cls.CHOICES:
-            if s[0] == source:
+            if s[0] == str_check:
                 return s[0]
 
         return None
+
+    @classmethod
+    def get_display(cls, val):
+        """Gets the display, human readable version of the enum value."""
+        if not val:
+            return None
+
+        val = val.upper()
+
+        for s in cls.CHOICES:
+            if s[0] == val:
+                return s[1]
+
+        return None
+
+
+class Source(EnumCheck):
+    """The notification source represents what generated the notification.
+
+    * SYSTEM - some system update performed on an object (i.e. a field update)
+    * USER - a user is the source
+    """
+    SYSTEM = 'SYSTEM'
+    USER = 'USER'
+    CHOICES = ((SYSTEM, _('System')),
+               (USER, _('User')),
+               )
+
+
+class Action(EnumCheck):
+    """The past tense action choices for a notification.
+
+    * COMMENTED - a user comment
+    * CREATED - a created action
+    * DELETED - a delete action
+    * UPDATED - an update action
+    """
+    COMMENTED = 'COMMENTED'
+    CREATED = 'CREATED'
+    DELETED = 'DELETED'
+    UPDATED = 'UPDATED'
+    CHOICES = ((COMMENTED, _('Commented')),
+               (CREATED, _('Created')),
+               (DELETED, _('Deleted')),
+               (UPDATED, _('Updated'))
+               )

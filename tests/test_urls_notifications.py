@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 
 from django.core.urlresolvers import reverse
-from django_notifications.constants import NotificationSource
+from django_notifications.constants import Source
 from django_notifications.models import Notification
 from django_notifications.urls import urlpatterns
 from django_testing.testcases.auth import AuthenticatedUserTestCase
@@ -25,22 +25,24 @@ class NotificationUrlTests(UrlTestCaseMixin, AuthenticatedUserTestCase):
         super(NotificationUrlTests, cls).setUpClass()
         cls.notification = cls.create_notification()
         cls.notification_reply = cls.notification.replies.create(
-                                                created_user=cls.user,
-                                                text='My reply',
-                                                notification=cls.notification)
+            created_user=cls.user,
+            text='My reply',
+            notification=cls.notification
+        )
 
     @classmethod
     def create_notification(cls, text='Hello world',
-                            source=NotificationSource.ACTIVITY,
+                            source=Source.SYSTEM,
                             created_user=None, **kwargs):
         about = create_user()
         return Notification.objects.create(
-                                        created_user=created_user or cls.user,
-                                        text=text,
-                                        about=about,
-                                        source=source,
-                                        ensure_for_objs=cls.user,
-                                        **kwargs)
+            created_user=created_user or cls.user,
+            text=text,
+            about=about,
+            source=source,
+            ensure_for_objs=cls.user,
+            **kwargs
+        )
 
     def test_notifications_view_view(self):
         """Test the notifications home url to ensure successful response."""

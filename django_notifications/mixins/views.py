@@ -12,10 +12,11 @@ from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.edit import FormView
 
 from .. import get_notification_model
-from ..constants import NotificationSource
+from ..constants import Source
 from ..forms import BasicCommentForm
 from ..http import NotificationResponse
 from ..models import NotificationReply
+from django_notifications.constants import Action
 
 
 Notification = get_notification_model()
@@ -112,7 +113,7 @@ class NotificationsViewMixin(object):
     You can further filter the notifications by passing the following query
     string params:
 
-    * ns: notification source.  Can be one of .contants.NotificationSource.
+    * ns: notification source.  Can be one of .contants.Source.
 
     Note: This mixin requires the django_core.mixins.paging.PagingViewMixin
     to be called before this view is called.
@@ -160,16 +161,14 @@ class NotificationsViewMixin(object):
     def get_notifications_queryset(self):
         """Get's the queryset for the notifications."""
         notifications_about_object = self.get_notifications_about_object()
-
-        # notification_kwargs = {'for_user': self.request.user}
         notification_kwargs = {}
 
         if notifications_about_object:
             notification_kwargs['obj'] = notifications_about_object
 
-        notification_source = NotificationSource.check(
-            self.request.GET.get('ns')
-        )
+        # TODO: need to validate this is correct since "action" was added to
+        #       the model
+        notification_source = Source.check(self.request.GET.get('ns'))
 
         if notification_source:
             notification_kwargs['source'] = notification_source
@@ -304,7 +303,8 @@ class NotificationFormView(FormView):
                 created_user=self.request.user,
                 text=text,
                 about=self.get_notifications_about_object(),
-                source=NotificationSource.COMMENT
+                source=Source.USER,
+                action=Action.COMMENTED
             )
 
         if self.request.is_ajax():

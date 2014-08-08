@@ -10,7 +10,8 @@ from django_core.db.models.mixins.generic import AbstractGenericObject
 from django_core.db.models.mixins.urls import AbstractUrlLinkModelMixin
 from django_core.utils.loading import get_class_from_settings
 
-from .constants import NotificationSource
+from .constants import Action
+from .constants import Source
 from .managers import NotificationReplyManager
 
 
@@ -37,7 +38,12 @@ class AbstractNotification(AbstractBaseModel):
     * about: object the notification is referring to.
     * about_id: id this object the notification pertains to.
     * about_content_type: the content type of the about object
-    * text: the text of the notification.  This can include html.
+    * text: the text of the notification.  This can include html. This is not
+        required because you can construct the text based on the other object
+        attributes.  For example, if I have an object ``car`` with a status of
+        ``CREATED`` then I can construct the text as follows:
+
+            ``Car object`` was ``created`` by ``created_user``
     * replies: list of replies to this notification
     * for_objs: list of docs this notification is for. For example,
         if a comment is made on a object "A" which has an object "B", then this
@@ -47,12 +53,13 @@ class AbstractNotification(AbstractBaseModel):
             2. object "B"
             4. users who are sharing this object
 
-    * source: the source of notification.  Can be one if NotificationSource
-        choices (i.e. 'user' generated comment, 'activity' on a bill, etc)
-
+    * source: the source of notification.  Can be one if constant.Source
+        choices (i.e. 'USER' generated comment, 'SYSTEM' activity on an
+        object, etc)
+    * action: the action (verb) that describes what happend ('CREATED',
+        'UPDATED', 'DELETED', 'COMMENTED')
     """
-
-    text = models.TextField()
+    text = models.TextField(blank=True, null=True)
     about = generic.GenericForeignKey(ct_field='about_content_type',
                                       fk_field='about_id')
     about_content_type = models.ForeignKey(ContentType, null=True, blank=True)
@@ -65,12 +72,8 @@ class AbstractNotification(AbstractBaseModel):
                                       related_name='for_objs',
                                       blank=True,
                                       null=True)
-    # TODO: source should really be where the notification came from ('USER',
-    #       'ANOTHER_APP', etc).  This field should really be named something
-    #       like "type" or a synonym of that since "type" is a reserved keyword
-    #       in python
-    source = models.CharField(max_length=20,
-                              choices=NotificationSource.CHOICES)
+    source = models.CharField(max_length=20, choices=Source.CHOICES)
+    action = models.CharField(max_length=20, choices=Action.CHOICES)
     objects = NotificationManager()
 
     class Meta:
@@ -78,11 +81,11 @@ class AbstractNotification(AbstractBaseModel):
 
     def is_comment(self):
         """Boolean indicating if the notification type is a comment."""
-        return self.source == NotificationSource.COMMENT
+        return self.action == Action.COMMENTED
 
     def is_activity(self):
         """Boolean indicating if the notification type is an activity."""
-        return self.source == NotificationSource.ACTIVITY
+        return self.source == Source.SYSTEM
 
     def add_reply(self, user, text, reply_to=None):
         """Adds a reply to a Notification
@@ -101,6 +104,24 @@ class AbstractNotification(AbstractBaseModel):
         #       because they are not part of the conversation?
         # self.notificationfor_set.get_or_create_generic(content_object=user)
         return reply
+
+    def get_text(self):
+        """Gets the text for an object.  If text is None, this will construct
+        the text based on the notification attributes.
+        """
+        if self.text:
+            return self.text
+
+        action = Action.get_display(self.action) or self.action
+        # `troy` created the `movie` (movie name)
+        # TODO: need to differentiate system activity from user created
+        #       activity.
+        return '{created_user} {action} the {object_name} {object}'.format(
+            created_user=self.created_user.username,
+            action=action.lower(),
+            object_name=self.about_content_type.model_class()._meta.verbose_name,
+            object=self.about
+        )
 
     def get_for_objects(self):
         """Gets the actual objects the notification is for."""

@@ -1,9 +1,7 @@
 NOTE: This is not stable yet and will likely change!  Please don't use in production until the 1.0 release.
 
-.. image:: https://travis-ci.org/InfoAgeTech/django-notifications.png?branch=master
-    :target: http://travis-ci.org/InfoAgeTech/django-notifications
-.. image:: https://coveralls.io/repos/InfoAgeTech/django-notifications/badge.png
-    :target: https://coveralls.io/r/InfoAgeTech/django-notifications
+[<img src="https://travis-ci.org/InfoAgeTech/django-notifications.png?branch=master">](http://travis-ci.org/InfoAgeTech/django-notifications)
+[<img src="https://coveralls.io/repos/InfoAgeTech/django-notifications/badge.png">](https://coveralls.io/r/InfoAgeTech/django-notifications)
 
 ====================
 django-notifications
@@ -18,8 +16,8 @@ Download the source from Github and run::
 
 Dependencies
 ============
-* `django-generic <https://github.com/InfoAgeTech/django-generic>`_
-* `django-core <https://github.com/InfoAgeTech/django-core>`_
+* [django-generic](https://github.com/InfoAgeTech/django-generic)
+* [django-core](https://github.com/InfoAgeTech/django-core)
 
 Configuration
 =============
@@ -27,13 +25,13 @@ Config steps:
 
 1. Add to installed apps. django-notifications has two dependencies which are listed above. Both need to be added to the installed apps in your settings file.::
 
-    INSTALLED_APPS += (
-        ...
-        'django_core',
-        'django_generic',
-        'django_notifications',
-        ...
-    )
+        INSTALLED_APPS += (
+            ...
+            'django_core',
+            'django_generic',
+            'django_notifications',
+            ...
+        )
 
 
 By default, django-notifications comes with builtin views.  You can use them if you like or totally write your own.
@@ -42,43 +40,43 @@ To use the views here are a few configuration steps to follow:
 
 1. Create the html file that will be used as the gateway between your application templates and django-notifications templates.  A simple template would look something like::
     
-    # base_notifications.html
-    {% extends request.base_template %}
-
-    {% block content %}
-      {% block notifications_content %}{% endblock %}
-    {% endblock %}
+        # base_notifications.html
+        {% extends request.base_template %}
+    
+        {% block content %}
+          {% block notifications_content %}{% endblock %}
+        {% endblock %}
 
 2. Once you're created the base notifications html file, you need to link to it in your settings.  In your settings file add the following setting that points to your template you just created::
 
-    NOTIFICATIONS_BASE_TEMPLATE = 'path/to/your/template/base_notifications.html'
+        NOTIFICATIONS_BASE_TEMPLATE = 'path/to/your/template/base_notifications.html'
 
 3. Add the context processor in your settings that's used to retrieve your custom base template::
 
-    TEMPLATE_CONTEXT_PROCESSORS = (
-        ...
-        'django_notifications.context_processors.template_name',
-        ...
-    )
+        TEMPLATE_CONTEXT_PROCESSORS = (
+            ...
+            'django_notifications.context_processors.template_name',
+            ...
+        )
 
 4. Add the urls::
 
-    urlpatterns = patterns('',
-        ...
-        url(r'^notifications', include('django_notifications.urls')),
-        ...
-    )
+        urlpatterns = patterns('',
+            ...
+            url(r'^notifications', include('django_notifications.urls')),
+            ...
+        )
 
 5. There are also default .less and .js files that will assist the notifications as well.  These are optional and the js requires jquery.  The files are located at::
 
-    /static/django_notifications/js/notifications.js
-    /static/django_notifications/less/notifications.less
+        /static/django_notifications/js/notifications.js
+        /static/django_notifications/less/notifications.less
 
 Form Rendering
 --------------
 Different apps render forms differently. With that in mind, this app lets you define the location for a function in your settings that will be used to render your forms.
 
-For example,  if I want to use the `django-bootstrap-form <https://github.com/tzangms/django-bootstrap-form>`_ app to render forms, I would provide the following setting to the template tag form rendering function::
+For example,  if I want to use the [django-bootstrap-form](https://github.com/tzangms/django-bootstrap-form) app to render forms, I would provide the following setting to the template tag form rendering function::
 
     NOTIFICATIONS_FORM_RENDERER = 'bootstrapform.templatetags.bootstrap.bootstrap'
 
@@ -207,6 +205,6 @@ If all this configuration still isn't to your liking, then you can simply extend
 
 Tests
 =====
-From the ``tests`` directory where the manage.py file is, run::
+From the ``tests`` directory where the manage.py file is, run:
 
-   python manage.py test
+    python manage.py test

@@ -1,9 +1,11 @@
-# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 from django.contrib.auth import get_user_model
 from django_notifications import get_notification_model
-from django_notifications.constants import NotificationSource
 from django_testing.testcases.users import SingleUserTestCase
 from django_testing.user_utils import create_user
+from django_notifications.constants import Action
+from django_notifications.constants import Source
 
 
 User = get_user_model()
@@ -23,11 +25,12 @@ class NotificationManagerTests(SingleUserTestCase):
         n = Notification.objects.create(created_user=self.user,
                                         text=text,
                                         about=about_obj,
-                                        source=NotificationSource.COMMENT)
+                                        action=Action.COMMENTED,
+                                        source=Source.USER)
 
         self.assertEqual(n.about, about_obj)
         self.assertEqual(n.about_id, about_obj.id)
-        self.assertEqual(n.source, NotificationSource.COMMENT)
+        self.assertEqual(n.action, Action.COMMENTED)
         self.assertEqual(n.text, text)
         self.assertEqual(n.created_user, self.user)
         self.assertEqual(n.last_modified_user, self.user)
@@ -40,17 +43,17 @@ class NotificationManagerTests(SingleUserTestCase):
         n1 = Notification.objects.create(created_user=self.user,
                                          text='Hello world 1',
                                          about=about_obj,
-                                         source=NotificationSource.COMMENT,
+                                         action=Action.COMMENTED,
                                          ensure_for_objs=for_user)
         n2 = Notification.objects.create(created_user=self.user,
                                          text='Hello world 2',
                                          about=about_obj,
-                                         source=NotificationSource.COMMENT,
+                                         action=Action.COMMENTED,
                                          ensure_for_objs=for_user)
         n3 = Notification.objects.create(created_user=self.user,
                                          text='Hello world 3',
                                          about=about_obj,
-                                         source=NotificationSource.COMMENT,
+                                         action=Action.COMMENTED,
                                          ensure_for_objs=for_user)
 
         notifications = Notification.objects.get_for_user(user=for_user)
@@ -68,17 +71,17 @@ class NotificationManagerTests(SingleUserTestCase):
         n1 = Notification.objects.create(created_user=self.user,
                                          text='Hello world 1',
                                          about=about_obj,
-                                         source=NotificationSource.COMMENT,
+                                         action=Action.COMMENTED,
                                          ensure_for_objs=[self.user, for_user])
         n2 = Notification.objects.create(created_user=self.user,
                                          text='Hello world 2',
                                          about=about_obj,
-                                         source=NotificationSource.COMMENT,
+                                         action=Action.COMMENTED,
                                          ensure_for_objs=[self.user, for_user])
         n3 = Notification.objects.create(created_user=self.user,
                                          text='Hello world 3',
                                          about=about_obj,
-                                         source=NotificationSource.COMMENT,
+                                         action=Action.COMMENTED,
                                          ensure_for_objs=[self.user, for_user])
 
         notifications = Notification.objects.get_for_object(obj=for_user)
@@ -97,7 +100,7 @@ class NotificationTests(SingleUserTestCase):
         n = Notification.objects.create(created_user=self.user,
                                         text='Hello world',
                                         about=create_user(),
-                                        source=NotificationSource.COMMENT)
+                                        action=Action.COMMENTED)
         replies = n.replies.all()
         self.assertEqual(len(replies), 0)
 
@@ -124,7 +127,7 @@ class NotificationTests(SingleUserTestCase):
         n = Notification.objects.create(created_user=self.user,
                                         text=text,
                                         about=about_obj,
-                                        source=NotificationSource.COMMENT,
+                                        action=Action.COMMENTED,
                                         ensure_for_objs=self.user)
         for_objects = n.get_for_objects()
 
@@ -137,7 +140,7 @@ class NotificationTests(SingleUserTestCase):
         n = Notification.objects.create(created_user=self.user,
                                         text='Hello world',
                                         about=create_user(),
-                                        source=NotificationSource.COMMENT)
+                                        action=Action.COMMENTED)
 
         reply_user = create_user()
         reply_text = 'Some reply comment.'
@@ -154,7 +157,7 @@ class NotificationTests(SingleUserTestCase):
         n = Notification.objects.create(created_user=self.user,
                                         text='Hello world',
                                         about=create_user(),
-                                        source=NotificationSource.COMMENT)
+                                        action=Action.COMMENTED)
 
         reply1 = n.add_reply(user=create_user(), text='Some reply comment.')
         reply2 = n.add_reply(user=create_user(), text='Some reply comment.')
@@ -174,7 +177,7 @@ class NotificationTests(SingleUserTestCase):
         n = Notification.objects.create(created_user=self.user,
                                         text='Hello world',
                                         about=create_user(),
-                                        source=NotificationSource.COMMENT)
+                                        action=Action.COMMENTED)
 
         reply1 = n.add_reply(user=create_user(), text='Some reply comment.')
         reply2 = n.add_reply(user=create_user(), text='Some reply comment.')
@@ -195,7 +198,7 @@ class NotificationTests(SingleUserTestCase):
         n = Notification.objects.create(created_user=self.user,
                                         text='Hello world',
                                         about=create_user(),
-                                        source=NotificationSource.COMMENT)
+                                        action=Action.COMMENTED)
 
         reply1 = n.add_reply(user=create_user(), text='Some reply comment.')
         reply2 = n.add_reply(user=create_user(),
@@ -210,13 +213,13 @@ class NotificationTests(SingleUserTestCase):
 
     def test_is_comment(self):
         """Test indicating if the notification is a comment."""
-        n = Notification(source=NotificationSource.COMMENT)
+        n = Notification(action=Action.COMMENTED)
         self.assertTrue(n.is_comment())
         self.assertFalse(n.is_activity())
 
     def test_is_activity(self):
         """Test indicating if the notification is a comment."""
-        n = Notification(source=NotificationSource.ACTIVITY)
+        n = Notification(source=Source.SYSTEM)
         self.assertTrue(n.is_activity())
         self.assertFalse(n.is_comment())
 
@@ -227,7 +230,7 @@ class NotificationExtensionTests(SingleUserTestCase):
         n = Notification.objects.create(created_user=self.user,
                                         text='Hello world',
                                         about=create_user(),
-                                        source=NotificationSource.COMMENT)
+                                        action=Action.COMMENTED)
         self.assertTrue(hasattr(n, 'my_test_method'))
         self.assertEqual(n.my_test_method(), 'worked')
 
