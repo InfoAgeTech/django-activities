@@ -60,7 +60,7 @@
 	            {{ notification.text|safe|linebreaks }}
 	          {% endif %}
 	      {% else %}
-	          {{ notification.get_activity_html|safe }}
+	          {{ notification.get_html|safe }}
 	      {% endif %}
         </li>
         <li class="date">{{ notification.created_dttm|naturaltime }}</li>

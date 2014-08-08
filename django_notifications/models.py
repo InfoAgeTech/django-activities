@@ -106,7 +106,7 @@ class AbstractNotification(AbstractBaseModel):
         # self.notificationfor_set.get_or_create_generic(content_object=user)
         return reply
 
-    def get_activity_text(self):
+    def get_text(self):
         """Gets the text for an object.  If text is None, this will construct
         the text based on the notification attributes.
         """
@@ -129,8 +129,8 @@ class AbstractNotification(AbstractBaseModel):
             object=self.about
         )
 
-    def get_activity_html(self):
-        """Does the same thing as ``get_activity_text(...)`` but looks to see
+    def get_html(self):
+        """Does the same thing as ``get_text(...)`` but looks to see
         if the objects have the ``get_absolute_url`` method implemented.  If
         they do, then they will appear as links.  For example, if the user
         model implements the ``get_absolute_url`` the user's text will be
