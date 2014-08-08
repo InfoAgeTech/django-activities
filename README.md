@@ -203,6 +203,15 @@ If all this configuration still isn't to your liking, then you can simply extend
         """Your concrete implementation of the notification app."""
         # Do your stuff here
 
+Custom Notification Rendering
+=============================
+When rendering the notifications, the ``get_activity_html`` will check to see if the notification ``about`` object has implemented custom rendering of the notification itself.  In order for the custom rendering to occur, the ``about`` object model needs to implement the class as follows:
+
+    def get_notification_created_html(self, notification, **kwargs):
+        """The notification renderer for a created notification about this object."""
+        # do rendering that returns html
+        return rendered_html
+
 Tests
 =====
 From the ``tests`` directory where the manage.py file is, run:

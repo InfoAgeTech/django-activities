@@ -139,6 +139,11 @@ class AbstractNotification(AbstractBaseModel):
         if self.text:
             return self.text
 
+        # check to see if the about model has implemented a custom template
+        if self.action == Action.CREATED and \
+           hasattr(self.about, 'get_notification_created_html'):
+            return self.about.get_notification_created_html(self)
+
         action = Action.get_display(self.action) or self.action
 
         created_user = self.created_user
