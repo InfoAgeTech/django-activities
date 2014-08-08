@@ -35,7 +35,6 @@ INSTALLED_APPS = (
     'django_notifications',
     'django_core',
     'django_nose',
-    'tests',
     'test_models'  # adding as an installed app so testing models get picked up.
 )
 

@@ -10,7 +10,7 @@ from .constants import Source
 class NotificationManager(CommonManager):
     """Manager for notifications."""
 
-    def create(self, created_user, text, about=None,
+    def create(self, created_user, text=None, about=None,
                source=Source.SYSTEM, action=Action.CREATED,
                ensure_for_objs=None, exclude_objs=None, **kwargs):
         """Creates a notification.
@@ -35,7 +35,7 @@ class NotificationManager(CommonManager):
             kwargs['about'] = about
 
         n = super(NotificationManager, self).create(
-            text=text.strip(),
+            text=text.strip() if text else text,
             created_user=created_user,
             last_modified_user=created_user,
             source=source,

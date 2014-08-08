@@ -105,7 +105,7 @@ class AbstractNotification(AbstractBaseModel):
         # self.notificationfor_set.get_or_create_generic(content_object=user)
         return reply
 
-    def get_text(self):
+    def get_activity_text(self):
         """Gets the text for an object.  If text is None, this will construct
         the text based on the notification attributes.
         """
@@ -113,14 +113,65 @@ class AbstractNotification(AbstractBaseModel):
             return self.text
 
         action = Action.get_display(self.action) or self.action
-        # `troy` created the `movie` (movie name)
+
+        if self.action == Action.COMMENTED:
+            template = '{created_user} {action} on the {object_name} {object}'
+        else:
+            template = '{created_user} {action} the {object_name} {object}'
+
         # TODO: need to differentiate system activity from user created
         #       activity.
-        return '{created_user} {action} the {object_name} {object}'.format(
+        return template.format(
             created_user=self.created_user.username,
             action=action.lower(),
             object_name=self.about_content_type.model_class()._meta.verbose_name,
             object=self.about
+        )
+
+    def get_activity_html(self):
+        """Does the same thing as ``get_activity_text(...)`` but looks to see
+        if the objects have the ``get_absolute_url`` method implemented.  If
+        they do, then they will appear as links.  For example, if the user
+        model implements the ``get_absolute_url`` the user's text will be
+        hyperlinked to the user's absolute url.
+        """
+        if self.text:
+            return self.text
+
+        action = Action.get_display(self.action) or self.action
+
+        created_user = self.created_user
+
+        if hasattr(self.created_user, 'get_absolute_url_link'):
+            created_user = self.created_user.get_absolute_url_link()
+        elif hasattr(self.created_user, 'get_absolute_url'):
+            created_user = '<a href="{0}">{1}</a>'.format(
+                created_user.get_absolute_url(),
+                created_user.username
+            )
+        else:
+            created_user = self.created_user.username
+
+        about = self.about
+
+        if hasattr(self.about, 'get_absolute_url_link'):
+            about = self.about.get_absolute_url_link()
+        elif hasattr(self.about, 'get_absolute_url'):
+            about = '<a href="{0}">{1}</a>'.format(about.get_absolute_url(),
+                                                   about)
+
+        if self.action == Action.COMMENTED:
+            template = '{created_user} {action} on the {object_name} {object}'
+        else:
+            template = '{created_user} {action} the {object_name} {object}'
+
+        # TODO: need to differentiate system activity from user created
+        #       activity.
+        return template.format(
+            created_user=created_user,
+            action=action.lower(),
+            object_name=self.about_content_type.model_class()._meta.verbose_name,
+            object=about
         )
 
     def get_for_objects(self):

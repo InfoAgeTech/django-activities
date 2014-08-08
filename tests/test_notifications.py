@@ -223,6 +223,26 @@ class NotificationTests(SingleUserTestCase):
         self.assertTrue(n.is_activity())
         self.assertFalse(n.is_comment())
 
+    def test_get_activity_text(self):
+        """Test the get_activity_text method to ensure it properly creates the
+        expected text.
+        """
+        n = Notification.objects.create(created_user=self.user,
+                                        about=create_user(),
+                                        action=Action.COMMENTED,
+                                        source=Source.USER)
+        self.assertIsNotNone(n.get_activity_text())
+
+    def test_get_activity_html(self):
+        """Test the get_activity_html method to ensure it properly creates the
+        expected text.
+        """
+        n = Notification.objects.create(created_user=self.user,
+                                        about=create_user(),
+                                        action=Action.COMMENTED,
+                                        source=Source.USER)
+        self.assertIsNotNone(n.get_activity_html())
+
 
 class NotificationExtensionTests(SingleUserTestCase):
 
