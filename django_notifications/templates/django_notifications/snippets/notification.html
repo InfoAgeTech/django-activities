@@ -53,11 +53,15 @@
             
         </li>
         <li class="msg">
-          {% if notification.source == 'COMMENT' %}
-            {{ notification.text|linebreaks }}
-          {% else %}
-            {{ notification.text|safe|linebreaks }}
-          {% endif %}
+          {% if notification.text %}
+	          {% if notification.source == 'COMMENT' %}
+	            {{ notification.text|linebreaks }}
+	          {% else %}
+	            {{ notification.text|safe|linebreaks }}
+	          {% endif %}
+	      {% else %}
+	          {{ notification.get_activity_html|safe }}
+	      {% endif %}
         </li>
         <li class="date">{{ notification.created_dttm|naturaltime }}</li>
         <li class="replies">

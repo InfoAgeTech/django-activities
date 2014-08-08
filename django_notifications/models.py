@@ -5,6 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
+from django.utils.translation import ugettext as _
 from django_core.db.models.mixins.base import AbstractBaseModel
 from django_core.db.models.mixins.generic import AbstractGenericObject
 from django_core.db.models.mixins.urls import AbstractUrlLinkModelMixin
@@ -161,9 +162,10 @@ class AbstractNotification(AbstractBaseModel):
                                                    about)
 
         if self.action == Action.COMMENTED:
-            template = '{created_user} {action} on the {object_name} {object}'
+            template = _('{created_user} {action} on the {object_name} '
+                         '{object}.')
         else:
-            template = '{created_user} {action} the {object_name} {object}'
+            template = _('{created_user} {action} the {object_name} {object}.')
 
         # TODO: need to differentiate system activity from user created
         #       activity.
@@ -203,7 +205,6 @@ class Notification(AbstractUrlLinkModelMixin, AbstractNotificationMixin,
     """Concrete model for notifications."""
 
     class Meta:
-        db_table = u'notifications'
         ordering = ('-id',)
         index_together = (('about_content_type', 'about_id'),)
 
