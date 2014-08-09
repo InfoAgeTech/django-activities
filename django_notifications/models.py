@@ -9,26 +9,11 @@ from django.utils.translation import ugettext as _
 from django_core.db.models.mixins.base import AbstractBaseModel
 from django_core.db.models.mixins.generic import AbstractGenericObject
 from django_core.db.models.mixins.urls import AbstractUrlLinkModelMixin
-from django_core.utils.loading import get_class_from_settings
 
 from .constants import Action
 from .constants import Source
+from .managers import NotificationManager
 from .managers import NotificationReplyManager
-
-
-try:
-    AbstractNotificationMixin = get_class_from_settings(
-        settings_key='NOTIFICATION_MODEL_MIXIN'
-    )
-except NotImplementedError:
-    from django_core.db.models import AbstractHookModelMixin as AbstractNotificationMixin
-
-try:
-    NotificationManager = get_class_from_settings(
-        settings_key='NOTIFICATION_MANAGER'
-    )
-except NotImplementedError:
-    from .managers import NotificationManager
 
 
 class AbstractNotification(AbstractBaseModel):
@@ -205,8 +190,7 @@ class AbstractNotification(AbstractBaseModel):
         return True
 
 
-class Notification(AbstractUrlLinkModelMixin, AbstractNotificationMixin,
-                   AbstractNotification):
+class Notification(AbstractUrlLinkModelMixin, AbstractNotification):
     """Concrete model for notifications."""
 
     class Meta:
@@ -260,9 +244,6 @@ class NotificationReply(AbstractUrlLinkModelMixin, AbstractBaseModel):
 @python_2_unicode_compatible
 class NotificationFor(AbstractGenericObject):
     """Defines the generic object a notification is for."""
-#
-#     class Meta:
-#         proxy = True
 
     def __str__(self):
         return '{0} {1}'.format(self.content_type, self.object_id)

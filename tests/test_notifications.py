@@ -242,18 +242,3 @@ class NotificationTests(SingleUserTestCase):
                                         action=Action.COMMENTED,
                                         source=Source.USER)
         self.assertIsNotNone(n.get_html())
-
-
-class NotificationExtensionTests(SingleUserTestCase):
-
-    def test_method_added_to_notification_model(self):
-        n = Notification.objects.create(created_user=self.user,
-                                        text='Hello world',
-                                        about=create_user(),
-                                        action=Action.COMMENTED)
-        self.assertTrue(hasattr(n, 'my_test_method'))
-        self.assertEqual(n.my_test_method(), 'worked')
-
-    def test_model_manager_extended(self):
-        self.assertTrue(hasattr(Notification.objects, 'my_new_manager_method'))
-        self.assertEqual(Notification.objects.my_new_manager_method(), 'works')

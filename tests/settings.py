@@ -4,8 +4,6 @@ import os
 import sys
 
 
-NOTIFICATION_MODEL_MIXIN = 'test_models.AbstractNotificationMixin'
-NOTIFICATION_MANAGER = 'test_models.managers.NotificationManager'
 NOTIFICATIONS_BASE_TEMPLATE = 'base_notifications.html'
 
 DEBUG = False
