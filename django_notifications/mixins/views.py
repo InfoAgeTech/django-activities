@@ -12,11 +12,11 @@ from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.edit import FormView
 
 from .. import get_notification_model
+from ..constants import Action
 from ..constants import Source
 from ..forms import BasicCommentForm
 from ..http import NotificationResponse
 from ..models import NotificationReply
-from django_notifications.constants import Action
 
 
 Notification = get_notification_model()
@@ -158,6 +158,25 @@ class NotificationsViewMixin(object):
 
         return context
 
+    def get_notifications_common_queryset(self, queryset):
+        """Common filters to apply to a queryset."""
+        notification_kwargs = {}
+        notification_source = Source.check(self.request.GET.get('ns'))
+
+        if notification_source:
+            notification_kwargs['source'] = notification_source
+
+        notification_action = Action.check(self.request.GET.get('na'))
+
+        if notification_action:
+            notification_kwargs['action'] = notification_action
+
+        return (queryset.filter(**notification_kwargs)
+                        .prefetch_related('about',
+                                          'replies',
+                                          'replies__created_user',
+                                          'created_user'))
+
     def get_notifications_queryset(self):
         """Get's the queryset for the notifications."""
         notifications_about_object = self.get_notifications_about_object()
@@ -166,18 +185,13 @@ class NotificationsViewMixin(object):
         if notifications_about_object:
             notification_kwargs['obj'] = notifications_about_object
 
-        # TODO: need to validate this is correct since "action" was added to
-        #       the model
-        notification_source = Source.check(self.request.GET.get('ns'))
+        queryset = Notification.objects.get_for_object(**notification_kwargs)
+        return self.get_notifications_common_queryset(queryset=queryset)
 
-        if notification_source:
-            notification_kwargs['source'] = notification_source
-
-        return (Notification.objects.get_for_object(**notification_kwargs)
-                                    .prefetch_related('about',
-                                                      'replies',
-                                                      'replies__created_user',
-                                                      'created_user'))
+    def get_notifications_created_user_queryset(self, user):
+        """Gets the notifications created by user queryset."""
+        queryset = Notification.objects.filter(created_user=user)
+        return self.get_notifications_common_queryset(queryset=queryset)
 
     def get_notifications_about_object(self):
         """Gets the object to get notifications for. The default is to return
@@ -298,13 +312,20 @@ class NotificationFormView(FormView):
                                    text=text)
 
         else:
+            ensure_for_objs = []
+            about = self.get_notifications_about_object()
+            if about == self.request.user:
+                # user commenting on own wall
+                ensure_for_objs.append(self.request.user)
+
             # New notification for an object
             notification = Notification.objects.create(
                 created_user=self.request.user,
                 text=text,
-                about=self.get_notifications_about_object(),
+                about=about,
                 source=Source.USER,
-                action=Action.COMMENTED
+                action=Action.COMMENTED,
+                ensure_for_objs=ensure_for_objs or None
             )
 
         if self.request.is_ajax():

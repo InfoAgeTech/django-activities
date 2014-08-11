@@ -7,8 +7,11 @@
     notification_url: the url for the object's notifications
     obj: the obj the notifications are for.
     notification_source: the source of the notifications (optional).  Default
-        is to show all.  Can be 'user' or 'activity'.
-    
+        is to show all.  Can be 'USER' or 'SYSTEM'.
+    notification_action: the action of the notification (optional). Defaults
+        to show all actions.  Can be one of an action values ("CREATED", 
+        "COMMENTED", "UPDATED", "DELETED", etc.)
+     
 {% endcomment %}
 
 {% load humanize notification_tags %}
@@ -36,9 +39,11 @@
     {% endif %}
     
     <ul class="nav nav-tabs notification-type">
-        <li{% if not notification_source or notification_source == 'all' %} class="active"{% endif %}><a href="{{ notification_url }}?ns=all">All</a></li>
-        <li{% if notification_source == 'user' %} class="active"{% endif %}><a href="{{ notification_url }}?ns=comment">Comments</a></li>
-        <li{% if notification_source == 'activity' %} class="active"{% endif %}><a href="{{ notification_url }}?ns=activity">Activity</a></li>
+      {% with action=notification_action.lower source=notification_source.lower %}
+        <li{% if not notification_action == 'commented' and not notification_source == 'system' %} class="active"{% endif %}><a href="{{ notification_url }}">All</a></li>
+        <li{% if notification_action == 'commented' %} class="active"{% endif %}><a href="{{ notification_url }}?na=commented">Comments</a></li>
+        <li{% if notification_source == 'system' %} class="active"{% endif %}><a href="{{ notification_url }}?ns=system">Activity</a></li>
+      {% endwith %}
     </ul>
   {% endif %}
    
@@ -57,7 +62,7 @@
   
   {% if notifications_page.has_next %}
     <div class="notifications-paging">
-        <a href="{{ notification_url }}?np={{ notifications_page.next_page_number }}&nps={{ notifications_page.paginator.per_page }}{% if notification_source %}&ns={{ notification_source }}{% endif %}" class="has-more">more</a>
+        <a href="{{ notification_url }}?np={{ notifications_page.next_page_number }}&nps={{ notifications_page.paginator.per_page }}{% if notification_source %}&ns={{ notification_source.lower }}{% endif %}{% if notification_action %}&na={{ notification_action.lower }}{% endif %}" class="has-more">more</a>
     </div>
   {% endif %}
    
