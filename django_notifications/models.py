@@ -11,6 +11,7 @@ from django_core.db.models.mixins.generic import AbstractGenericObject
 from django_core.db.models.mixins.urls import AbstractUrlLinkModelMixin
 
 from .constants import Action
+from .constants import Privacy
 from .constants import Source
 from .managers import NotificationManager
 from .managers import NotificationReplyManager
@@ -43,7 +44,9 @@ class AbstractNotification(AbstractBaseModel):
         choices (i.e. 'USER' generated comment, 'SYSTEM' activity on an
         object, etc)
     * action: the action (verb) that describes what happend ('CREATED',
-        'UPDATED', 'DELETED', 'COMMENTED')
+        'UPDATED', 'DELETED', 'COMMENTED', etc)
+    * privacy: the privacy of the notification.  Can be either 'PUBLIC' or
+        'PRIVATE'.
     """
     text = models.TextField(blank=True, null=True)
     about = generic.GenericForeignKey(ct_field='about_content_type',
@@ -60,6 +63,8 @@ class AbstractNotification(AbstractBaseModel):
                                       null=True)
     source = models.CharField(max_length=20, choices=Source.CHOICES)
     action = models.CharField(max_length=20, choices=Action.CHOICES)
+    privacy = models.CharField(max_length=20, choices=Privacy.CHOICES,
+                               default=Privacy.PUBLIC)
     objects = NotificationManager()
 
     class Meta:

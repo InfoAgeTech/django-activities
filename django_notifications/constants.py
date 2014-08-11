@@ -69,3 +69,12 @@ class Action(EnumCheck):
                (DELETED, _('Deleted')),
                (UPDATED, _('Updated'))
                )
+
+
+class Privacy(object):
+    """Privacy for a notification."""
+    PUBLIC = 'PUBLIC'  # everyone can see
+    PRIVATE = 'PRIVATE'  # only created user can see
+    CHOICES = ((PUBLIC, 'Public - everyone can see'),
+               (PRIVATE, 'Private - only created user can see'),
+               )
