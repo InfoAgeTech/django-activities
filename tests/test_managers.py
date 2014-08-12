@@ -109,7 +109,7 @@ class NotificationManagerTests(TestCase):
         self.assertEqual(notification, notifications[0])
 
     def test_get_for_object_with_user(self):
-        """Test for gettting all notifications for an object with for_user
+        """Test for getting all notifications for an object with for_user
         passed in.
         """
         user_1 = create_user()
@@ -128,8 +128,8 @@ class NotificationManagerTests(TestCase):
         self.assertEqual(notification, notifications[0])
 
     def test_get_for_object_with_user_not_qualifying_public(self):
-        """Test for gettting all notifications for an object with for_user
-        passed in.
+        """Test for getting all notifications for an object with for_user
+        passed in (can see all public notifications).
         """
         user_1 = create_user()
         user_2 = create_user()
@@ -146,8 +146,8 @@ class NotificationManagerTests(TestCase):
         self.assertEqual(notification, notifications[0])
 
     def test_get_for_object_with_user_qualifying_private(self):
-        """Test for gettting all notifications for an object with for_user
-        passed in.
+        """Test for getting all notifications for an object with for_user
+        passed in who has access to a private notification.
         """
         user_1 = create_user()
         user_2 = create_user()
@@ -166,8 +166,8 @@ class NotificationManagerTests(TestCase):
         self.assertEqual(notification, notifications[0])
 
     def test_get_for_object_with_user_not_qualifying_private(self):
-        """Test for gettting all notifications for an object with for_user
-        passed in.
+        """Test for getting all notifications for an object with for_user
+        passed in that doesn't qualify for any issues.
         """
         user_1 = create_user()
         user_2 = create_user()
