@@ -104,7 +104,10 @@ class ActivityManager(CommonManager):
                                for_objs__object_id=obj.id,
                                **kwargs)
 
-        if for_user is None:
+        if for_user is None or not for_user.is_authenticated():
+            return queryset.filter(privacy=Privacy.PUBLIC).distinct()
+
+        if for_user and for_user == obj:
             return queryset
 
         user_content_type = ContentType.objects.get_for_model(for_user)

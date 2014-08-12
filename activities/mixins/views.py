@@ -172,6 +172,7 @@ class ActivitiesViewMixin(object):
 
         return (queryset.filter(**activity_kwargs)
                         .prefetch_related('about',
+                                          'about_content_type',
                                           'replies',
                                           'replies__created_user',
                                           'created_user'))
@@ -179,17 +180,12 @@ class ActivitiesViewMixin(object):
     def get_activities_queryset(self):
         """Get's the queryset for the activities."""
         activities_about_object = self.get_activities_about_object()
-        activity_kwargs = {}
+        activity_kwargs = {'for_user': self.request.user}
 
         if activities_about_object:
             activity_kwargs['obj'] = activities_about_object
 
         queryset = Activity.objects.get_for_object(**activity_kwargs)
-        return self.get_activities_common_queryset(queryset=queryset)
-
-    def get_activities_created_user_queryset(self, user):
-        """Gets the activities created by user queryset."""
-        queryset = Activity.objects.filter(created_user=user)
         return self.get_activities_common_queryset(queryset=queryset)
 
     def get_activities_about_object(self):

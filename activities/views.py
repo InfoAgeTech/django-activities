@@ -21,8 +21,8 @@ from .mixins.views import UserActivitiesViewMixin
 
 
 class ActivitiesView(LoginRequiredViewMixin, PagingViewMixin,
-                    ActivityContentTypeObjectViewMixin, ActivitiesViewMixin,
-                    ActivityFormView):
+                     ActivityContentTypeObjectViewMixin, ActivitiesViewMixin,
+                     ActivityFormView):
 
     template_name = 'activities/view_activities.html'
 
@@ -38,7 +38,7 @@ class ActivitiesView(LoginRequiredViewMixin, PagingViewMixin,
 
 # TODO: Is this view app specific?
 class ActivitiesForUserView(LoginRequiredViewMixin, PagingViewMixin,
-                           UserActivitiesViewMixin, ActivityFormView):
+                            UserActivitiesViewMixin, ActivityFormView):
 
     template_name = 'activities/view_activities.html'
 
