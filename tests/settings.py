@@ -73,5 +73,4 @@ DATABASES = {
 }
 
 if 'test' in sys.argv:
-    NOSE_ARGS = ('--cover-package=', '--nocapture',
-                 '--with-doctest', '--testmatch=^test')
+    NOSE_ARGS = ('--nocapture', '--with-doctest', '--testmatch=^test')
