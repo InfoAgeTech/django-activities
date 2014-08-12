@@ -3,7 +3,7 @@
 
 [run]
 omit = */*urls.py,*__init__.py
-include = */django_notifications/*
+include = */activites/*
 
 [report]
 # Regexes for lines to exclude from consideration

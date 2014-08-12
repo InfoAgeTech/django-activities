@@ -6,5 +6,5 @@ from django.conf.urls import url
 
 
 urlpatterns = patterns('',
-    url(r'^notifications', include('django_notifications.urls')),
+    url(r'^activities', include('activities.urls')),
 )

@@ -1,0 +1,21 @@
+{% extends 'activities/base_activity.html' %}
+{% load activity_tags %}
+{% block page_title %}Edit Activity - {% endblock %}
+
+{% block breadcrumb %}
+    <li>{{ activity.get_edit_url_link }}</li>
+{% endblock %}
+
+{% block activity_content %}
+    <h1>Edit Activity</h1>
+    <form method="post" action="{{ activity.get_edit_url }}" class="form-horizontal">
+        {% csrf_token %}
+        {{ form|render_activity_form }}
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a href="{{ activity.about.get_absolute_url }}">cancel</a>
+            </div>
+        </div>
+    </form>
+{% endblock %}

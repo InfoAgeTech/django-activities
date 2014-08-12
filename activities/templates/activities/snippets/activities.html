@@ -1,0 +1,73 @@
+{% comment %}
+    This snippet is used for user activities or activity feed.
+    
+    Variables:
+    
+    activities_page: the page django.core.paginator.Page of activities
+    activity_url: the url for the object's activities
+    obj: the obj the activities are for.
+    activity_source: the source of the activities (optional).  Default
+        is to show all.  Can be 'USER' or 'SYSTEM'.
+    activity_action: the action of the activity (optional). Defaults
+        to show all actions.  Can be one of an action values ("CREATED", 
+        "COMMENTED", "UPDATED", "DELETED", etc.)
+     
+{% endcomment %}
+
+{% load humanize activity_tags %}
+{% spaceless %}
+
+{% with activities_object_list=activities_page.object_list %}
+
+<div class="activities-container" data-ajax="activities">
+
+  {% if not request.is_ajax %}
+    {% if request.user.is_authenticated %}
+    <form class="comment-form" action="{{ activity_url }}" method="post">{% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.path}}" />
+        <div class="row">
+            <div class="col-md-9">
+                <textarea name="text" rows="2" cols="20" class="form-control" placeholder="Make a comment..."></textarea>
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-primary btn-sm" type="submit">Comment</button>
+            </div>
+        </div>
+    </form>
+    {% else %}
+    <div>Please log in to comment.</div>
+    {% endif %}
+    
+    <ul class="nav nav-tabs activity-type">
+      {% with action=activity_action.lower source=activity_source.lower %}
+        <li{% if not activity_action == 'commented' and not activity_source == 'system' %} class="active"{% endif %}><a href="{{ activity_url }}">All</a></li>
+        <li{% if activity_action == 'commented' %} class="active"{% endif %}><a href="{{ activity_url }}?na=commented">Comments</a></li>
+        <li{% if activity_source == 'system' %} class="active"{% endif %}><a href="{{ activity_url }}?ns=system">Activity</a></li>
+      {% endwith %}
+    </ul>
+  {% endif %}
+   
+  
+	<ul class="activities">
+	{% for n in activities_object_list %}
+	  {% if obj == n.about %}
+	    {% render_activity activity=n %}
+	  {% else %}
+	    {% render_activity activity=n show_reference_obj=True %}
+	  {% endif %}
+	{% empty %}
+	    <li class="no-activities-found">No activities found.</li>
+	{% endfor %}
+	</ul>
+  
+  {% if activities_page.has_next %}
+    <div class="activities-paging">
+        <a href="{{ activity_url }}?np={{ activities_page.next_page_number }}&nps={{ activities_page.paginator.per_page }}{% if activity_source %}&ns={{ activity_source.lower }}{% endif %}{% if activity_action %}&na={{ activity_action.lower }}{% endif %}" class="has-more">more</a>
+    </div>
+  {% endif %}
+   
+</div>
+
+{% endwith %}
+
+{% endspaceless %}

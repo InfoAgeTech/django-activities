@@ -1,9 +1,9 @@
 from django.db import models
 
 
-class AbstractNotificationMixin(models.Model):
-    """The abstract notification model to add functionality to the
-    Notification's model.
+class AbstractActivityMixin(models.Model):
+    """The abstract activity model to add functionality to the
+    Activity's model.
     """
 
     class Meta:

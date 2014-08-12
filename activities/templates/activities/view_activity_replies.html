@@ -1,0 +1,10 @@
+{% extends 'activities/base_activity.html' %}
+{% block page_title %}Activity Replies - {% endblock %}
+
+{% block activity_content %}
+    <h1>Activity Replies</h1>
+    
+    <ul class="data-list activities">
+        {% include 'activities/snippets/activity.html' with activity=activity %}
+    </ul>
+{% endblock %}

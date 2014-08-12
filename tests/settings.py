@@ -4,7 +4,7 @@ import os
 import sys
 
 
-NOTIFICATIONS_BASE_TEMPLATE = 'base_notifications.html'
+ACTIVITIES_BASE_TEMPLATE = 'base_activities.html'
 
 DEBUG = False
 
@@ -30,7 +30,7 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.humanize',
-    'django_notifications',
+    'activities',
     'django_core',
     'django_nose',
     'test_models'  # adding as an installed app so testing models get picked up.
@@ -44,13 +44,13 @@ MIDDLEWARE_CLASSES = (
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
     'django.core.context_processors.media',
-    'django_notifications.context_processors.template_name',
+    'activities.context_processors.template_name',
     'django.contrib.auth.context_processors.auth',
 )
 
 SITE_ROOT = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../')
 TEMPLATE_DIRS = (
-    os.path.join(SITE_ROOT, 'django_notifications/templates')
+    os.path.join(SITE_ROOT, 'activities/templates')
 )
 
 ROOT_URLCONF = 'urls'

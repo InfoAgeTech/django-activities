@@ -1,0 +1,100 @@
+.activities-container .comment-form {
+  margin-bottom: 7px;
+}
+.activities-container .comment-form textarea[name="text"] {
+  height: 31px;
+  width: 100%;
+}
+.activities-container .comment-form .btn-primary {
+  width: 100%;
+}
+.activities-container .activities {
+  margin-bottom: 0;
+  padding-left: 0;
+}
+.activities-container .activities li {
+  list-style: none;
+}
+.activities-container .activities ul {
+  padding-left: 0;
+}
+.activities-container .activities .avatar {
+  float: left;
+  margin-left: 0;
+}
+.activities-container .activities .comment-reply-form input[type="text"] {
+  height: 25px;
+  padding: 2px 4px;
+}
+.activities-container .activities .comment-reply-form .comment-holder {
+  margin-left: 32px;
+}
+.activities-container .activities .comment-reply-form .comment-reply-form {
+  margin-bottom: 0;
+}
+.activities-container .activities .comment-reply-form .avatar,
+.activities-container .activities .reply .avatar {
+  height: 24px;
+  width: 24px;
+}
+.activities-container .activities .item {
+  border-bottom: 1px solid #F2F2F2;
+  padding: 10px 0;
+}
+.activities-container .activities .item .actions {
+  float: right;
+}
+.activities-container .activities .item .actions .action {
+  padding: 0 2px;
+}
+.activities-container .activities .item .msg ul li {
+  list-style: disc;
+}
+.activities-container .activities .item .msg ul,
+.activities-container .activities .item .msg ol {
+  margin-left: 20px;
+}
+.activities-container .activities .item .name .about-obj {
+  color: silver;
+  margin-left: 5px;
+}
+.activities-container .activities .item .name .about-obj a {
+  color: gray;
+}
+.activities-container .activities .item .name,
+.activities-container .activities .item .msg,
+.activities-container .activities .item .date,
+.activities-container .activities .item .replies {
+  display: block;
+  margin-left: 40px;
+}
+.activities-container .activities .no-activities-found {
+  text-align: center;
+  margin: 25px 0 5px;
+}
+.activities-container .activities .reply .name,
+.activities-container .activities .reply .msg,
+.activities-container .activities .reply .date {
+  margin-left: 32px;
+}
+.activities-paging {
+  text-align: center;
+}
+.activities-paging .progress,
+.activities-paging .progress .bar {
+  display: inline-block;
+  width: 100px;
+}
+.activity .actions {
+  float: right;
+}
+.activity .actions a {
+  margin-left: 5px;
+}
+.activity .actions .date {
+  color: silver;
+}
+.activity .actions .msg .field-name,
+.activity .actions .msg .field-value {
+  font-weight: bold;
+}

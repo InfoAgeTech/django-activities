@@ -1,0 +1,109 @@
+{% comment %}
+    This snippet represents an individual user activities or activity.
+    
+    Variables:
+    
+    activity: activity object
+    show_reference_obj: boolean string whether to show the line about which obj  
+        the activity is referencing. This has to be a string because of how 
+        variables are passed to the snippet.  Should be 'True' or 'False'. 
+        Default is 'False'.
+    
+{% endcomment %}
+
+{% load collection_tags humanize i18n activity_tags url_tags %}
+
+{% spaceless %}
+<li class="item-container activity-container" id="n-{{ activity.id }}">
+
+    <ul class="item activity clearfix">
+        
+        <li class="avatar">
+            <a href="{{ activity.created_user.get_absolute_url }}">
+                <img src="{{ activity.created_user.get_avatar_url }}" alt="Avatar" class="avatar" />
+            </a>
+        </li>
+        <li class="actions">
+            {% if activity.is_editable and activity.created_user_id == user.id %}
+                {% edit_url_link obj=activity icon_class=ICON_EDIT_CLS text='' %}
+            {% endif %}
+            {% delete_url_link obj=activity icon_class=ICON_DECLINE_CLS text='' %}
+        </li>
+        <li class="name">
+            <strong>
+                <a href="{{ activity.created_user.get_absolute_url }}">{{ activity.created_user.get_full_name }}</a>
+            </strong>
+            
+            {% comment %}If this is passed in a template, I can only pass strings which is why 'True' check exists{% endcomment %}
+            {% comment %}
+            {% if show_reference_obj == 'True' or show_reference_obj == True %}
+              {% if activity.about|get_obj_type == 'bill' %}
+                <span class="about-obj">{% if activity.about.group_id %}in {{ activity.about.group.get_absolute_url_link }} {% endif %}
+                    for {{ activity.about.get_absolute_url_link }}
+                </span>
+              {% elif activity.about|get_obj_type == 'billinstance' %}
+                <span class="about-obj">{% if activity.about.bill.group_id %}in {{ activity.about.bill.group.get_absolute_url_link }} {% endif %}
+                    for {{ activity.about.bill.get_absolute_url_link }} ({{ activity.about.get_absolute_url_link_short_date }})
+                </span>
+              {% elif activity.about|get_obj_type == 'group' %}
+                <span class="about-obj">in {{ activity.about.get_absolute_url_link }}</span>
+              {% endif %}
+            {% endif %}
+            {% endcomment %}
+            
+        </li>
+        <li class="msg">
+          {% if activity.text %}
+	          {% if activity.source == 'COMMENT' %}
+	            {{ activity.text|linebreaks }}
+	          {% else %}
+	            {{ activity.text|safe|linebreaks }}
+	          {% endif %}
+	      {% else %}
+	          {{ activity.get_html|safe }}
+	      {% endif %}
+        </li>
+        <li class="date">{{ activity.created_dttm|naturaltime }}</li>
+        <li class="replies">
+            <ul>
+                {% for reply in activity.replies.all %}
+                <li class="reply">
+                    <ul>
+                        <li class="avatar">
+                            <a href="{{ reply.created_user.get_absolute_url }}">
+                                <img src="{{ reply.created_user.get_avatar_url }}" alt="Avatar" class="avatar" />
+                            </a>
+                        </li>
+                        <li class="actions">
+                            {% if reply.created_user_id == user.id or activity.created_user_id == user.id %}
+                                <a href="{{ reply.get_edit_url }}"><i class="{{ ICON_EDIT_CLS }}"></i></a>
+                            {% endif %}
+                            <a href="{{ reply.get_delete_url }}"><i class="{{ ICON_DECLINE_CLS }}"></i></a>
+                        </li>
+                        <li class="name">
+                            <strong>
+                                <a href="{{ reply.created_user.get_absolute_url }}">{{ reply.created_user.get_full_name }}</a>
+                            </strong>
+                        </li>
+                        <li class="msg">{{ reply.text|safe|linebreaks }}</li>
+                        <li class="date">{{ reply.created_dttm|naturaltime }}</li>
+                    </ul>
+                </li>
+                {% endfor %}
+                <li class="my-reply">
+                    <form class="comment-reply-form" action="{% url 'activities_view' activity.about_content_type.id activity.about_id %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ request.path}}" />
+                        <input type="hidden" name="pid" value="{{ activity.id }}" />
+                        <img alt="Avatar" src="{{ user.get_avatar_url }}" class="avatar" />
+                        <div class="comment-holder">
+                            <input type="text" name="text" class="form-control" placeholder="Make a comment..." />
+                        </div>
+                    </form>
+                </li>
+            </ul>
+        </li>     
+    </ul>
+    
+</li>
+{% endspaceless %}

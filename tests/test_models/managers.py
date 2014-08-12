@@ -1,8 +1,8 @@
-from django_notifications.managers import NotificationManager as BaseNotificationManager
+from activities.managers import ActivityManager as BaseActivityManager
 
 
-class NotificationManager(BaseNotificationManager):
-    """Test manager for overriding the Notification's manager."""
+class ActivityManager(BaseActivityManager):
+    """Test manager for overriding the Activity's manager."""
 
     def my_new_manager_method(self):
         return 'works'

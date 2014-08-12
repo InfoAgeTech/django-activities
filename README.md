@@ -1,18 +1,18 @@
 NOTE: This is not stable yet and will likely change!  Please don't use in production until the 1.0 release.
 
-[<img src="https://travis-ci.org/InfoAgeTech/django-notifications.png?branch=master">](http://travis-ci.org/InfoAgeTech/django-notifications)
-[<img src="https://coveralls.io/repos/InfoAgeTech/django-notifications/badge.png">](https://coveralls.io/r/InfoAgeTech/django-notifications)
+[<img src="https://travis-ci.org/InfoAgeTech/django-activities.png?branch=master">](http://travis-ci.org/InfoAgeTech/django-activities)
+[<img src="https://coveralls.io/repos/InfoAgeTech/django-activities/badge.png">](https://coveralls.io/r/InfoAgeTech/django-activities)
 
 ====================
-django-notifications
+django-activities
 ====================
-django-notifications is a generic python notifications module written for django.  You can create notifications about any object type and share that comment with any object type.
+django-activities is a generic python activities module written for django.  You can create activities about any object type and share that comment with any object type.
 
 Intallation
 ===========
 Download the source from Github and run::
 
-    python setup.py install
+    python setup.py django-activities
 
 Dependencies
 ============
@@ -23,39 +23,39 @@ Configuration
 =============
 Config steps:
 
-1. Add to installed apps. django-notifications has two dependencies which are listed above. Both need to be added to the installed apps in your settings file.::
+1. Add to installed apps. django-activities has two dependencies which are listed above. Both need to be added to the installed apps in your settings file.::
 
         INSTALLED_APPS += (
             ...
             'django_core',
             'django_generic',
-            'django_notifications',
+            'activities',
             ...
         )
 
 
-By default, django-notifications comes with builtin views.  You can use them if you like or totally write your own.
+By default, django-activities comes with builtin views.  You can use them if you like or totally write your own.
 
 To use the views here are a few configuration steps to follow:
 
-1. Create the html file that will be used as the gateway between your application templates and django-notifications templates.  A simple template would look something like::
+1. Create the html file that will be used as the gateway between your application templates and django-activities templates.  A simple template would look something like::
     
-        # base_notifications.html
+        # base_activities.html
         {% extends request.base_template %}
     
         {% block content %}
-          {% block notifications_content %}{% endblock %}
+          {% block activities_content %}{% endblock %}
         {% endblock %}
 
-2. Once you're created the base notifications html file, you need to link to it in your settings.  In your settings file add the following setting that points to your template you just created::
+2. Once you're created the base activities html file, you need to link to it in your settings.  In your settings file add the following setting that points to your template you just created::
 
-        NOTIFICATIONS_BASE_TEMPLATE = 'path/to/your/template/base_notifications.html'
+        ACTIVITIES_BASE_TEMPLATE = 'path/to/your/template/base_activities.html'
 
 3. Add the context processor in your settings that's used to retrieve your custom base template::
 
         TEMPLATE_CONTEXT_PROCESSORS = (
             ...
-            'django_notifications.context_processors.template_name',
+            'activities.context_processors.template_name',
             ...
         )
 
@@ -63,14 +63,14 @@ To use the views here are a few configuration steps to follow:
 
         urlpatterns = patterns('',
             ...
-            url(r'^notifications', include('django_notifications.urls')),
+            url(r'^activities', include('activities.urls')),
             ...
         )
 
-5. There are also default .less and .js files that will assist the notifications as well.  These are optional and the js requires jquery.  The files are located at::
+5. There are also default .less and .js files that will assist the activities as well.  These are optional and the js requires jquery.  The files are located at::
 
-        /static/django_notifications/js/notifications.js
-        /static/django_notifications/less/notifications.less
+        /static/activities/js/activities.js
+        /static/activities/less/activities.less
 
 Form Rendering
 --------------
@@ -78,59 +78,59 @@ Different apps render forms differently. With that in mind, this app lets you de
 
 For example,  if I want to use the [django-bootstrap-form](https://github.com/tzangms/django-bootstrap-form) app to render forms, I would provide the following setting to the template tag form rendering function::
 
-    NOTIFICATIONS_FORM_RENDERER = 'bootstrapform.templatetags.bootstrap.bootstrap'
+    ACTIVITIES_FORM_RENDERER = 'bootstrapform.templatetags.bootstrap.bootstrap'
 
 Then all forms will render using the django-bootstrap-form library.  You can optionally provide the following strings that will render that form using table, paragraph or list tags::
 
-    NOTIFICATIONS_FORM_RENDERER = 'as_p'     # render form using <p> tags
-    NOTIFICATIONS_FORM_RENDERER = 'as_table' # render form using <table>
-    NOTIFICATIONS_FORM_RENDERER = 'as_ul'    # render form using <ul>
+    ACTIVITIES_FORM_RENDERER = 'as_p'     # render form using <p> tags
+    ACTIVITIES_FORM_RENDERER = 'as_table' # render form using <table>
+    ACTIVITIES_FORM_RENDERER = 'as_ul'    # render form using <ul>
 
 This will default to rending the form to however the form's ``__str__`` method is defined.
 
 Examples
 ========
-Below are some basic examples on how to use django-notifications::
+Below are some basic examples on how to use django-activities::
 
     >>> from django.contrib.auth import get_user_model
-    >>> from django_notifications.models import Notification
+    >>> from activities.models import Activity
     >>>
     >>> User = get_user_model()
     >>> user = User.objects.create_user(username='hello')
     >>>
-    >>> # The object the notification is about
+    >>> # The object the activity is about
     >>> about_obj = User.objects.create_user(username='world')
-    >>> n = Notification.objects.create(created_user=user,
+    >>> n = Activity.objects.create(created_user=user,
     ...                                 text='Hello world',
     ...                                 about=about_obj,
     ...                                 source='COMMENT')
     >>> n.text
     'Hello world'
-    >>> user_notifications = Notification.objects.get_for_user(user=user)
-    >>> len(user_notifications)
+    >>> user_activities = Activity.objects.get_for_user(user=user)
+    >>> len(user_activities)
     1
-    >>> object_notifications = Notification.objects.get_for_object(obj=about_obj)
-    >>> len(object_notifications)
+    >>> object_activities = Activity.objects.get_for_object(obj=about_obj)
+    >>> len(object_activities)
     1
 
 Extend the Model
 ================
-If all this configuration still isn't to your liking, then you can simply extend the Notification model::
+If all this configuration still isn't to your liking, then you can simply extend the Activity model::
 
-    # my_notification_app/models.py
+    # my_activity_app/models.py
     
-    from django_notifications.models import AbstractNotification
+    from activities.models import AbstractActivity
     
-    class MyNotification(AbstractNotification):
-        """Your concrete implementation of the notification app."""
+    class MyActivity(AbstractActivity):
+        """Your concrete implementation of the activity app."""
         # Do your stuff here
 
-Custom Notification Rendering
+Custom Activity Rendering
 =============================
-When rendering the notifications, the ``get_html`` will check to see if the notification ``about`` object has implemented custom rendering of the notification itself.  In order for the custom rendering to occur, the ``about`` object model needs to implement the class as follows:
+When rendering the activities, the ``get_html`` will check to see if the activity ``about`` object has implemented custom rendering of the activity itself.  In order for the custom rendering to occur, the ``about`` object model needs to implement the class as follows:
 
-    def get_notification_created_html(self, notification, **kwargs):
-        """The notification renderer for a created notification about this object."""
+    def get_activity_created_html(self, activity, **kwargs):
+        """The activity renderer for a created activity about this object."""
         # do rendering that returns html
         return rendered_html
 

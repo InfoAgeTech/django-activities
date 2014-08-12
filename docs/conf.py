@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# django-notifications documentation build configuration file, created by
+# django-activities documentation build configuration file, created by
 # sphinx-quickstart on Thu Feb 21 12:52:04 2013.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -22,7 +22,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'tests.settings'
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-# sys.path.append(os.path.abspath('../django_notifications'))
+# sys.path.append(os.path.abspath('../activities'))
 sys.path.append(os.path.abspath('../tests'))
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
@@ -56,7 +56,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'django-notifications'
+project = 'django-activities'
 copyright = '{0}, Troy Grosfield'.format(date.today().year)
 
 # The version info for the project you're documenting, acts as replacement for
@@ -178,7 +178,7 @@ html_show_copyright = True
 # html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'django-notificationsdoc'
+htmlhelp_basename = 'django-activitiesdoc'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -197,7 +197,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'django-notifications.tex', 'django-notifications Documentation',
+  ('index', 'django-activities.tex', 'django-activities Documentation',
    'Troy Grosfield', 'manual'),
 ]
 
@@ -227,7 +227,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'django-notifications', 'django-notifications Documentation',
+    ('index', 'django-activities', 'django-activities Documentation',
      [u'Troy Grosfield'], 1)
 ]
 
@@ -241,8 +241,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'django-notifications', 'django-notifications Documentation',
-   'Troy Grosfield', 'django-notifications', 'One line description of project.',
+  ('index', 'django-activities', 'django-activities Documentation',
+   'Troy Grosfield', 'django-activities', 'One line description of project.',
    'Miscellaneous'),
 ]
 
@@ -259,7 +259,7 @@ texinfo_documents = [
 # -- Options for Epub output ---------------------------------------------------
 
 # Bibliographic Dublin Core info.
-epub_title = 'django-notifications'
+epub_title = 'django-activities'
 epub_author = 'Troy Grosfield'
 epub_publisher = 'Troy Grosfield'
 epub_copyright = '{0}, Troy Grosfield'.format(date.today().year)
