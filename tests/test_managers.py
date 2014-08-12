@@ -6,6 +6,7 @@ from django_notifications.constants import Action
 from django_notifications.constants import Source
 from django_notifications.models import Notification
 from django_testing.user_utils import create_user
+from django_notifications.constants import Privacy
 
 
 User = get_user_model()
@@ -82,10 +83,102 @@ class NotificationManagerTests(TestCase):
             text='hello world',
             about=user_2,
             action=Action.COMMENTED,
-            ensure_for_objs=[self.user, user_2, user_3])
+            ensure_for_objs=[self.user, user_2, user_3]
+        )
 
         for_objs = list(notification.get_for_objects())
         self.assertEqual(len(for_objs), 3)
         self.assertTrue(self.user in for_objs)
         self.assertTrue(user_2 in for_objs)
         self.assertTrue(user_3 in for_objs)
+
+    def test_get_for_object_no_user(self):
+        """Test for gettting all notifications for an object with no for_user
+        passed in.
+        """
+        user_1 = create_user()
+        notification = Notification.objects.create(
+            created_user=self.user,
+            text='hello world',
+            about=user_1,
+            action=Action.COMMENTED,
+        )
+
+        notifications = Notification.objects.get_for_object(obj=user_1)
+        self.assertEqual(len(notifications), 1)
+        self.assertEqual(notification, notifications[0])
+
+    def test_get_for_object_with_user(self):
+        """Test for gettting all notifications for an object with for_user
+        passed in.
+        """
+        user_1 = create_user()
+        user_2 = create_user()
+        notification = Notification.objects.create(
+            created_user=self.user,
+            text='hello world',
+            about=user_1,
+            action=Action.COMMENTED,
+            ensure_for_objs=[user_2]
+        )
+
+        notifications = Notification.objects.get_for_object(obj=user_1,
+                                                            for_user=user_2)
+        self.assertEqual(len(notifications), 1)
+        self.assertEqual(notification, notifications[0])
+
+    def test_get_for_object_with_user_not_qualifying_public(self):
+        """Test for gettting all notifications for an object with for_user
+        passed in.
+        """
+        user_1 = create_user()
+        user_2 = create_user()
+        notification = Notification.objects.create(
+            created_user=self.user,
+            text='hello world',
+            about=user_1,
+            action=Action.COMMENTED
+        )
+
+        notifications = Notification.objects.get_for_object(obj=user_1,
+                                                            for_user=user_2)
+        self.assertEqual(len(notifications), 1)
+        self.assertEqual(notification, notifications[0])
+
+    def test_get_for_object_with_user_qualifying_private(self):
+        """Test for gettting all notifications for an object with for_user
+        passed in.
+        """
+        user_1 = create_user()
+        user_2 = create_user()
+        notification = Notification.objects.create(
+            created_user=self.user,
+            text='hello world',
+            about=user_1,
+            action=Action.COMMENTED,
+            privacy=Privacy.PRIVATE,
+            ensure_for_objs=[user_2]
+        )
+
+        notifications = Notification.objects.get_for_object(obj=user_1,
+                                                            for_user=user_2)
+        self.assertEqual(len(notifications), 1)
+        self.assertEqual(notification, notifications[0])
+
+    def test_get_for_object_with_user_not_qualifying_private(self):
+        """Test for gettting all notifications for an object with for_user
+        passed in.
+        """
+        user_1 = create_user()
+        user_2 = create_user()
+        notification = Notification.objects.create(
+            created_user=self.user,
+            text='hello world',
+            about=user_1,
+            action=Action.COMMENTED,
+            privacy=Privacy.PRIVATE
+        )
+
+        notifications = Notification.objects.get_for_object(obj=user_1,
+                                                            for_user=user_2)
+        self.assertEqual(len(notifications), 0)

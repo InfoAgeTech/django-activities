@@ -1,9 +1,11 @@
 from __future__ import unicode_literals
 
 from django.contrib.contenttypes.models import ContentType
+from django.db.models.query_utils import Q
 from django_core.db.models import CommonManager
 
 from .constants import Action
+from .constants import Privacy
 from .constants import Source
 
 
@@ -82,6 +84,16 @@ class NotificationManager(CommonManager):
     def get_for_object(self, obj, for_user=None, **kwargs):
         """Gets notifications for a specific object.
 
+        If ``for_user`` is provided, this will return all notifications for the
+        object that are public and will also return all private notifications
+        that the ``for_user`` has access to.
+
+        Example use case, "Jane" is on "John's" profile page full of
+        notifications.  Jane is the for_user and accessing John's
+        notifications. John is the ``obj``. Jane will be able to see all public
+        notifications as well as any private notifications she specifically
+        has be granted access to see.
+
         :param obj: the object the notifications are for
         :param for_user: only notifications that this user can see
         :param kwargs: any key value pair fields that are on the model.
@@ -96,8 +108,9 @@ class NotificationManager(CommonManager):
             return queryset
 
         user_content_type = ContentType.objects.get_for_model(for_user)
-        return queryset.filter(for_objs__content_type=user_content_type,
-                               for_objs__object_id=for_user.id)
+        return queryset.filter(Q(privacy=Privacy.PUBLIC) |
+                               Q(for_objs__content_type=user_content_type,
+                                 for_objs__object_id=for_user.id)).distinct()
 
 
 class NotificationReplyManager(CommonManager):

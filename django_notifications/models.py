@@ -198,6 +198,8 @@ class AbstractNotification(AbstractBaseModel):
 class Notification(AbstractUrlLinkModelMixin, AbstractNotification):
     """Concrete model for notifications."""
 
+    objects = NotificationManager()
+
     class Meta:
         ordering = ('-id',)
         index_together = (('about_content_type', 'about_id'),)
