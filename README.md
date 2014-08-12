@@ -10,7 +10,7 @@ django-activities is a generic python activities module written for django.  You
 
 Intallation
 ===========
-Download the source from Github and run::
+Download the source from Github and run:
 
     python setup.py django-activities
 
@@ -22,7 +22,7 @@ Configuration
 =============
 Config steps:
 
-1. Add to installed apps. django-activities has two dependencies which are listed above. Both need to be added to the installed apps in your settings file.::
+1. Add to installed apps. django-activities has two dependencies which are listed above. Both need to be added to the installed apps in your settings file.:
 
         INSTALLED_APPS += (
             ...
@@ -36,7 +36,7 @@ By default, django-activities comes with builtin views.  You can use them if you
 
 To use the views here are a few configuration steps to follow:
 
-1. Create the html file that will be used as the gateway between your application templates and django-activities templates.  A simple template would look something like::
+1. Create the html file that will be used as the gateway between your application templates and django-activities templates.  A simple template would look something like:
     
         # base_activities.html
         {% extends request.base_template %}
@@ -45,11 +45,11 @@ To use the views here are a few configuration steps to follow:
           {% block activities_content %}{% endblock %}
         {% endblock %}
 
-2. Once you're created the base activities html file, you need to link to it in your settings.  In your settings file add the following setting that points to your template you just created::
+2. Once you're created the base activities html file, you need to link to it in your settings.  In your settings file add the following setting that points to your template you just created:
 
         ACTIVITIES_BASE_TEMPLATE = 'path/to/your/template/base_activities.html'
 
-3. Add the context processor in your settings that's used to retrieve your custom base template::
+3. Add the context processor in your settings that's used to retrieve your custom base template:
 
         TEMPLATE_CONTEXT_PROCESSORS = (
             ...
@@ -57,7 +57,7 @@ To use the views here are a few configuration steps to follow:
             ...
         )
 
-4. Add the urls::
+4. Add the urls:
 
         urlpatterns = patterns('',
             ...
@@ -65,7 +65,7 @@ To use the views here are a few configuration steps to follow:
             ...
         )
 
-5. There are also default .less and .js files that will assist the activities as well.  These are optional and the js requires jquery.  The files are located at::
+5. There are also default .less and .js files that will assist the activities as well.  These are optional and the js requires jquery.  The files are located at:
 
         /static/activities/js/activities.js
         /static/activities/less/activities.less
@@ -74,11 +74,11 @@ Form Rendering
 --------------
 Different apps render forms differently. With that in mind, this app lets you define the location for a function in your settings that will be used to render your forms.
 
-For example,  if I want to use the [django-bootstrap-form](https://github.com/tzangms/django-bootstrap-form) app to render forms, I would provide the following setting to the template tag form rendering function::
+For example,  if I want to use the [django-bootstrap-form](https://github.com/tzangms/django-bootstrap-form) app to render forms, I would provide the following setting to the template tag form rendering function:
 
     ACTIVITIES_FORM_RENDERER = 'bootstrapform.templatetags.bootstrap.bootstrap'
 
-Then all forms will render using the django-bootstrap-form library.  You can optionally provide the following strings that will render that form using table, paragraph or list tags::
+Then all forms will render using the django-bootstrap-form library.  You can optionally provide the following strings that will render that form using table, paragraph or list tags:
 
     ACTIVITIES_FORM_RENDERER = 'as_p'     # render form using <p> tags
     ACTIVITIES_FORM_RENDERER = 'as_table' # render form using <table>
@@ -88,7 +88,7 @@ This will default to rending the form to however the form's ``__str__`` method i
 
 Examples
 ========
-Below are some basic examples on how to use django-activities::
+Below are some basic examples on how to use django-activities:
 
     >>> from django.contrib.auth import get_user_model
     >>> from activities.models import Activity
@@ -113,7 +113,7 @@ Below are some basic examples on how to use django-activities::
 
 Extend the Model
 ================
-If all this configuration still isn't to your liking, then you can simply extend the Activity model::
+If all this configuration still isn't to your liking, then you can simply extend the Activity model:
 
     # my_activity_app/models.py
     
