@@ -12,16 +12,16 @@ from django_core.views import PagingViewMixin
 from .forms import ActivityDeleteForm
 from .forms import ActivityEditForm
 from .forms import ActivityReplyEditForm
-from .mixins.views import ActivitesViewMixin
+from .mixins.views import ActivitiesViewMixin
 from .mixins.views import ActivityContentTypeObjectViewMixin
 from .mixins.views import ActivityFormView
 from .mixins.views import ActivityReplySingleObjectViewMixin
 from .mixins.views import ActivitySingleObjectViewMixin
-from .mixins.views import UserActivitesViewMixin
+from .mixins.views import UserActivitiesViewMixin
 
 
-class ActivitesView(LoginRequiredViewMixin, PagingViewMixin,
-                    ActivityContentTypeObjectViewMixin, ActivitesViewMixin,
+class ActivitiesView(LoginRequiredViewMixin, PagingViewMixin,
+                    ActivityContentTypeObjectViewMixin, ActivitiesViewMixin,
                     ActivityFormView):
 
     template_name = 'activities/view_activities.html'
@@ -30,15 +30,15 @@ class ActivitesView(LoginRequiredViewMixin, PagingViewMixin,
         return self.content_object
 
     def get_context_data(self, **kwargs):
-        context = super(ActivitesView, self).get_context_data(**kwargs)
+        context = super(ActivitiesView, self).get_context_data(**kwargs)
         context['content_type'] = self.content_type
         context['content_object'] = self.content_object
         return context
 
 
 # TODO: Is this view app specific?
-class ActivitesForUserView(LoginRequiredViewMixin, PagingViewMixin,
-                           UserActivitesViewMixin, ActivityFormView):
+class ActivitiesForUserView(LoginRequiredViewMixin, PagingViewMixin,
+                           UserActivitiesViewMixin, ActivityFormView):
 
     template_name = 'activities/view_activities.html'
 

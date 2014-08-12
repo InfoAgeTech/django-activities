@@ -103,8 +103,8 @@ class ActivityReplySingleObjectViewMixin(ActivityReplyViewMixin,
         return self.activity_reply
 
 
-class ActivitesViewMixin(object):
-    """Activites view mixin that returns the activity_obj's paginator
+class ActivitiesViewMixin(object):
+    """Activities view mixin that returns the activity_obj's paginator
     and current page the the authenticated user is able to see.
 
     Filtering:
@@ -132,10 +132,10 @@ class ActivitesViewMixin(object):
         self.activities_page_num, self.activities_page_size = \
             self.get_activities_paging()
         self.activities_paginate_by = self.activities_page_size
-        return super(ActivitesViewMixin, self).dispatch(*args, **kwargs)
+        return super(ActivitiesViewMixin, self).dispatch(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        context = super(ActivitesViewMixin,
+        context = super(ActivitiesViewMixin,
                         self).get_context_data(**kwargs)
 
         activities = self.get_activities_queryset()
@@ -247,8 +247,8 @@ class ActivitesViewMixin(object):
         return page_num, page_size
 
 
-class UserActivitesViewMixin(ActivitesViewMixin):
-    """Activites for the authenticated user."""
+class UserActivitiesViewMixin(ActivitiesViewMixin):
+    """Activities for the authenticated user."""
 
     def get_activities_about_object(self):
         return self.request.user
@@ -259,7 +259,7 @@ class ActivityFormView(FormView):
     for an object.
 
     This must be called after after any subclass of
-    activities.mixins.ActivitesViewMixin so this mixin has access
+    activities.mixins.ActivitiesViewMixin so this mixin has access
     to the `activities_about_object` attribute.
     """
     form_class = BasicCommentForm
@@ -337,7 +337,7 @@ class ActivityFormView(FormView):
         return super(ActivityFormView, self).form_invalid(form=form)
 
 
-# TODO: This isn't Activites specific and could be moved elsewhere.
+# TODO: This isn't Activities specific and could be moved elsewhere.
 class ContentTypeObjectViewMixin(object):
     """View mixin that takes the content type id and object id from the url
     and it gets the object it refers to.

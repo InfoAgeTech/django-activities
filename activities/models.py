@@ -18,7 +18,7 @@ from .managers import ActivityReplyManager
 
 
 class AbstractActivity(AbstractBaseModel):
-    """Abstract extensible model for Activites.
+    """Abstract extensible model for Activities.
 
     Attributes:
 
