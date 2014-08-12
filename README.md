@@ -16,7 +16,6 @@ Download the source from Github and run::
 
 Dependencies
 ============
-* [django-generic](https://github.com/InfoAgeTech/django-generic)
 * [django-core](https://github.com/InfoAgeTech/django-core)
 
 Configuration
@@ -28,7 +27,6 @@ Config steps:
         INSTALLED_APPS += (
             ...
             'django_core',
-            'django_generic',
             'activities',
             ...
         )
