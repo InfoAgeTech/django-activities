@@ -6,7 +6,7 @@ from django.template.loader import render_to_string
 try:
     # python 2
     import urlparse as parse
-except:
+except ImportError:
     # python 3
     from urllib import parse
 

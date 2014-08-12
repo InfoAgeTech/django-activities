@@ -1,12 +1,13 @@
 from __future__ import unicode_literals
 
+from django.contrib.auth import get_user_model
+from django.test import TestCase
+from django_testing.user_utils import create_user
+
 from activities.constants import Action
 from activities.constants import Privacy
 from activities.constants import Source
 from activities.models import Activity
-from django.contrib.auth import get_user_model
-from django.test import TestCase
-from django_testing.user_utils import create_user
 
 
 User = get_user_model()

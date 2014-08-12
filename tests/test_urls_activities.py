@@ -1,12 +1,13 @@
 from __future__ import unicode_literals
 
-from activities.constants import Source
-from activities.models import Activity
-from activities.urls import urlpatterns
 from django.core.urlresolvers import reverse
 from django_testing.testcases.auth import AuthenticatedUserTestCase
 from django_testing.testcases.urls import UrlTestCaseMixin
 from django_testing.user_utils import create_user
+
+from activities.constants import Source
+from activities.models import Activity
+from activities.urls import urlpatterns
 
 
 class ActivityUrlTests(UrlTestCaseMixin, AuthenticatedUserTestCase):
