@@ -17,4 +17,4 @@ install:
 script:
   - cd tests && coverage run manage.py test
 after_success: 
-  - coveralls
+  - coveralls --rcfile=../.coveragerc
