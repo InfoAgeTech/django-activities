@@ -2,10 +2,18 @@
 # http://nedbatchelder.com/code/coverage/config.html#config
 
 [run]
-omit = */*urls.py,*__init__.py
-include = */activites/*
+omit = 
+    */*urls.py
+    *__init__.py
+include = activities*
+source = activities
 
 [report]
+omit = 
+    */*urls.py
+    *__init__.py
+include = 
+    */activities/*
 # Regexes for lines to exclude from consideration
 exclude_lines =
     # Have to re-enable the standard pragma
