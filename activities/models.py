@@ -78,6 +78,10 @@ class AbstractActivity(AbstractBaseModel):
         """Boolean indicating if the activity type is an activity."""
         return self.source == Source.SYSTEM
 
+    def is_public(self):
+        """Boolean indicating if the activity is public."""
+        return self.privacy == Privacy.PUBLIC
+
     def add_reply(self, user, text, reply_to=None):
         """Adds a reply to a Activity
 

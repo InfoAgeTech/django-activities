@@ -44,6 +44,17 @@ class ActivityViewMixin(object):
         self.activity = Activity.objects.get_by_id_or_404(
             id=kwargs.get(self.activity_pk_url_kwarg)
         )
+
+        if self.activity.is_public() or \
+           self.activity.created_user == self.request.user:
+            return self.activity
+
+        # Check to ensure the user has permission to view the activity
+        user_ct = ContentType.objects.get_for_model(self.request.user)
+        if not self.activity.for_objs.filter(content_type=user_ct,
+                                             object_id=self.request.user.id):
+            raise Http404
+
         return self.activity
 
 

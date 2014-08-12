@@ -13,6 +13,6 @@
         <dt>Last Modified on</dt>
         <dd>{{ activity.last_modified_dttm|date }}</dd>
         <dt>Activity</dt>
-        <dd>{{ activity.text|safe }}</dd>
+        <dd>{{ activity.get_html }}</dd>
     </dl>
 {% endblock %}
