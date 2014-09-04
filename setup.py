@@ -34,9 +34,5 @@ setup(
     setup_requires=[
         'django >= 1.6',
     ],
-    test_suite='nose.collector',
-    tests_require=[
-        'django_nose'
-    ],
     classifiers=classifiers
 )
