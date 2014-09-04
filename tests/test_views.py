@@ -5,14 +5,10 @@ from activities.constants import Privacy
 from activities.constants import Source
 from activities.mixins.views import ActivityViewMixin
 from activities.models import Activity
-from django.contrib.auth import get_user_model
 from django.http.response import Http404
 from django.test import TestCase
 from django_testing.user_utils import create_user
 from mock import MagicMock
-
-
-User = get_user_model()
 
 
 class ActivityViewMixinTests(TestCase):
