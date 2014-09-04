@@ -23,7 +23,6 @@ INSTALLED_APPS = (
     'django.contrib.humanize',
     'activities',
     'django_core',
-    'django_nose',
     'test_models'  # adding as an installed app so testing models get picked up.
 )
 
