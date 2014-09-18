@@ -91,23 +91,23 @@ $(document).ready(function(){
         e.preventDefault();
         var $this = $(this),
             $activitiesContainer = $this.closest('.activities-container')
-            $text_input = $this.find('textarea[name="text"]'),
-            form_data = $this.serialize(),
-            text = $.trim($this.find('input[name="text"]').val());
+            $textField = $this.find('textarea[name="text"]'),
+            formData = $this.serialize(),
+            text = $.trim($textField.val());
         
         if (!text) {
             // No text in the comment.  Nothing to do.
             return false;
         }
         
-        $.post($this.attr('action'), form_data, function(resp_text, success_fail, resp){
+        $.post($this.attr('action'), formData, function(resp_text, success_fail, resp){
             var $activities = $activitiesContainer.find('.activities:first');
             
             if (resp.status == 200 || resp.status == 202) {
                 $activities.find('.no-activities-found').remove();
                 $activities.prepend(resp_text.activity);
-                $text_input.val('');
-                $text_input.blur();
+                $textField.val('');
+                $textField.blur();
             } else {
                 console.log('There was an error adding the comment.');
             }

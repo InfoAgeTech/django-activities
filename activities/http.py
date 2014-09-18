@@ -22,7 +22,8 @@ class ActivityResponse(JsonResponse):
         be returned with the response.
     :return: HttpResponse with json encoded activity content.
     """
-    def __init__(self, request, activity, status=200, additional_content=None):
+    def __init__(self, request, activity, status=200, additional_content=None,
+                 **kwargs):
 
         if additional_content:
             content = additional_content
@@ -31,4 +32,5 @@ class ActivityResponse(JsonResponse):
 
         content['activity'] = get_activity_html(request=request,
                                                 activity=activity)
-        super(ActivityResponse, self).__init__(content=content, status=status)
+        super(ActivityResponse, self).__init__(content=content, status=status,
+                                               **kwargs)
