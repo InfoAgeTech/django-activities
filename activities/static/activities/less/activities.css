@@ -21,6 +21,8 @@
 .activities-container .activities .avatar {
   float: left;
   margin-left: 0;
+  max-height: 32px;
+  max-width: 32px;
 }
 .activities-container .activities .comment-reply-form input[type="text"] {
   height: 25px;
