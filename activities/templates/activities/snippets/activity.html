@@ -17,6 +17,7 @@
 {% load collection_tags humanize i18n activity_tags url_tags tz %}
 
 {% spaceless %}
+{% with user_timezone=user_timezone|default:'UTC' %}
 <li class="item-container activity-container" id="n-{{ activity.id }}">
 
     <ul class="item activity clearfix">
@@ -66,7 +67,7 @@
 	          {{ activity.get_html|safe }}
 	      {% endif %}
         </li>
-        <li class="date">{{ activity.created_dttm|timezone:user_timezone|default:'UTC'|naturaltime }}</li>
+        <li class="date">{{ activity.created_dttm|timezone:user_timezone|naturaltime }}</li>
         <li class="replies">
             <ul>
                 {% for reply in activity.replies.all %}
@@ -89,7 +90,7 @@
                             </strong>
                         </li>
                         <li class="msg">{{ reply.text|safe|linebreaks }}</li>
-                        <li class="date">{{ reply.created_dttm|timezone:user_timezone|default:'UTC'|naturaltime }}</li>
+                        <li class="date">{{ reply.created_dttm|timezone:user_timezone|naturaltime }}</li>
                     </ul>
                 </li>
                 {% endfor %}
@@ -109,4 +110,5 @@
     </ul>
     
 </li>
+{% endwith %}
 {% endspaceless %}

@@ -6,16 +6,19 @@
     <li><a href="{% url 'activity_reply_delete' activity.id activity_reply.id %}">Delete</a></li>
 {% endblock %}
 
+
 {% block activity_content %}
     <h1>Confirm delete for activity reply</h1>
+    {% with user_timezone=user_timezone|default:'UTC' %}
     <dl class="dl-horizontal">
         <dt>Created by</dt>
         <dd>{{ activity_reply.created_user.get_absolute_url_link }}</dd>
         <dt>Created on</dt>
-        <dd>{{ activity_reply.created_dttm|timezone:user_timezone|default:'UTC'|date:'DATETIME_FORMAT' }}</dd>
+        <dd>{{ activity_reply.created_dttm|timezone:user_timezone|date:'DATETIME_FORMAT' }}</dd>
         <dt>Activity</dt>
         <dd>{{ activity_reply.text|safe }}</dd>
     </dl>
+    {% endwith %}
     <form method="post" action="{% url 'activity_reply_delete' activity.id activity_reply.id %}">
         {% csrf_token %}
         <div class="form-group">

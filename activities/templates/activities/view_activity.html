@@ -4,16 +4,18 @@
 
 {% block activity_content %}
     <h1>Activity</h1>
+    {% with user_timezone=user_timezone|default:'UTC' %}
     <dl class="dl-horizontal">
         <dt>Created by</dt>
         <dd>{{ activity.created_user.get_absolute_url_link }}</dd>
         <dt>Created on</dt>
-        <dd>{{ activity.created_dttm|timezone:user_timezone|default:'UTC'|date:'DATETIME_FORMAT' }}</dd>
+        <dd>{{ activity.created_dttm|timezone:user_timezone|date:'DATETIME_FORMAT' }}</dd>
         <dt>Last Modified by</dt>
         <dd>{{ activity.last_modified_user.get_absolute_url_link }}</dd>
         <dt>Last Modified on</dt>
-        <dd>{{ activity.last_modified_dttm|timezone:user_timezone|default:'UTC'|date:'DATETIME_FORMAT' }}</dd>
+        <dd>{{ activity.last_modified_dttm|timezone:user_timezone|date:'DATETIME_FORMAT' }}</dd>
         <dt>Activity</dt>
         <dd>{{ activity.get_html }}</dd>
     </dl>
+    {% endwith %}
 {% endblock %}
