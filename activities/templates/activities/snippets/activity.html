@@ -4,6 +4,9 @@
     Variables:
     
     activity: activity object
+    user_timezone: will display the dates in this timezone if provided.  If not,
+        will default to 'UTC' time.  Possible values are 'America/Denver', 
+        'America/Chicago', etc.
     show_reference_obj: boolean string whether to show the line about which obj  
         the activity is referencing. This has to be a string because of how 
         variables are passed to the snippet.  Should be 'True' or 'False'. 
@@ -11,7 +14,7 @@
     
 {% endcomment %}
 
-{% load collection_tags humanize i18n activity_tags url_tags %}
+{% load collection_tags humanize i18n activity_tags url_tags tz %}
 
 {% spaceless %}
 <li class="item-container activity-container" id="n-{{ activity.id }}">
@@ -63,7 +66,7 @@
 	          {{ activity.get_html|safe }}
 	      {% endif %}
         </li>
-        <li class="date">{{ activity.created_dttm|naturaltime }}</li>
+        <li class="date">{{ activity.created_dttm|timezone:user_timezone|default:'UTC'|naturaltime }}</li>
         <li class="replies">
             <ul>
                 {% for reply in activity.replies.all %}
@@ -86,7 +89,7 @@
                             </strong>
                         </li>
                         <li class="msg">{{ reply.text|safe|linebreaks }}</li>
-                        <li class="date">{{ reply.created_dttm|naturaltime }}</li>
+                        <li class="date">{{ reply.created_dttm|timezone:user_timezone|default:'UTC'|naturaltime }}</li>
                     </ul>
                 </li>
                 {% endfor %}

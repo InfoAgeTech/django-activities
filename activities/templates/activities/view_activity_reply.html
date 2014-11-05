@@ -1,4 +1,5 @@
 {% extends 'activities/base_activity.html' %}
+{% load tz %}
 {% block page_title %}Activity Reply - {% endblock %}
 
 {% block activity_content %}
@@ -7,11 +8,11 @@
         <dt>Created by</dt>
         <dd>{{ activity_reply.created_user.get_absolute_url_link }}</dd>
         <dt>Created on</dt>
-        <dd>{{ activity_reply.created_dttm|date }}</dd>
+        <dd>{{ activity_reply.created_dttm|timezone:user_timezone|default:'UTC'|date:'DATETIME_FORMAT' }}</dd>
         <dt>Last Modified by</dt>
         <dd>{{ activity_reply.last_modified_user.get_absolute_url_link }}</dd>
         <dt>Last Modified on</dt>
-        <dd>{{ activity_reply.last_modified_dttm|date }}</dd>
+        <dd>{{ activity_reply.last_modified_dttm|timezone:user_timezone|default:'UTC'|date:'DATETIME_FORMAT' }}</dd>
         <dt>Activity</dt>
         <dd>{{ activity_reply.text|safe }}</dd>
     </dl>

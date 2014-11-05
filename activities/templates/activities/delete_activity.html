@@ -12,7 +12,7 @@
         <dt>Created by</dt>
         <dd>{{ activity.created_user.get_absolute_url_link }}</dd>
         <dt>Created on</dt>
-        <dd>{{ activity.created_dttm|date:'Y-n-j' }}</dd>
+        <dd>{{ activity.created_dttm|date:'DATE_FORMAT' }}</dd>
         <dt>Activity</dt>
         <dd>{{ activity.text|safe }}</dd>
     </dl>
