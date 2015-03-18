@@ -8,20 +8,20 @@ from django.views.generic.edit import FormView
 from django.views.generic.edit import UpdateView
 from django_core.views import LoginRequiredViewMixin
 from django_core.views import PagingViewMixin
+from django_core.views.mixins.generic import GenericObjectViewMixin
 
 from .forms import ActivityDeleteForm
 from .forms import ActivityEditForm
 from .forms import ActivityReplyEditForm
 from .mixins.views import ActivitiesViewMixin
 from .mixins.views import ActivityFormView
-from .mixins.views import ActivityGenericObjectViewMixin
 from .mixins.views import ActivityReplySingleObjectViewMixin
 from .mixins.views import ActivitySingleObjectViewMixin
 from .mixins.views import UserActivitiesViewMixin
 
 
 class ActivitiesView(LoginRequiredViewMixin, PagingViewMixin,
-                     ActivityGenericObjectViewMixin, ActivitiesViewMixin,
+                     GenericObjectViewMixin, ActivitiesViewMixin,
                      ActivityFormView):
 
     template_name = 'activities/view_activities.html'
@@ -29,11 +29,9 @@ class ActivitiesView(LoginRequiredViewMixin, PagingViewMixin,
     def get_activities_about_object(self):
         return self.content_object
 
-    def get_context_data(self, **kwargs):
-        context = super(ActivitiesView, self).get_context_data(**kwargs)
-        context['content_type'] = self.content_type
-        context['content_object'] = self.content_object
-        return context
+    def get_content_object_url(self):
+        return reverse('activities_view', args=[self.content_type.id,
+                                                self.content_object.id])
 
 
 # TODO: Is this view app specific?

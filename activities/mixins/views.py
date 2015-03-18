@@ -17,7 +17,6 @@ from ..constants import Source
 from ..forms import BasicCommentForm
 from ..http import ActivityResponse
 from ..models import ActivityReply
-from django_core.views.mixins.generic import GenericObjectViewMixin
 
 
 Activity = get_activity_model()
@@ -343,15 +342,3 @@ class ActivityFormView(FormView):
     def form_invalid(self, form):
         # TODO: what do I want to do here?
         return super(ActivityFormView, self).form_invalid(form=form)
-
-
-class ActivityGenericObjectViewMixin(GenericObjectViewMixin):
-    """Activity content type mixin."""
-
-    def get_context_data(self, **kwargs):
-        context = super(ActivityGenericObjectViewMixin,
-                        self).get_context_data(**kwargs)
-        context['activity_url'] = reverse('activities_view',
-                                          args=[self.content_type.id,
-                                                self.content_object.id])
-        return context
