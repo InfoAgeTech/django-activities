@@ -13,15 +13,15 @@ from .forms import ActivityDeleteForm
 from .forms import ActivityEditForm
 from .forms import ActivityReplyEditForm
 from .mixins.views import ActivitiesViewMixin
-from .mixins.views import ActivityContentTypeObjectViewMixin
 from .mixins.views import ActivityFormView
+from .mixins.views import ActivityGenericObjectViewMixin
 from .mixins.views import ActivityReplySingleObjectViewMixin
 from .mixins.views import ActivitySingleObjectViewMixin
 from .mixins.views import UserActivitiesViewMixin
 
 
 class ActivitiesView(LoginRequiredViewMixin, PagingViewMixin,
-                     ActivityContentTypeObjectViewMixin, ActivitiesViewMixin,
+                     ActivityGenericObjectViewMixin, ActivitiesViewMixin,
                      ActivityFormView):
 
     template_name = 'activities/view_activities.html'

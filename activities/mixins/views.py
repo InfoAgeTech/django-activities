@@ -17,6 +17,7 @@ from ..constants import Source
 from ..forms import BasicCommentForm
 from ..http import ActivityResponse
 from ..models import ActivityReply
+from django_core.views.mixins.generic import GenericObjectViewMixin
 
 
 Activity = get_activity_model()
@@ -344,49 +345,11 @@ class ActivityFormView(FormView):
         return super(ActivityFormView, self).form_invalid(form=form)
 
 
-# TODO: This isn't Activities specific and could be moved elsewhere.
-class ContentTypeObjectViewMixin(object):
-    """View mixin that takes the content type id and object id from the url
-    and it gets the object it refers to.
-    """
-    def dispatch(self, *args, **kwargs):
-        try:
-            # TODO: Do I want to accept a content type id or name?
-            content_type_id = kwargs['content_type_id']
-            object_id = kwargs['object_id']
-        except:
-            raise Http404
-
-        try:
-            self.content_type = ContentType.objects.get_for_id(
-                id=content_type_id
-            )
-        except:
-            raise Http404
-
-        content_model = self.content_type.model_class()
-
-        try:
-            self.content_object = content_model.objects.get(id=object_id)
-        except:
-            raise Http404
-
-        return super(ContentTypeObjectViewMixin, self).dispatch(*args,
-                                                                **kwargs)
-
-    def get_context_data(self, **kwargs):
-        context = super(ContentTypeObjectViewMixin,
-                        self).get_context_data(**kwargs)
-        context['content_type'] = self.content_type
-        context['content_object'] = self.content_object
-        return context
-
-
-class ActivityContentTypeObjectViewMixin(ContentTypeObjectViewMixin):
+class ActivityGenericObjectViewMixin(GenericObjectViewMixin):
     """Activity content type mixin."""
 
     def get_context_data(self, **kwargs):
-        context = super(ActivityContentTypeObjectViewMixin,
+        context = super(ActivityGenericObjectViewMixin,
                         self).get_context_data(**kwargs)
         context['activity_url'] = reverse('activities_view',
                                           args=[self.content_type.id,
