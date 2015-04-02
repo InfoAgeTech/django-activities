@@ -54,13 +54,9 @@ class AbstractActivity(AbstractBaseModel):
     about_content_type = models.ForeignKey(ContentType, null=True, blank=True)
     about_id = models.PositiveIntegerField(null=True, blank=True)
     replies = models.ManyToManyField('ActivityReply',
-                                     related_name='replies',
-                                     blank=True,
-                                     null=True)
+                                     related_name='replies')
     for_objs = models.ManyToManyField('ActivityFor',
-                                      related_name='for_objs',
-                                      blank=True,
-                                      null=True)
+                                      related_name='for_objs')
     source = models.CharField(max_length=20, choices=Source.CHOICES)
     action = models.CharField(max_length=20, choices=Action.CHOICES)
     privacy = models.CharField(max_length=20, choices=Privacy.CHOICES,
