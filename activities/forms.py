@@ -49,6 +49,20 @@ class BaseActivityEditForm(UserFormMixin, forms.ModelForm):
 
         return self.user
 
+    def clean(self, *args, **kwargs):
+        cleaned_data = super(BaseActivityEditForm, self).clean(*args, **kwargs)
+
+        # created user shouldn't error since it should always be the same
+        if 'created_user' in self.errors:
+            cleaned_data['created_user'] = self.instance.created_user
+            del self.errors['created_user']
+
+        if self.user.is_authenticated() and 'last_modified_user' in self.errors:
+            cleaned_data['last_modified_user'] = self.user
+            del self.errors['last_modified_user']
+
+        return cleaned_data
+
 
 class ActivityEditForm(BaseActivityEditForm):
 

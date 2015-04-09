@@ -1,12 +1,13 @@
 from __future__ import unicode_literals
 
+from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
+from django.utils.translation import ugettext_lazy as _
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import DeleteView
 from django.views.generic.edit import FormView
 from django.views.generic.edit import UpdateView
-from django_core.views import LoginRequiredViewMixin
 from django_core.views import PagingViewMixin
 from django_core.views.mixins.generic import GenericObjectViewMixin
 
@@ -14,41 +15,43 @@ from .forms import ActivityDeleteForm
 from .forms import ActivityEditForm
 from .forms import ActivityReplyEditForm
 from .mixins.views import ActivitiesViewMixin
+from .mixins.views import ActivityCreatedUserRequiredViewMixin
 from .mixins.views import ActivityFormView
 from .mixins.views import ActivityReplySingleObjectViewMixin
 from .mixins.views import ActivitySingleObjectViewMixin
 from .mixins.views import UserActivitiesViewMixin
 
 
-class ActivitiesView(LoginRequiredViewMixin, PagingViewMixin,
-                     GenericObjectViewMixin, ActivitiesViewMixin,
-                     ActivityFormView):
+class ActivitiesView(PagingViewMixin, ActivitiesViewMixin, ActivityFormView):
 
     template_name = 'activities/view_activities.html'
+
+
+class ActivitiesGenericObjectView(GenericObjectViewMixin, ActivitiesView):
 
     def get_activities_about_object(self):
         return self.content_object
 
+    # TODO: this would no longer work for the current configuration
     def get_content_object_url(self):
         return reverse('activities_view', args=[self.content_type.id,
                                                 self.content_object.id])
 
 
 # TODO: Is this view app specific?
-class ActivitiesForUserView(LoginRequiredViewMixin, PagingViewMixin,
-                            UserActivitiesViewMixin, ActivityFormView):
+class ActivitiesForUserView(PagingViewMixin, UserActivitiesViewMixin,
+                            ActivityFormView):
 
     template_name = 'activities/view_activities.html'
 
 
-class ActivityView(LoginRequiredViewMixin, ActivitySingleObjectViewMixin,
-                   TemplateView):
+class ActivityView(ActivitySingleObjectViewMixin, TemplateView):
 
     template_name = 'activities/view_activity.html'
 
 
-class ActivityEditView(LoginRequiredViewMixin, ActivitySingleObjectViewMixin,
-                       UpdateView):
+class ActivityEditView(ActivityCreatedUserRequiredViewMixin,
+                       ActivitySingleObjectViewMixin, UpdateView):
     template_name = 'activities/edit_activity.html'
     form_class = ActivityEditForm
 
@@ -62,8 +65,8 @@ class ActivityEditView(LoginRequiredViewMixin, ActivitySingleObjectViewMixin,
         return self.activity.get_absolute_url()
 
 
-class ActivityDeleteView(LoginRequiredViewMixin, ActivitySingleObjectViewMixin,
-                         FormView):
+class ActivityDeleteView(ActivityCreatedUserRequiredViewMixin,
+                         ActivitySingleObjectViewMixin, FormView):
 
     template_name = 'activities/delete_activity.html'
     form_class = ActivityDeleteForm
@@ -88,17 +91,15 @@ class ActivityDeleteView(LoginRequiredViewMixin, ActivitySingleObjectViewMixin,
         return self.activity.about.get_absolute_url()
 
 
-class ActivityRepliesView(LoginRequiredViewMixin,
-                          ActivitySingleObjectViewMixin, TemplateView):
+class ActivityRepliesView(ActivitySingleObjectViewMixin, TemplateView):
     template_name = 'activities/view_activity_replies.html'
 
 
-class ActivityReplyView(LoginRequiredViewMixin,
-                        ActivityReplySingleObjectViewMixin, TemplateView):
+class ActivityReplyView(ActivityReplySingleObjectViewMixin, TemplateView):
     template_name = 'activities/view_activity_reply.html'
 
 
-class ActivityReplyEditView(LoginRequiredViewMixin,
+class ActivityReplyEditView(ActivityCreatedUserRequiredViewMixin,
                             ActivityReplySingleObjectViewMixin, UpdateView):
     template_name = 'activities/edit_activity_reply.html'
     form_class = ActivityReplyEditForm
@@ -109,12 +110,17 @@ class ActivityReplyEditView(LoginRequiredViewMixin,
         kwargs['user'] = self.request.user
         return kwargs
 
+    def form_valid(self, form):
+        messages.success(request=self.request,
+                         message=_('Reply successfully updated!'),
+                         fail_silently=True)
+        return super(ActivityReplyEditView, self).form_valid(form)
+
     def get_success_url(self):
-        return reverse('activity_reply_edit',
-                       args=[self.activity.id, self.activity_reply.id])
+        return self.request.path
 
 
-class ActivityReplyDeleteView(LoginRequiredViewMixin,
+class ActivityReplyDeleteView(ActivityCreatedUserRequiredViewMixin,
                               ActivityReplySingleObjectViewMixin, DeleteView):
 
     template_name = 'activities/delete_activity_reply.html'

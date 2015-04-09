@@ -4,6 +4,7 @@
     Variables:
     
     activity: activity object
+    activity_url: the url for the object's activities
     user_timezone: will display the dates in this timezone if provided.  If not,
         will default to 'UTC' time.  Possible values are 'America/Denver', 
         'America/Chicago', etc.
@@ -29,9 +30,9 @@
         </li>
         <li class="actions">
             {% if activity.is_editable and activity.created_user_id == user.id %}
-                {% edit_url_link obj=activity icon_class=ICON_EDIT_CLS text='' %}
+                <a href="{% if activity_url %}{{ activity_url }}/..{% else %}.{% endif %}{{ activity.get_delete_url }}"><i class="{{ ICON_EDIT_CLS }}"></i></a>
             {% endif %}
-            {% delete_url_link obj=activity icon_class=ICON_DECLINE_CLS text='' %}
+            <a href="{% if activity_url %}{{ activity_url }}/..{% else %}.{% endif %}{{ activity.get_delete_url }}"><i class="{{ ICON_DECLINE_CLS }}"></i></a>
         </li>
         <li class="name">
             <strong>
@@ -80,9 +81,9 @@
                         </li>
                         <li class="actions">
                             {% if reply.created_user_id == user.id or activity.created_user_id == user.id %}
-                                <a href="{{ reply.get_edit_url }}"><i class="{{ ICON_EDIT_CLS }}"></i></a>
+                                <a href="{% if activity_url %}{{ activity_url }}/..{% else %}.{% endif %}{{ reply.get_edit_url }}"><i class="{{ ICON_EDIT_CLS }}"></i></a>
                             {% endif %}
-                            <a href="{{ reply.get_delete_url }}"><i class="{{ ICON_DECLINE_CLS }}"></i></a>
+                            <a href="{% if activity_url %}{{ activity_url }}/..{% else %}.{% endif %}{{ reply.get_delete_url }}"><i class="{{ ICON_DECLINE_CLS }}"></i></a>
                         </li>
                         <li class="name">
                             <strong>
@@ -94,8 +95,9 @@
                     </ul>
                 </li>
                 {% endfor %}
+                {% if user.is_authenticated %}
                 <li class="my-reply">
-                    <form class="comment-reply-form" action="{% url 'activities_view' activity.about_content_type.id activity.about_id %}" method="post">
+                    <form class="comment-reply-form" action="{{ activity_url }}" method="post">
                         {% csrf_token %}
                         <input type="hidden" name="next" value="{{ request.path}}" />
                         <input type="hidden" name="pid" value="{{ activity.id }}" />
@@ -105,6 +107,7 @@
                         </div>
                     </form>
                 </li>
+                {% endif %}
             </ul>
         </li>     
     </ul>

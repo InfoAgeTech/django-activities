@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import PermissionDenied
 from django.core.paginator import EmptyPage
 from django.core.paginator import Paginator
 from django.core.urlresolvers import reverse
@@ -10,6 +11,7 @@ from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.edit import FormView
+from django_core.views.mixins.auth import LoginRequiredViewMixin
 
 from .. import get_activity_model
 from ..constants import Action
@@ -35,6 +37,7 @@ class ActivityViewMixin(object):
     def get_context_data(self, **kwargs):
         context = super(ActivityViewMixin, self).get_context_data(**kwargs)
         context['activity'] = self.activity
+        context['activity_url'] = self.get_activity_url()
         return context
 
     def get_activity(self, **kwargs):
@@ -57,17 +60,26 @@ class ActivityViewMixin(object):
 
         return self.activity
 
+    def get_activity_url(self):
+        """Gets the root activity url for the object the activity is about."""
+        prefix = ''
+
+        if hasattr(self.activity.about, 'get_absolute_url'):
+            prefix = self.activity.about.get_absolute_url()
+
+        return '{0}/activities'.format(prefix)
+
 
 class ActivitySingleObjectViewMixin(ActivityViewMixin, SingleObjectMixin):
     """Mixin for when the activity represents what the page is about."""
 
     def dispatch(self, *args, **kwargs):
-        self.object = self.get_activity(**kwargs)
-        return super(ActivitySingleObjectViewMixin,
-                     self).dispatch(*args, **kwargs)
+        self.object = self.get_object(**kwargs)
+        return super(ActivitySingleObjectViewMixin, self).dispatch(*args,
+                                                                   **kwargs)
 
     def get_object(self, **kwargs):
-        return self.activity
+        return self.get_activity(**kwargs)
 
 
 class ActivityReplyViewMixin(ActivityViewMixin):
@@ -106,12 +118,12 @@ class ActivityReplySingleObjectViewMixin(ActivityReplyViewMixin,
     """
 
     def dispatch(self, *args, **kwargs):
-        self.object = self.get_activity_reply(**kwargs)
+        self.object = self.get_object(**kwargs)
         return super(ActivityReplySingleObjectViewMixin,
                      self).dispatch(*args, **kwargs)
 
     def get_object(self, **kwargs):
-        return self.activity_reply
+        return self.get_activity_reply(**kwargs)
 
 
 class ActivitiesViewMixin(object):
@@ -216,8 +228,15 @@ class ActivitiesViewMixin(object):
         # TODO: Would be nice to try and optimize this so I don't have to query
         #       for the content type if possible.
         about_obj = self.get_activities_about_object()
-        content_type = ContentType.objects.get_for_model(about_obj)
-        return reverse('activities_view', args=[content_type.id, about_obj.id])
+        # content_type = ContentType.objects.get_for_model(about_obj)
+        # return reverse('activities_view', args=[content_type.id, about_obj.id])
+
+        prefix = ''
+
+        if hasattr(about_obj, 'get_absolute_url'):
+            prefix = about_obj.get_absolute_url()
+
+        return '{0}/activities'.format(prefix)
 
     def get_activities_paging(self):
         """Gets the paging values passed through the query string params.
@@ -252,6 +271,17 @@ class ActivitiesViewMixin(object):
             page_size = orig_page_size
 
         return page_num, page_size
+
+
+class ActivityCreatedUserRequiredViewMixin(LoginRequiredViewMixin):
+    """View mixin for activity views that require the created user."""
+    def dispatch(self, *args, **kwargs):
+
+        if self.request.user != self.get_object(**kwargs).created_user:
+            raise PermissionDenied
+
+        return super(ActivityCreatedUserRequiredViewMixin,
+                     self).dispatch(*args, **kwargs)
 
 
 class UserActivitiesViewMixin(ActivitiesViewMixin):

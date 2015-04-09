@@ -51,9 +51,9 @@
 	<ul class="activities">
 	{% for n in activities_object_list %}
 	  {% if obj == n.about %}
-	    {% render_activity activity=n %}
+	    {% render_activity activity=n activity_url=activity_url %}
 	  {% else %}
-	    {% render_activity activity=n show_reference_obj=True %}
+	    {% render_activity activity=n show_reference_obj=True activity_url=activity_url %}
 	  {% endif %}
 	{% empty %}
 	    <li class="no-activities-found">No activities found.</li>

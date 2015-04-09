@@ -3,12 +3,12 @@
 {% block page_title %}Edit Activity Reply - {% endblock %}
 
 {% block breadcrumb %}
-    <li><a href="{% url 'activity_reply_edit' activity.id activity_reply.id %}">Edit</a></li>
+    <li>Edit</li>
 {% endblock %}
 
 {% block activity_content %}
     <h1>Edit Activity Reply</h1>
-    <form method="post" action="{% url 'activity_reply_edit' activity.id activity_reply.id %}">
+    <form method="post" action="">
         {% csrf_token %}
         {{ form|render_activity_form }}
         <div class="form-group">

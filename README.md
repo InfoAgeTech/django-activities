@@ -57,7 +57,7 @@ To use the views here are a few configuration steps to follow:
             ...
         )
 
-4. Add the urls:
+4. Add the urls (generic urls are not longer the recommended approach. see extending the urls section):
 
         urlpatterns = patterns('',
             ...
@@ -69,6 +69,46 @@ To use the views here are a few configuration steps to follow:
 
         /static/activities/js/activities.js
         /static/activities/less/activities.less
+
+
+Custom Activity Urls
+--------------------
+
+There are times when you want prettier urls that aren't so generic or want to add additional subclasses to the activity views (like special permission checking view mixins).  If this is the case you'll need to do two things.  First, create a view that contains the mixin you want to use. Second, call the ``activities.urls.get_urls(...)`` method from within your urls.py file:
+        
+    # create the custom view that all activity views will inherit
+    class MyCustomActivitiesView(object):
+    
+        def get_activities_about_object(self):
+            # override the method to explicitly state which object
+            # should be used for activies
+            return some_object
+    
+Then in your urls.py:
+
+    from activities.urls import get_urls
+    from django.conf.urls import patterns
+    
+    urlpatterns = patterns('',
+        ...
+        # regular urls stuff
+        url(r'^/foo/?$', SomeView.as_view(), name='my_view'),
+        ...
+    )
+    
+    # Generate the activity urls for movies
+    get_urls(extend_urlpatterns=urlpatterns,
+                root_urlpattern_name='my_view',
+                class_prefix='MyActivies',
+                bases_classes=(MyCustomActivitiesView,))
+
+This will generate the following urls:
+
+- /foo/activities
+- /foo/activities/<activity_id>
+- /foo/activities/<activity_id>/edit        
+- /foo/activities/<activity_id>/delete
+- etc
 
 Form Rendering
 --------------

@@ -32,10 +32,11 @@ def render_activities(context, page, obj, activity_url, activity_source=None):
 
 
 @register.simple_tag(takes_context=True)
-def render_activity(context, activity, show_reference_obj=False):
+def render_activity(context, activity, activity_url, show_reference_obj=False):
     template_context = {
         'activity': activity,
-        'show_reference_obj': show_reference_obj
+        'show_reference_obj': show_reference_obj,
+        'activity_url': activity_url
     }
 
     return render_to_string('activities/snippets/activity.html',
