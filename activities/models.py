@@ -207,15 +207,12 @@ class Activity(AbstractUrlLinkModelMixin, AbstractActivity):
         index_together = (('about_content_type', 'about_id'),)
 
     def get_absolute_url(self):
-        # return reverse('activity_view', args=[self.id])
         return '/activities/{0}'.format(self.id)
 
     def get_edit_url(self):
-        # return reverse('activity_edit', args=[self.id])
         return '{0}/edit'.format(self.get_absolute_url())
 
     def get_delete_url(self):
-        # return reverse('activity_delete', args=[self.id])
         return '{0}/delete'.format(self.get_absolute_url())
 
 
@@ -241,17 +238,13 @@ class ActivityReply(AbstractUrlLinkModelMixin, AbstractBaseModel):
         ordering = ('id',)
 
     def get_absolute_url(self):
-        # return reverse('activity_reply', args=[self.activity_id, self.id])
         return '{0}/replies/{1}'.format(self.activity.get_absolute_url(),
                                         self.id)
 
     def get_edit_url(self):
-        # return reverse('activity_reply_edit', args=[self.activity_id, self.id])
         return '{0}/edit'.format(self.get_absolute_url())
 
     def get_delete_url(self):
-        # return reverse('activity_reply_delete', args=[self.activity_id,
-        #                                              self.id])
         return '{0}/delete'.format(self.get_absolute_url())
 
 
