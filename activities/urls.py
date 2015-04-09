@@ -28,28 +28,15 @@ urlpattern_mapping = (
 )
 
 
-
 urlpatterns = patterns('',
     url(r'^/(?P<content_type_id>\d+)/(?P<object_id>\d+)/?$', ActivitiesGenericObjectView.as_view(), name='activities_view'),
     *[url(pattern['regex'], pattern['view'].as_view(), name=pattern['name'])
-      for pattern in urlpattern_mapping]
+      for pattern in urlpattern_mapping if pattern['name'] != 'activities_view']
 )
 
 
-# urlpatterns = patterns('',
-#     url(r'^/(?P<content_type_id>\d+)/(?P<object_id>\d+)/?$', ActivitiesView.as_view(), name='activities_view'),
-#     url(r'^/(?P<activity_id>\d+)/delete/?$', ActivityDeleteView.as_view(), name='activity_delete'),
-#     url(r'^/(?P<activity_id>\d+)/edit/?$', ActivityEditView.as_view(), name='activity_edit'),
-#     url(r'^/(?P<activity_id>\d+)/replies/(?P<reply_id>\d+)/delete/?$', ActivityReplyDeleteView.as_view(), name='activity_reply_delete'),
-#     url(r'^/(?P<activity_id>\d+)/replies/(?P<reply_id>\d+)/edit/?$', ActivityReplyEditView.as_view(), name='activity_reply_edit'),
-#     url(r'^/(?P<activity_id>\d+)/replies/(?P<reply_id>\d+)/?$', ActivityReplyView.as_view(), name='activity_reply'),
-#     url(r'^/(?P<activity_id>\d+)/replies/?$', ActivityRepliesView.as_view(), name='activity_replies'),
-#     url(r'^/(?P<activity_id>\d+)/?$', ActivityView.as_view(), name='activity_view'),
-# )
-
-
 def get_urls(extend_urlpatterns, root_urlpattern_name, class_prefix,
-             bases_classes=None, url_prefix='activities'):
+             bases_classes=None):
     """Function that dynamically creates activities urls so urls don't have to
     use generic content type ids in the urls.
 
@@ -65,6 +52,18 @@ def get_urls(extend_urlpatterns, root_urlpattern_name, class_prefix,
 
         ./activities/(?P<activity_id>\d+)/delete/?S
         ./activities/(?P<activity_id>\d+)/edit/?S
+
+    A call to the following:
+
+    > get_urls(my_url_patterns,
+    .          class_prefix='Foo',
+    .          base_classes=(LoginRequiredViewMixin,))
+
+    This generates a view class that resembles something along the lines of:
+
+    class FooActivityView(LoginRequiredViewMixin, ActivityView):
+        class_prefix = 'Foo'
+
     """
     root_urlpattern = None
 
@@ -95,8 +94,8 @@ def get_urls(extend_urlpatterns, root_urlpattern_name, class_prefix,
 
         # generate the new pattern name
         pattern_name = '{0}_{1}'.format(class_prefix.lower(), pattern_name)
-        url_pattern = r'{0}/{1}/{2}'.format(root_urlpattern, url_prefix,
-                                            pattern_regex)
+        url_pattern = r'{0}/activities/{1}'.format(root_urlpattern,
+                                                   pattern_regex)
 
         # add the pattern to urls
         extend_urlpatterns += patterns('',
