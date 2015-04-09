@@ -19,7 +19,7 @@
         <dd>{{ activity_reply.text|safe }}</dd>
     </dl>
     {% endwith %}
-    <form method="post" action="{% url 'activity_reply_delete' activity.id activity_reply.id %}">
+    <form method="post" action="">
         {% csrf_token %}
         <div class="form-group">
             <div>

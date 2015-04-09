@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import PermissionDenied
 from django.core.paginator import EmptyPage
 from django.core.paginator import Paginator
 from django.core.urlresolvers import reverse
@@ -10,6 +11,7 @@ from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.edit import FormView
+from django_core.views.mixins.auth import LoginRequiredViewMixin
 
 from .. import get_activity_model
 from ..constants import Action
@@ -111,7 +113,7 @@ class ActivityReplySingleObjectViewMixin(ActivityReplyViewMixin,
                      self).dispatch(*args, **kwargs)
 
     def get_object(self, **kwargs):
-        return self.activity_reply
+        return self.get_activity_reply(**kwargs)
 
 
 class ActivitiesViewMixin(object):
@@ -252,6 +254,17 @@ class ActivitiesViewMixin(object):
             page_size = orig_page_size
 
         return page_num, page_size
+
+
+class ActivityCreatedUserRequiredViewMixin(LoginRequiredViewMixin):
+    """View mixin for activity views that require the created user."""
+    def dispatch(self, *args, **kwargs):
+
+        if self.request.user != self.get_object(**kwargs).created_user:
+            raise PermissionDenied
+
+        return super(ActivityCreatedUserRequiredViewMixin,
+                     self).dispatch(*args, **kwargs)
 
 
 class UserActivitiesViewMixin(ActivitiesViewMixin):
