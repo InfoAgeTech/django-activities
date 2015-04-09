@@ -234,7 +234,7 @@ class ActivitiesViewMixin(object):
         prefix = ''
 
         if hasattr(about_obj, 'get_absolute_url'):
-            prefix = self.activity.about.get_absolute_url()
+            prefix = about_obj.get_absolute_url()
 
         return '{0}/activities'.format(prefix)
 

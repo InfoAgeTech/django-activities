@@ -64,7 +64,7 @@ $(document).ready(function(){
         $linkContainer.addClass('active');
         
         $parent.find('.activities-paging').remove();
-        $activitiesContainer.html('<li class="activities-paging">' + getLoadingHtml() + '</li>');
+        $activitiesContainer.append('<li class="activities-paging">' + getLoadingHtml() + '</li>');
         
         $.get(url, function(data){
             $activitiesContainer.html(data);
