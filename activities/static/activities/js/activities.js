@@ -6,7 +6,7 @@ $(document).ready(function(){
     }
 
     
-    /*
+    /**
      * This is for activities handling.
      *
      * Required data attributes:
