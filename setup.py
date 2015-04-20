@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+import os
+
 from setuptools import find_packages
 from setuptools import setup
 
@@ -14,6 +16,8 @@ classifiers = [
     'Topic :: Internet :: WWW/HTTP',
     'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
 ]
+
+README = open(os.path.join(os.path.dirname(__file__), 'README.md')).read()
 
 setup(
     name='django-activities',
