@@ -17,6 +17,7 @@ USE_I18N = True
 ACTIVITIES_BASE_TEMPLATE = 'base_activities.html'
 
 INSTALLED_APPS = (
+    'test_without_migrations',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
