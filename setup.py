@@ -1,7 +1,5 @@
 from __future__ import unicode_literals
 
-import os
-
 from setuptools import find_packages
 from setuptools import setup
 
@@ -17,13 +15,10 @@ classifiers = [
     'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
 ]
 
-README = open(os.path.join(os.path.dirname(__file__), 'README.md')).read()
-
 setup(
     name='django-activities',
     version='1.0.0',
     description='Activities app for django',
-    long_description=README,
     author='Troy Grosfield',
     maintainer='Troy Grosfield',
     url='https://github.com/infoagetech/django-activities',
