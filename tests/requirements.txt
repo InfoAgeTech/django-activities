@@ -1,2 +1,2 @@
-test_without_migrations
+django-test-without-migrations
 https://github.com/InfoAgeTech/django-testing/tarball/master
