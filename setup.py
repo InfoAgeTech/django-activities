@@ -21,7 +21,7 @@ README = open(os.path.join(os.path.dirname(__file__), 'README.md')).read()
 
 setup(
     name='django-activities',
-    version='0.0.1',
+    version='1.0.0',
     description='Activities app for django',
     long_description=README,
     author='Troy Grosfield',
@@ -32,7 +32,8 @@ setup(
     include_package_data=True,
     zip_safe=False,
     setup_requires=[
-        'django >= 1.6',
+        'django >= 1.7',
+        'django-core >= 1.0'
     ],
     classifiers=classifiers
 )

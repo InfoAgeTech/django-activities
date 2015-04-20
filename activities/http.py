@@ -1,11 +1,11 @@
 from __future__ import unicode_literals
 
-from django_core.views import JsonResponse
+from django_core.views import JSONResponse
 
 from .utils import get_activity_html
 
 
-class ActivityResponse(JsonResponse):
+class ActivityResponse(JSONResponse):
     """Returns a HttpResponse for an event that causes a new activity to be
     generated.  The content of the response is the new activity. Returns a
     status of 200.

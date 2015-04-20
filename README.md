@@ -1,9 +1,6 @@
-NOTE: This is not stable yet and will likely change!  Please don't use in production until the 1.0 release.
-
 [<img src="https://travis-ci.org/InfoAgeTech/django-activities.png?branch=master">](http://travis-ci.org/InfoAgeTech/django-activities)
 [<img src="https://coveralls.io/repos/InfoAgeTech/django-activities/badge.png">](https://coveralls.io/r/InfoAgeTech/django-activities)
 
-====================
 django-activities
 ====================
 django-activities is a generic python activities module written for django.  You can create activities about any object type and share that comment with any object type.
@@ -12,7 +9,7 @@ Intallation
 ===========
 Download the source from Github and run:
 
-    python setup.py django-activities
+    pip install django-activities
 
 Dependencies
 ============
