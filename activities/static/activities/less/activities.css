@@ -11,6 +11,7 @@
 .activities-container .activities {
   margin-bottom: 0;
   padding-left: 0;
+  position: relative;
 }
 .activities-container .activities li {
   list-style: none;
@@ -80,7 +81,14 @@
   margin-left: 32px;
 }
 .activities-paging {
+  background-color: rgba(255, 255, 255, 0.9);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
   text-align: center;
+  padding-top: 25px;
 }
 .activities-paging .progress,
 .activities-paging .progress .bar {

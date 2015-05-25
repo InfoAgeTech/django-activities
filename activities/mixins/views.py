@@ -4,7 +4,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import EmptyPage
 from django.core.paginator import Paginator
-from django.core.urlresolvers import reverse
 from django.http.response import Http404
 from django.http.response import HttpResponse
 from django.shortcuts import render_to_response
