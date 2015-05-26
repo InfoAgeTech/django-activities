@@ -9,4 +9,5 @@ __pycache__
 .project
 .pydevproject
 .settings
+/dist
 docs/guide
