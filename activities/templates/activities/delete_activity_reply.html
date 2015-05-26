@@ -18,7 +18,7 @@
         <dd>{{ activity_reply.text|safe }}</dd>
     </dl>
     {% endwith %}
-    <form method="post" action="">
+    <form method="post" action="{{ request.path }}">
         {% csrf_token %}
         <div class="form-group">
             <div>

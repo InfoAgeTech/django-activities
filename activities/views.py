@@ -34,8 +34,9 @@ class ActivitiesGenericObjectView(GenericObjectViewMixin, ActivitiesView):
 
     # TODO: this would no longer work for the current configuration
     def get_content_object_url(self):
-        return reverse('activities_view', args=[self.content_type.id,
-                                                self.content_object.id])
+        url_args = [self.generic_object_content_type.id,
+                    self.content_object.id]
+        return reverse('activities_view', args=url_args)
 
 
 # TODO: Is this view app specific?
