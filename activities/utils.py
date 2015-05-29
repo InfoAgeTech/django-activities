@@ -32,6 +32,8 @@ def get_activity_html(request, activity):
 #     if (about_obj_absolute_url != current_url and
 #         activity_url not in current_url):
 #         context['show_reference_obj'] = True
+    if activity.about and hasattr(activity.about, 'get_activities_url'):
+        context['activity_url'] = activity.about.get_activities_url()
 
     return render_to_string('activities/snippets/activity.html',
                             context,

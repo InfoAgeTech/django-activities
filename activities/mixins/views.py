@@ -63,6 +63,10 @@ class ActivityViewMixin(object):
         """Gets the root activity url for the object the activity is about."""
         prefix = ''
 
+        if self.activity.about and hasattr(self.activity.about,
+                                           'get_activities_url'):
+            return self.activity.about.get_activities_url()
+
         if hasattr(self.activity.about, 'get_absolute_url'):
             prefix = self.activity.about.get_absolute_url()
 

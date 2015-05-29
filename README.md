@@ -97,7 +97,7 @@ Then in your urls.py:
     get_urls(extend_urlpatterns=urlpatterns,
                 root_urlpattern_name='my_view',
                 class_prefix='MyActivies',
-                bases_classes=(MyCustomActivitiesView,))
+                base_classes=(MyCustomActivitiesView,))
 
 This will generate the following urls:
 

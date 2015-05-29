@@ -2,7 +2,6 @@ from __future__ import unicode_literals
 
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
-from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext as _
@@ -207,6 +206,9 @@ class Activity(AbstractUrlLinkModelMixin, AbstractActivity):
         index_together = (('about_content_type', 'about_id'),)
 
     def get_absolute_url(self):
+        if self.about and hasattr(self.about, 'get_activities_url'):
+            return '{0}/{1}'.format(self.about.get_activities_url(), self.id)
+
         return '/activities/{0}'.format(self.id)
 
     def get_edit_url(self):

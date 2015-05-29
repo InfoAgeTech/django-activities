@@ -29,10 +29,12 @@
             </a>
         </li>
         <li class="actions">
-            {% if activity.is_editable and activity.created_user_id == user.id %}
-                <a href="{% if activity_url %}{{ activity_url }}/..{% else %}.{% endif %}{{ activity.get_delete_url }}"><i class="{{ ICON_EDIT_CLS }}"></i></a>
+            {% if activity.created_user_id == user.id %}
+                {% if activity.is_editable %}
+                <a href="{{ activity.get_edit_url }}"><i class="{{ ICON_EDIT_CLS }}"></i></a>
+                {% endif %}
+                <a href="{{ activity.get_delete_url }}"><i class="{{ ICON_DECLINE_CLS }}"></i></a>
             {% endif %}
-            <a href="{% if activity_url %}{{ activity_url }}/..{% else %}.{% endif %}{{ activity.get_delete_url }}"><i class="{{ ICON_DECLINE_CLS }}"></i></a>
         </li>
         <li class="name">
             <strong>
@@ -80,10 +82,10 @@
                             </a>
                         </li>
                         <li class="actions">
-                            {% if reply.created_user_id == user.id or activity.created_user_id == user.id %}
-                                <a href="{% if activity_url %}{{ activity_url }}/..{% else %}.{% endif %}{{ reply.get_edit_url }}"><i class="{{ ICON_EDIT_CLS }}"></i></a>
+                            {% if reply.created_user_id == user.id %}
+                                <a href="{{ reply.get_edit_url }}"><i class="{{ ICON_EDIT_CLS }}"></i></a>
+                                <a href="{{ reply.get_delete_url }}"><i class="{{ ICON_DECLINE_CLS }}"></i></a>
                             {% endif %}
-                            <a href="{% if activity_url %}{{ activity_url }}/..{% else %}.{% endif %}{{ reply.get_delete_url }}"><i class="{{ ICON_DECLINE_CLS }}"></i></a>
                         </li>
                         <li class="name">
                             <strong>

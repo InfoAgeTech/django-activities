@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+import logging
+
 from django.conf.urls import patterns
 from django.conf.urls import url
 from django.core.exceptions import ImproperlyConfigured
@@ -14,6 +16,8 @@ from .views import ActivityReplyEditView
 from .views import ActivityReplyView
 from .views import ActivityView
 
+
+logger = logging.getLogger(__name__)
 
 # need to map these in order for the dynamic urls to work correctly
 urlpattern_mapping = (
@@ -35,8 +39,8 @@ urlpatterns = patterns('',
 )
 
 
-def get_urls(extend_urlpatterns, root_urlpattern_name, class_prefix,
-             bases_classes=None):
+def get_urls(extend_urlpatterns, root_urlpattern_name, class_prefix=None,
+             base_classes=None, model=None):
     """Function that dynamically creates activities urls so urls don't have to
     use generic content type ids in the urls.
 
@@ -46,7 +50,9 @@ def get_urls(extend_urlpatterns, root_urlpattern_name, class_prefix,
     :param class_prefix: this is the string class prefix to use for the
         generated views.  This will also be the prefix used for the url naming
         conventions.
-    :param bases: the iterable of base classes to extend.
+    :param base_classes: the iterable of base classes to extend.
+    :param model: the model to add the urls to.  If no class prefix is provided,
+        the model name will be used as the prefix.
     :param url_prefix: the prefix to use for the urls.  Default is "activities"
         so the urls would be generated as follows:
 
@@ -65,6 +71,15 @@ def get_urls(extend_urlpatterns, root_urlpattern_name, class_prefix,
         class_prefix = 'Foo'
 
     """
+    if model:
+        if class_prefix is None:
+            class_prefix = model.__name__
+
+        if not hasattr(model, 'get_activities_url'):
+            logger.warning("Adding activity urls to the \"{0}\" model and the "
+                           "model doesn't implement a \"get_activities_url\" "
+                           "method which is recommended.".format(model))
+
     root_urlpattern = None
 
     for pattern in extend_urlpatterns:
@@ -89,7 +104,7 @@ def get_urls(extend_urlpatterns, root_urlpattern_name, class_prefix,
 
         class_name = '{0}{1}'.format(class_prefix, pattern_view.__name__)
         ExtendedActivityView = type(class_name,
-                                    bases_classes + (pattern_view,),
+                                    base_classes + (pattern_view,),
                                     {'class_prefix': class_prefix})
 
         # generate the new pattern name
