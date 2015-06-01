@@ -1,15 +1,21 @@
 .activities-container {
     
     .comment-form {
+        @textarea-width: 74%;
+        @textarea-margin-right: 1%;
         margin-bottom: 7px; 
         
-        textarea[name="text"] { 
+        textarea { 
+            display: inline-block;
             height: 31px; 
-            width: 100%; 
+            width: @textarea-width;
+            margin-right: @textarea-margin-right;
         }
         
-        .btn-primary { 
-            width: 100%; 
+        button {
+            display: inline-block;
+            width: 100% - @textarea-width - @textarea-margin-right;
+            vertical-align: top;
         }
     }
     

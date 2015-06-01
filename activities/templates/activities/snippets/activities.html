@@ -25,14 +25,8 @@
     {% if request.user.is_authenticated %}
     <form class="comment-form" action="{{ activity_url }}" method="post">{% csrf_token %}
         <input type="hidden" name="next" value="{{ request.path}}" />
-        <div class="row">
-            <div class="col-md-9">
-                <textarea name="text" rows="2" cols="20" class="form-control" placeholder="Make a comment..."></textarea>
-            </div>
-            <div class="col-md-3">
-                <button class="btn btn-primary btn-sm" type="submit">Comment</button>
-            </div>
-        </div>
+        <textarea name="text" rows="2" cols="20" class="form-control" placeholder="Make a comment..."></textarea>
+        <button class="btn btn-primary btn-sm" type="submit">Comment</button>
     </form>
     {% else %}
     <div class="comment-form">Please log in to comment.</div>
