@@ -26,8 +26,8 @@ $(document).ready(function(){
         $.post($frm.attr('action'), form_data, function(resp_text, success_fail, resp){
             if (resp.status == 200){
                 $frm.closest('.activity-container').remove();
-            } else {
-                console.log('There was an error deleting the activity.');
+            } else if (window.console && window.console.log) {
+                window.console.log('There was an error deleting the activity.');
             }
         });
         
@@ -108,8 +108,8 @@ $(document).ready(function(){
                 $activities.prepend(resp_text.activity);
                 $textField.val('');
                 $textField.blur();
-            } else {
-                console.log('There was an error adding the comment.');
+            } else if (window.console && window.console.log) {
+                window.console.log('There was an error adding the comment.');
             }
         });
         
@@ -131,8 +131,8 @@ $(document).ready(function(){
             
             if (resp.status == 200 || resp.status == 202){
                 $('#n-' + activity_id).replaceWith(resp_text.activity);
-            } else {
-                console.log('There was an error adding the activity reply.');
+            } else if (window.console && window.console.log) {
+                window.console.log('There was an error adding the activity reply.');
             }
         });
         
@@ -147,8 +147,8 @@ $(document).ready(function(){
             
             if (resp.status == 200){
                 $('#n-' + activity_id).remove();
-            } else {
-                console.log('There was an error deleting the activity.');
+            } else if (window.console && window.console.log) {
+                window.console.log('There was an error deleting the activity.');
             }
         });
     });
