@@ -25,7 +25,7 @@
         
         <li class="avatar">
             <a href="{{ activity.created_user.get_absolute_url }}">
-                <img src="{{ activity.created_user.get_avatar_url }}" alt="Avatar" class="avatar" />
+                <img src="{{ activity.created_user.get_thumbnail_url|default:activity.created_user.get_avatar_url }}" alt="Avatar" class="avatar" />
             </a>
         </li>
         <li class="actions">
@@ -78,7 +78,7 @@
                     <ul>
                         <li class="avatar">
                             <a href="{{ reply.created_user.get_absolute_url }}">
-                                <img src="{{ reply.created_user.get_avatar_url }}" alt="Avatar" class="avatar" />
+                                <img src="{{ reply.created_user.get_thumbnail_url|default:reply.created_user.get_avatar_url }}" alt="Avatar" class="avatar" />
                             </a>
                         </li>
                         <li class="actions">
@@ -103,7 +103,7 @@
                         {% csrf_token %}
                         <input type="hidden" name="next" value="{{ request.path}}" />
                         <input type="hidden" name="pid" value="{{ activity.id }}" />
-                        <img alt="Avatar" src="{{ user.get_avatar_url }}" class="avatar" />
+                        <img alt="Avatar" src="{{ user.get_thumbnail_url|default:user.get_avatar_url }}" class="avatar" />
                         <div class="comment-holder">
                             <input type="text" name="text" class="form-control" placeholder="Make a comment..." />
                         </div>
