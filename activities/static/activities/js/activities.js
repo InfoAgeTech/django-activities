@@ -24,7 +24,7 @@ $(document).ready(function(){
         e.preventDefault(); 
         
         $.post($frm.attr('action'), form_data, function(resp_text, success_fail, resp){
-            if (resp.status == 200){
+            if (resp.status === 200){
                 $frm.closest('.activity-container').remove();
             } else if (window.console && window.console.log) {
                 window.console.log('There was an error deleting the activity.');
@@ -83,7 +83,7 @@ $(document).ready(function(){
     }).on('blur', 'form.comment-form textarea', function(e) {
         var $this = $(this);
         
-        if ($.trim($this.val()) == ''){
+        if ($.trim($this.val()) === ''){
             $this.css('height', $this.data('origHeight'));
         }
         
@@ -103,7 +103,7 @@ $(document).ready(function(){
         $.post($this.attr('action'), formData, function(resp_text, success_fail, resp){
             var $activities = $activitiesContainer.find('.activities:first');
             
-            if (resp.status == 200 || resp.status == 202) {
+            if (resp.status === 200 || resp.status === 202) {
                 $activities.find('.no-activities-found').remove();
                 $activities.prepend(resp_text.activity);
                 $textField.val('');
@@ -129,7 +129,7 @@ $(document).ready(function(){
         
         $.post($this.attr('action'), form_data, function(resp_text, success_fail, resp){
             
-            if (resp.status == 200 || resp.status == 202){
+            if (resp.status === 200 || resp.status === 202){
                 $('#n-' + activity_id).replaceWith(resp_text.activity);
             } else if (window.console && window.console.log) {
                 window.console.log('There was an error adding the activity reply.');
@@ -145,7 +145,7 @@ $(document).ready(function(){
         
         $.post($this.attr('action'), form_data, function(resp_text, success_fail, resp){
             
-            if (resp.status == 200){
+            if (resp.status === 200){
                 $('#n-' + activity_id).remove();
             } else if (window.console && window.console.log) {
                 window.console.log('There was an error deleting the activity.');
