@@ -74,7 +74,7 @@ $(document).ready(function(){
         e.preventDefault();
         var $this = $(this);
         
-        if ($this.data('origHeight') == undefined){
+        if ($this.data('origHeight') === undefined){
             $this.data('origHeight', $this.css('height'));
         }
         
