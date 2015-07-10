@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
@@ -48,8 +48,8 @@ class AbstractActivity(AbstractBaseModel):
         'PRIVATE'.
     """
     text = models.TextField(blank=True, null=True)
-    about = generic.GenericForeignKey(ct_field='about_content_type',
-                                      fk_field='about_id')
+    about = GenericForeignKey(ct_field='about_content_type',
+                              fk_field='about_id')
     about_content_type = models.ForeignKey(ContentType, null=True, blank=True)
     about_id = models.PositiveIntegerField(null=True, blank=True)
     replies = models.ManyToManyField('ActivityReply',
