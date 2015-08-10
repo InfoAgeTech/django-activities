@@ -73,9 +73,11 @@
 	      {% endif %}
         </li>
         <li class="date">{{ activity.created_dttm|timezone:user_timezone|naturaltime }}</li>
+        {% with replies=activity.replies.all %}
+        {% if replies or not replies and user.is_authenticated %}
         <li class="replies">
             <ul>
-                {% for reply in activity.replies.all %}
+                {% for reply in replies %}
                 <li class="reply">
                     <ul>
                         <li class="avatar">
@@ -118,6 +120,8 @@
                 {% endif %}
             </ul>
         </li>     
+        {% endif %}
+        {% endwith %}
     </ul>
     
 </li>
