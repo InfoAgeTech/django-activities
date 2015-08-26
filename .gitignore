@@ -11,3 +11,4 @@ __pycache__
 .settings
 /dist
 docs/guide
+/*/static/activities/less/*.css
