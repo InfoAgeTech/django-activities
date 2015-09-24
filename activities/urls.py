@@ -83,7 +83,9 @@ def get_urls(extend_urlpatterns, root_urlpattern_name, class_prefix=None,
     root_urlpattern = None
 
     for pattern in extend_urlpatterns:
-        if pattern.name == root_urlpattern_name:
+        # if the pattern doesn't have the "name" attribute, then it might be
+        # an "include" and not an actual regex pattern.
+        if hasattr(pattern, 'name') and pattern.name == root_urlpattern_name:
             root_urlpattern = pattern.regex.pattern
             break
 
