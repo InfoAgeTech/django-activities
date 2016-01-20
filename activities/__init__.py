@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-from django.apps.config import AppConfig
+from django.apps import apps
 from django.core.exceptions import ImproperlyConfigured
 
 
@@ -22,7 +22,7 @@ def get_activity_model():
         raise ImproperlyConfigured("ACTIVITY_MODEL must be of the form "
                                    "'app_label.model_name'")
 
-    activity_model = AppConfig.get_model(app_label, model_name)
+    activity_model = apps.get_model(app_label, model_name)
 
     if activity_model is None:
         raise ImproperlyConfigured("ACTIVITY_MODEL refers to model '%s' "
