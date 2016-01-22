@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django.template import Library
 from django.template.loader import render_to_string
 from django_core.utils.loading import get_function_from_settings
@@ -17,31 +15,29 @@ def render_activities(context, page, obj, activity_url, activity_source=None):
     :param activity_url: the url to use for the activities
     :param source: the activity source
     """
-    template_context = {
+    context.update({
         'activities_page': page,
         'obj': obj,
         'activity_url': activity_url
-    }
+    })
 
     if activity_source is not None:
-        template_context['activity_source'] = activity_source
+        context['activity_source'] = activity_source
 
     return render_to_string('activities/snippets/activities.html',
-                            template_context,
-                            context_instance=context)
+                            context=context)
 
 
 @register.simple_tag(takes_context=True)
 def render_activity(context, activity, activity_url, show_reference_obj=False):
-    template_context = {
+    context.update({
         'activity': activity,
         'show_reference_obj': show_reference_obj,
         'activity_url': activity_url
-    }
+    })
 
     return render_to_string('activities/snippets/activity.html',
-                            template_context,
-                            context_instance=context)
+                            context=context)
 
 
 @register.filter

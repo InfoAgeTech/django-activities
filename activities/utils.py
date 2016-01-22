@@ -1,7 +1,6 @@
-from __future__ import unicode_literals
-
 from django.template.context import RequestContext
 from django.template.loader import render_to_string
+
 
 try:
     # python 2
@@ -37,4 +36,4 @@ def get_activity_html(request, activity):
 
     return render_to_string('activities/snippets/activity.html',
                             context,
-                            context_instance=RequestContext(request)).strip()
+                            context=RequestContext(request)).strip()

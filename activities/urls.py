@@ -1,8 +1,5 @@
-from __future__ import unicode_literals
-
 import logging
 
-from django.conf.urls import patterns
 from django.conf.urls import url
 from django.core.exceptions import ImproperlyConfigured
 
@@ -32,11 +29,13 @@ urlpattern_mapping = (
 )
 
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^/(?P<content_type_id>\d+)/(?P<object_id>\d+)/?$', ActivitiesGenericObjectView.as_view(), name='activities_view'),
-    *[url(pattern['regex'], pattern['view'].as_view(), name=pattern['name'])
+
+] + [url(pattern['regex'], pattern['view'].as_view(), name=pattern['name'])
       for pattern in urlpattern_mapping if pattern['name'] != 'activities_view']
-)
+
+
 
 
 def get_urls(extend_urlpatterns, root_urlpattern_name, class_prefix=None,
@@ -115,6 +114,6 @@ def get_urls(extend_urlpatterns, root_urlpattern_name, class_prefix=None,
                                                    pattern_regex)
 
         # add the pattern to urls
-        extend_urlpatterns += patterns('',
+        extend_urlpatterns += [
             url(url_pattern, ExtendedActivityView.as_view(), name=pattern_name),
-        )
+        ]
