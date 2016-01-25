@@ -25,8 +25,8 @@
         
         <li class="avatar">
             <a href="{{ activity.created_user.get_absolute_url }}">
-              {% with thumbnail_url=activity.created_user.get_thumbnail_square_url|default:activity.created_user.get_thumbnail_url %}
-                <img src="{% if thumbnail_url %}{{ thumbnail_url }}{% else %}{{ activity.created_user.get_avatar_url }}{% endif %}" alt="Avatar" class="avatar" />
+              {% with created_user=activity.created_user %}
+                {% include 'activities/snippets/user_thumbnail.html' with user=created_user %}
               {% endwith %}
             </a>
         </li>
@@ -82,8 +82,8 @@
                     <ul>
                         <li class="avatar">
                             <a href="{{ reply.created_user.get_absolute_url }}">
-                              {% with thumbnail_url=reply.created_user.get_thumbnail_square_url|default:reply.created_user.get_thumbnail_url %} 
-                                <img src="{% if thumbnail_url %}{{ thumbnail_url }}{% else %}{{ reply.created_user.get_avatar_url }}{% endif %}" alt="Avatar" class="avatar" />
+                              {% with created_user=reply.created_user  %} 
+                                {% include 'activities/snippets/user_thumbnail.html' with user=created_user %}
                               {% endwith %}
                             </a>
                         </li>
@@ -109,9 +109,7 @@
                         {% csrf_token %}
                         <input type="hidden" name="next" value="{{ request.path}}" />
                         <input type="hidden" name="pid" value="{{ activity.id }}" />
-                        {% with thumbnail_url=user.get_thumbnail_square_url|default:user.get_thumbnail_url %}
-                        <img alt="Avatar" src="{% if thumbnail_url %}{{ thumbnail_url }}{% else %}{{ user.get_avatar_url }}{% endif %}" class="avatar" />
-                        {% endwith %}
+                        {% include 'activities/snippets/user_thumbnail.html' with user=user %}
                         <div class="comment-holder">
                             <input type="text" name="text" class="form-control" placeholder="Make a comment..." />
                         </div>

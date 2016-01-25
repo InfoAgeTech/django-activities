@@ -1,0 +1,8 @@
+{% comment %}
+Gets the user's thumbnail.
+
+Params:
+
+- user: the user object to get the thumbnail for.
+{% endcomment %}
+<img src="{% if user.get_thumbnail_square_url %}{{ user.get_thumbnail_square_url }}{% elif user.get_thumbnail_url %}{{ user.get_thumbnail_url }}{% else %}{{ user.get_avatar_url }}{% endif %}" alt="Avatar" class="avatar" />
