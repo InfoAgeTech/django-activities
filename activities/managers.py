@@ -10,7 +10,7 @@ from .constants import Source
 
 
 class ActivityManager(CommonManager):
-    """Manager for activities."""
+    """Manager for Activity model."""
 
     def create(self, created_user, text=None, about=None,
                source=Source.SYSTEM, action=Action.CREATED,

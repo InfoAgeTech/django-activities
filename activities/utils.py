@@ -15,7 +15,10 @@ def get_activity_html(request, activity):
 
     :param activity: activity document
     """
-    context = {'activity': activity}
+    context = RequestContext(request)
+    context.update({
+        'activity': activity
+    })
 
     # TODO: Need to fix all the url logic checking below since the
     #       absolute url != to the http referrer.
@@ -35,5 +38,4 @@ def get_activity_html(request, activity):
         context['activity_url'] = activity.about.get_activities_url()
 
     return render_to_string('activities/snippets/activity.html',
-                            context,
-                            context=RequestContext(request)).strip()
+                            context=context).strip()

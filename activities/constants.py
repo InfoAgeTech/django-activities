@@ -55,19 +55,25 @@ class Source(EnumCheck):
 class Action(EnumCheck):
     """The past tense action choices for a activity.
 
+    * ADDED - an object was added to the system
     * COMMENTED - a user comment
     * CREATED - a created action
     * DELETED - a delete action
     * UPDATED - an update action
+    * UPLOADED - an object was uploaded (typically a media item like an image)
     """
+    ADDED = 'ADDED'
     COMMENTED = 'COMMENTED'
     CREATED = 'CREATED'
     DELETED = 'DELETED'
     UPDATED = 'UPDATED'
-    CHOICES = ((COMMENTED, _('Commented')),
+    UPLOADED = 'UPLOADED'
+    CHOICES = ((ADDED, _('Added')),
+               (COMMENTED, _('Commented')),
                (CREATED, _('Created')),
                (DELETED, _('Deleted')),
-               (UPDATED, _('Updated'))
+               (UPDATED, _('Updated')),
+               (UPLOADED, _('Uploaded'))
                )
 
 
