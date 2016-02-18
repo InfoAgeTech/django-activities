@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.query_utils import Q
 from django_core.db.models import CommonManager
@@ -116,6 +114,16 @@ class ActivityManager(CommonManager):
                                Q(privacy=Privacy.CUSTOM,
                                  for_objs__content_type=user_content_type,
                                  for_objs__object_id=for_user.id)).distinct()
+
+    def delete_all_about_object(self, about, **kwargs):
+        """Deletes all activities about an object.
+
+        :param about: the object to delete all activities for when this object
+            is the "about" object on the activity.
+        """
+        content_type = ContentType.objects.get_for_model(about)
+        return self.filter(about_content_type=content_type,
+                           about_id=about.id).delete()
 
 
 class ActivityReplyManager(CommonManager):
