@@ -95,6 +95,38 @@ class AbstractActivity(AbstractBaseModel):
         # self.activityfor_set.get_or_create_generic(content_object=user)
         return reply
 
+    def get_action_html(self):
+
+        if self.action not in (Action.ADDED, Action.CREATED, Action.SHARED,
+                               Action.UPLOADED):
+            # no activity text to return
+            return ''
+
+        if self.action == Action.CREATED and \
+           hasattr(self.about, 'get_activity_action_html'):
+            return self.about.get_activity_action_html(self)
+
+        object_name = self.about_content_type.model_class()._meta.verbose_name
+        object_ref = object_name
+        # these are common words that require "an" in the action text
+        an_words = ['image']
+        a_or_an = 'a'
+
+        if object_name.lower() in an_words:
+            a_or_an = 'an'
+
+        if hasattr(self.about, 'get_absolute_url'):
+            object_ref = '<a href="{0}">{1}</a>'.format(
+                self.about.get_absolute_url(),
+                object_name
+            )
+
+        return '{action} {a_or_an} {object_ref}.'.format(
+            action=self.action.lower(),
+            a_or_an=a_or_an,
+            object_ref=object_ref
+        )
+
     def get_text(self):
         """Gets the text for an object.  If text is None, this will construct
         the text based on the activity attributes.

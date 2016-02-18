@@ -42,25 +42,13 @@
             <strong>
                 <a href="{{ activity.created_user.get_absolute_url }}">{{ activity.created_user.get_full_name }}</a>
             </strong>
-            
-            {% comment %}If this is passed in a template, I can only pass strings which is why 'True' check exists{% endcomment %}
-            {% comment %}
-            {% if show_reference_obj == 'True' or show_reference_obj == True %}
-              {% if activity.about|get_obj_type == 'bill' %}
-                <span class="about-obj">{% if activity.about.group_id %}in {{ activity.about.group.get_absolute_url_link }} {% endif %}
-                    for {{ activity.about.get_absolute_url_link }}
-                </span>
-              {% elif activity.about|get_obj_type == 'billinstance' %}
-                <span class="about-obj">{% if activity.about.bill.group_id %}in {{ activity.about.bill.group.get_absolute_url_link }} {% endif %}
-                    for {{ activity.about.bill.get_absolute_url_link }} ({{ activity.about.get_absolute_url_link_short_date }})
-                </span>
-              {% elif activity.about|get_obj_type == 'group' %}
-                <span class="about-obj">in {{ activity.about.get_absolute_url_link }}</span>
+            {% with action_html=activity.get_action_html %}
+              {% if action_html %}
+                <span class="action-text">{{ action_html|safe }}</span>
               {% endif %}
-            {% endif %}
-            {% endcomment %}
-            
+            {% endwith %}
         </li>
+        <li class="date"><a href="{{ activity.get_absolute_url }}">{{ activity.created_dttm|timezone:user_timezone|naturaltime }}</a></li>
         <li class="msg">
           {% if activity.text %}
 	          {% if activity.source == 'COMMENT' %}
@@ -72,7 +60,6 @@
 	          {{ activity.get_html|safe }}
 	      {% endif %}
         </li>
-        <li class="date"><a href="{{ activity.get_absolute_url }}">{{ activity.created_dttm|timezone:user_timezone|naturaltime }}</a></li>
         {% with replies=activity.replies.all %}
         {% if replies or not replies and user.is_authenticated %}
         <li class="replies">
@@ -97,26 +84,26 @@
                             <strong>
                                 <a href="{{ reply.created_user.get_absolute_url }}">{{ reply.created_user.get_full_name }}</a>
                             </strong>
+                            <span class="action-text">{{ reply.created_dttm|timezone:user_timezone|naturaltime }}</a>
                         </li>
                         <li class="msg">{{ reply.text|safe|linebreaks }}</li>
-                        <li class="date">{{ reply.created_dttm|timezone:user_timezone|naturaltime }}</li>
                     </ul>
                 </li>
                 {% endfor %}
-                {% if user.is_authenticated %}
-                <li class="my-reply">
-                    <form class="comment-reply-form" action="{{ activity_url }}" method="post">
-                        {% csrf_token %}
-                        <input type="hidden" name="next" value="{{ request.path}}" />
-                        <input type="hidden" name="pid" value="{{ activity.id }}" />
-                        {% include 'activities/snippets/user_thumbnail.html' with user=user %}
-                        <div class="comment-holder">
-                            <input type="text" name="text" class="form-control" placeholder="Make a comment..." />
-                        </div>
-                    </form>
-                </li>
-                {% endif %}
             </ul>
+            {% if user.is_authenticated %}
+            <div class="my-reply">
+                <form class="comment-reply-form" action="{{ activity_url }}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.path}}" />
+                    <input type="hidden" name="pid" value="{{ activity.id }}" />
+                    {% include 'activities/snippets/user_thumbnail.html' with user=user %}
+                    <div class="comment-holder">
+                        <input type="text" name="text" class="form-control" placeholder="Make a comment..." />
+                    </div>
+                </form>
+            </div>
+            {% endif %}
         </li>     
         {% endif %}
         {% endwith %}

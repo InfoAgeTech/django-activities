@@ -196,12 +196,21 @@ class ActivitiesViewMixin(object):
         if activity_action:
             activity_kwargs['action'] = activity_action
 
-        return (queryset.filter(**activity_kwargs)
-                        .prefetch_related('about',
-                                          'about_content_type',
-                                          'replies',
-                                          'replies__created_user',
-                                          'created_user'))
+        prefetch_fields = self.get_activity_prefetch_related_fields()
+        queryset = queryset.filter(**activity_kwargs)
+
+        if prefetch_fields:
+            return queryset.prefetch_related(*prefetch_fields)
+
+        return queryset
+
+    def get_activity_prefetch_related_fields(self):
+        """Returns a list of the activity fields to prefetch."""
+        return ['about',
+                'about_content_type',
+                'replies',
+                'replies__created_user',
+                'created_user']
 
     def get_activities_queryset(self):
         """Get's the queryset for the activities."""

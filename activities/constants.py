@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django.utils.translation import ugettext as _
 
 
@@ -47,9 +45,10 @@ class Source(EnumCheck):
     """
     SYSTEM = 'SYSTEM'
     USER = 'USER'
-    CHOICES = ((SYSTEM, _('System')),
-               (USER, _('User')),
-               )
+    CHOICES = (
+        (SYSTEM, _('System')),
+        (USER, _('User')),
+    )
 
 
 class Action(EnumCheck):
@@ -59,6 +58,8 @@ class Action(EnumCheck):
     * COMMENTED - a user comment
     * CREATED - a created action
     * DELETED - a delete action
+    * EDITED - an edit action
+    * SHARED - a shared action
     * UPDATED - an update action
     * UPLOADED - an object was uploaded (typically a media item like an image)
     """
@@ -66,15 +67,20 @@ class Action(EnumCheck):
     COMMENTED = 'COMMENTED'
     CREATED = 'CREATED'
     DELETED = 'DELETED'
+    EDITED = 'EDITED'
+    SHARED = 'SHARED'
     UPDATED = 'UPDATED'
     UPLOADED = 'UPLOADED'
-    CHOICES = ((ADDED, _('Added')),
-               (COMMENTED, _('Commented')),
-               (CREATED, _('Created')),
-               (DELETED, _('Deleted')),
-               (UPDATED, _('Updated')),
-               (UPLOADED, _('Uploaded'))
-               )
+    CHOICES = (
+       (ADDED, _('Added')),
+       (COMMENTED, _('Commented')),
+       (CREATED, _('Created')),
+       (DELETED, _('Deleted')),
+       (EDITED, _('Edited')),
+       (SHARED, _('Shared')),
+       (UPDATED, _('Updated')),
+       (UPLOADED, _('Uploaded'))
+   )
 
 
 class Privacy(object):
@@ -82,7 +88,8 @@ class Privacy(object):
     PUBLIC = 'PUBLIC'  # everyone can see
     PRIVATE = 'PRIVATE'  # only created user can see
     CUSTOM = 'CUSTOM'  # a custom set of object has visibility
-    CHOICES = ((PUBLIC, _('Public - everyone can see')),
-               (PRIVATE, _('Private - only created user can see')),
-               (CUSTOM, _('Custom - users must be granted visibility')),
-               )
+    CHOICES = (
+       (PUBLIC, _('Public - everyone can see')),
+       (PRIVATE, _('Private - only created user can see')),
+       (CUSTOM, _('Custom - users must be granted visibility')),
+   )

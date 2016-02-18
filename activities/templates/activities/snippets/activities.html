@@ -1,17 +1,20 @@
 {% comment %}
-    This snippet is used for user activities or activity feed.
-    
-    Variables:
-    
-    activities_page: the page django.core.paginator.Page of activities
-    activity_url: the url for the object's activities
-    obj: the obj the activities are for.
-    activity_source: the source of the activities (optional).  Default
-        is to show all.  Can be 'USER' or 'SYSTEM'.
-    activity_action: the action of the activity (optional). Defaults
-        to show all actions.  Can be one of an action values ("CREATED", 
-        "COMMENTED", "UPDATED", "DELETED", etc.)
-     
+This snippet is used for user activities or activity feed.
+
+Params:
+
+activities_page: the page django.core.paginator.Page of activities
+activity_url: the url for the object's activities
+obj: the obj the activities are for.
+activity_source: the source of the activities (optional).  Default
+    is to show all.  Can be 'USER' or 'SYSTEM'.
+activity_action: the action of the activity (optional). Defaults
+    to show all actions.  Can be one of an action values ("CREATED", 
+    "COMMENTED", "UPDATED", "DELETED", etc.)
+show_comment_form: (optional) boolean indicating if the comment form should
+    be shown at the top of the activities.  Default is True.
+show_activity_type_tabs: (optional) show the activity type tabs at the top of the
+    activities so they can be sorted by type.  Default is True.
 {% endcomment %}
 
 {% load humanize activity_tags %}
@@ -22,16 +25,19 @@
 <div class="activities-container" data-ajax="activities">
 
   {% if not request.is_ajax %}
-    {% if request.user.is_authenticated %}
-    <form class="comment-form" action="{{ activity_url }}" method="post">{% csrf_token %}
-        <input type="hidden" name="next" value="{{ request.path}}" />
-        <textarea name="text" rows="2" cols="20" class="form-control" placeholder="Make a comment..."></textarea>
-        <button class="btn btn-primary btn-sm" type="submit">Comment</button>
-    </form>
-    {% else %}
-    <div class="comment-form">Please log in to comment.</div>
+    {% if  show_comment_form != False %}
+      {% if request.user.is_authenticated %}
+	    <form class="comment-form" action="{{ activity_url }}" method="post">{% csrf_token %}
+	        <input type="hidden" name="next" value="{{ request.path}}" />
+	        <textarea name="text" rows="2" cols="20" class="form-control" placeholder="Make a comment..."></textarea>
+	        <button class="btn btn-primary btn-sm" type="submit">Comment</button>
+	    </form>
+      {% else %}
+        <div class="comment-form">Please log in to comment.</div>
+      {% endif %}
     {% endif %}
     
+    {% if show_activity_type_tabs != False %}
     <ul class="nav nav-tabs activity-type">
       {% with action=activity_action.lower source=activity_source.lower %}
         <li{% if not activity_action == 'commented' and not activity_source == 'system' %} class="active"{% endif %}><a href="{{ activity_url }}">All</a></li>
@@ -39,6 +45,7 @@
         <li{% if activity_source == 'system' %} class="active"{% endif %}><a href="{{ activity_url }}?ns=system">Activity</a></li>
       {% endwith %}
     </ul>
+    {% endif %}
   {% endif %}
    
   

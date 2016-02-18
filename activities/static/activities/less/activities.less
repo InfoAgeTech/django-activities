@@ -20,6 +20,7 @@
     }
     
     .activities {
+        @activity-header-link-color: #9B9B9B;
         margin-bottom: 0;
         padding-left: 0;
         position: relative;
@@ -66,6 +67,11 @@
             border-bottom: 1px solid #F2F2F2;
             padding: 10px 0;
             
+            > .msg {
+                margin-top: 10px;
+                margin-bottom: 10px;
+            }
+            
             .actions { 
                 float: right;
                 
@@ -74,7 +80,21 @@
                 }
             }
             
+            .date {
+                font-size: .9em;    
+                
+                a {
+                    color: @activity-header-link-color;
+                }
+            }
+            
             .msg {
+                
+                img {
+                    max-width: 100%;
+                    max-height: 500px;
+                    height: auto;
+                }
                 
                 ul li {
                     list-style: disc;
@@ -88,28 +108,45 @@
             
             .name {
                  
-                .about-obj { 
+                .about-obj,
+                .action-text { 
                     color: silver; 
                     margin-left: 5px;
                     
                     a { 
-                        color: gray;
+                        color: @activity-header-link-color;
                     }
-                    
                 }
                 
             }
             
-            .name, .msg, .date, .replies { 
+            .date,
+            .name { 
                 display: block; 
                 margin-left: 40px;
             }
              
         }
         
+        .my-reply {
+            margin: -10px;
+            padding: 10px;
+            position: relative;
+            z-index: 10;
+        }
+        
         .no-activities-found {
             text-align: center;
             margin: 25px 0 5px;
+        }
+        
+        .replies {
+            background-color: white;
+            border-bottom: 1px solid rgba(0,0,0,.1);
+            border-right: 1px solid rgba(0,0,0,.1);
+            padding: 10px;
+            max-height: 500px;
+            overflow-y: scroll;
         }
         
         .reply {
