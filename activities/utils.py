@@ -1,6 +1,7 @@
 from django.template.context import RequestContext
 from django.template.loader import render_to_string
-
+from django.contrib.contenttypes.models import ContentType
+from django.apps import apps
 
 try:
     # python 2

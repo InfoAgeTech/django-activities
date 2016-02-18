@@ -15,7 +15,7 @@
         <dt>Last Modified on</dt>
         <dd>{{ activity.last_modified_dttm|timezone:user_timezone|date:'DATETIME_FORMAT' }}</dd>
         <dt>Activity</dt>
-        <dd>{{ activity.get_html }}</dd>
+        <dd>{{ activity.get_html|safe }}</dd>
     </dl>
     {% endwith %}
 {% endblock %}
