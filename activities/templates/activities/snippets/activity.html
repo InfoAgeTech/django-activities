@@ -72,7 +72,7 @@
 	          {{ activity.get_html|safe }}
 	      {% endif %}
         </li>
-        <li class="date">{{ activity.created_dttm|timezone:user_timezone|naturaltime }}</li>
+        <li class="date"><a href="{{ activity.get_absolute_url }}">{{ activity.created_dttm|timezone:user_timezone|naturaltime }}</a></li>
         {% with replies=activity.replies.all %}
         {% if replies or not replies and user.is_authenticated %}
         <li class="replies">

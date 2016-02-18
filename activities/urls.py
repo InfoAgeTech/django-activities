@@ -39,7 +39,7 @@ urlpatterns = [
 
 
 def get_urls(extend_urlpatterns, root_urlpattern_name, class_prefix=None,
-             base_classes=None, model=None):
+             base_classes=None, model=None, root_urlpattern=None):
     """Function that dynamically creates activities urls so urls don't have to
     use generic content type ids in the urls.
 
@@ -52,6 +52,7 @@ def get_urls(extend_urlpatterns, root_urlpattern_name, class_prefix=None,
     :param base_classes: the iterable of base classes to extend.
     :param model: the model to add the urls to.  If no class prefix is provided,
         the model name will be used as the prefix.
+    :param root_urlpattern: the root pattern to create the
     :param url_prefix: the prefix to use for the urls.  Default is "activities"
         so the urls would be generated as follows:
 
@@ -79,14 +80,16 @@ def get_urls(extend_urlpatterns, root_urlpattern_name, class_prefix=None,
                            "model doesn't implement a \"get_activities_url\" "
                            "method which is recommended.".format(model))
 
-    root_urlpattern = None
+    if base_classes is None:
+        base_classes = tuple()
 
-    for pattern in extend_urlpatterns:
-        # if the pattern doesn't have the "name" attribute, then it might be
-        # an "include" and not an actual regex pattern.
-        if hasattr(pattern, 'name') and pattern.name == root_urlpattern_name:
-            root_urlpattern = pattern.regex.pattern
-            break
+    if root_urlpattern is None:
+        for pattern in extend_urlpatterns:
+            # if the pattern doesn't have the "name" attribute, then it might be
+            # an "include" and not an actual regex pattern.
+            if hasattr(pattern, 'name') and pattern.name == root_urlpattern_name:
+                root_urlpattern = pattern.regex.pattern
+                break
 
     if root_urlpattern is None:
         raise ImproperlyConfigured('No url pattern found with the name: '
@@ -112,6 +115,9 @@ def get_urls(extend_urlpatterns, root_urlpattern_name, class_prefix=None,
         pattern_name = '{0}_{1}'.format(class_prefix.lower(), pattern_name)
         url_pattern = r'{0}/activities/{1}'.format(root_urlpattern,
                                                    pattern_regex)
+
+        if url_pattern.startswith('^/activities/'):
+            url_pattern = url_pattern.replace('^/activities/', '^activities/')
 
         # add the pattern to urls
         extend_urlpatterns += [
