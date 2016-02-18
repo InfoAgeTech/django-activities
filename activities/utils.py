@@ -1,14 +1,5 @@
 from django.template.context import RequestContext
 from django.template.loader import render_to_string
-from django.contrib.contenttypes.models import ContentType
-from django.apps import apps
-
-try:
-    # python 2
-    import urlparse as parse
-except ImportError:
-    # python 3
-    from urllib import parse
 
 
 def get_activity_html(request, activity):
