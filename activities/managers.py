@@ -71,6 +71,12 @@ class ActivityManager(CommonManager):
         n.for_objs.add(*for_objs)
         return n
 
+    def get_about_object(self, about, **kwargs):
+        """Gets all activities about the "about" object."""
+        content_type = ContentType.objects.get_for_model(about)
+        return self.filter(about_content_type=content_type,
+                           about_id=about.id)
+
     def get_for_user(self, user, **kwargs):
         """Gets activities for a user.
 
@@ -124,6 +130,48 @@ class ActivityManager(CommonManager):
         content_type = ContentType.objects.get_for_model(about)
         return self.filter(about_content_type=content_type,
                            about_id=about.id).delete()
+
+    def updates_for_about_objects_queryset(self, about_objects_queryset,
+                                            **updates):
+        """Update activites for "about" objects from a queryset of "about"
+        objects.
+
+        :param about_objects_queryset: the queryset of activity "about" objects
+            to update.
+        """
+        if not updates:
+            return None
+
+        content_type = ContentType.objects.get_for_model(
+            about_objects_queryset.model
+        )
+
+        activities_queryset = self.filter(
+            about_content_type=content_type,
+            about_id__in=about_objects_queryset.values_list('id')
+        )
+
+        if len(updates.keys()) == 1:
+            # exclude items that don't need to be updates because they already
+            # have the one change needed
+            activities_queryset = activities_queryset.exclude(**updates)
+
+        return activities_queryset.update(**updates)
+
+    def updates_for_about_object(self, about, **updates):
+        """Make updates to activites for activities with the "about" object.
+
+        :param about: updates all activities that have this "about" object
+        """
+        if not updates:
+            return None
+
+        content_type = ContentType.objects.get_for_model(about)
+
+        return self.filter(
+            about_content_type=content_type,
+            about_id=about.id
+        ).update(**updates)
 
 
 class ActivityReplyManager(CommonManager):

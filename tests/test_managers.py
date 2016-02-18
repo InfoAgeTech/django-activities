@@ -1,11 +1,13 @@
-from __future__ import unicode_literals
-
 from activities.constants import Action
 from activities.constants import Privacy
 from activities.constants import Source
 from activities.models import Activity
+from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 from django_testing.user_utils import create_user
+
+from .utils import create_activity
 
 
 class ActivityManagerTests(TestCase):
@@ -148,7 +150,7 @@ class ActivityManagerTests(TestCase):
         """
         user_1 = create_user()
         user_2 = create_user()
-        activity = Activity.objects.create(
+        Activity.objects.create(
             created_user=self.user,
             text='hello world',
             about=user_1,
@@ -167,16 +169,83 @@ class ActivityManagerTests(TestCase):
         """
         user_1 = create_user()
         user_2 = create_user()
-        activity = Activity.objects.create(
-            created_user=self.user,
-            text='hello world',
-            about=user_1,
-            action=Action.COMMENTED,
-            privacy=Privacy.CUSTOM,
-            ensure_for_objs=[user_2]
-        )
+        activity = create_activity(about=user_1,
+                                   privacy=Privacy.CUSTOM,
+                                   ensure_for_objs=[user_2],
+                                   created_user=self.user)
 
         activities = Activity.objects.get_for_object(obj=user_1,
                                                      for_user=user_2)
         self.assertEqual(len(activities), 1)
         self.assertEqual(activity, activities[0])
+
+    def test_updates_for_about_objects_queryset(self):
+        """Test the updates_for_about_objects_queryset activity manager
+        method.
+        """
+        user_1 = create_user()
+        user_2 = create_user()
+        user_3 = create_user()
+        num_activities_per_user = 3
+        users = [user_1, user_2, user_3]
+        # add activities
+        for i in range(num_activities_per_user):
+            for user in users:
+                create_activity(created_user=self.user,
+                                about=user, privacy=Privacy.PRIVATE)
+
+        user_model = get_user_model()
+        user_content_type = ContentType.objects.get_for_model(user_model)
+        queryset = user_model.objects.filter(id__in=[user_1.id,
+                                                      user_2.id,
+                                                      user_3.id])
+
+        # update the activities
+        num_objects_updated = Activity.objects.updates_for_about_objects_queryset(
+            about_objects_queryset=queryset,
+            privacy=Privacy.PUBLIC
+        )
+        self.assertEqual(num_objects_updated,
+                         num_activities_per_user * len(users))
+        activities = Activity.objects.filter(about_content_type=user_content_type,
+                                             about_id__in=[user_1.id,
+                                                           user_2.id,
+                                                           user_3.id])
+
+        self.assertEqual(activities.count(),
+                         num_activities_per_user * len(users))
+
+        for index, activity in enumerate(list(activities)):
+            self.assertEqual(activity.privacy, Privacy.PUBLIC,
+                             'Error index {0}'.format(index))
+
+    def test_updates_for_about_object(self):
+        """Test the updates_for_about_object activity manager
+        method.
+        """
+        user_1 = create_user()
+        num_activities_per_user = 3
+
+        # add activities
+        for i in range(num_activities_per_user):
+            create_activity(created_user=self.user, about=user_1,
+                            privacy=Privacy.PRIVATE)
+
+        user_model = get_user_model()
+        user_content_type = ContentType.objects.get_for_model(user_model)
+
+        # update the activities
+        num_objects_updated = Activity.objects.updates_for_about_object(
+            about=user_1,
+            privacy=Privacy.PUBLIC
+        )
+
+        self.assertEqual(num_objects_updated, num_activities_per_user)
+        activities = Activity.objects.filter(about_content_type=user_content_type,
+                                             about_id=user_1.id)
+
+        self.assertEqual(activities.count(), num_activities_per_user)
+
+        for index, activity in enumerate(list(activities)):
+            self.assertEqual(activity.privacy, Privacy.PUBLIC,
+                             'Error index {0}'.format(index))

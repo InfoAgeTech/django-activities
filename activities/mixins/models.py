@@ -40,7 +40,7 @@ class AbstractActivityModelMixin(models.Model):
         """Ensures that the actual image file itself is deleted if one
         exists.
         """
-        super(AbstractActivityModelMixin, cls).post_save(sender, instance,
-                                                         **kwargs)
+        super(AbstractActivityModelMixin, cls).post_delete(sender, instance,
+                                                           **kwargs)
         # need to delete any notifications about this object
         get_activity_model().objects.delete_all_about_object(about=instance)

@@ -232,7 +232,6 @@ class Activity(AbstractUrlLinkModelMixin, AbstractActivity):
     objects = ActivityManager()
 
     class Meta:
-        ordering = ('-id',)
         index_together = (('about_content_type', 'about_id'),)
 
     def get_absolute_url(self):
