@@ -161,9 +161,14 @@ class AbstractActivity(AbstractBaseModel):
             return self.text
 
         # check to see if the about model has implemented a custom template
-        if self.action == Action.CREATED and \
-           hasattr(self.about, 'get_activity_created_html'):
-            return self.about.get_activity_created_html(self)
+        activity_html_func_name = 'get_activity_{0}_html'.format(
+            self.action.lower()
+        )
+
+        if hasattr(self.about, activity_html_func_name):
+            # custom formatting function exists.  Use it.
+            html_func = getattr(self.about, activity_html_func_name)
+            return html_func(self)
 
         action = Action.get_display(self.action) or self.action
 

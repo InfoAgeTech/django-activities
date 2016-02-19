@@ -148,7 +148,7 @@ class ActivityManager(CommonManager):
 
         activities_queryset = self.filter(
             about_content_type=content_type,
-            about_id__in=about_objects_queryset.values_list('id')
+            about_id__in=about_objects_queryset.values_list('id', flat=True)
         )
 
         if len(updates.keys()) == 1:

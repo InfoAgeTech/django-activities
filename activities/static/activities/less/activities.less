@@ -25,11 +25,11 @@
         padding-left: 0;
         position: relative;
         
-        li {
+        > li {
             list-style: none;
         }
-        
-        ul {
+    
+        ul, ol {
             padding-left: 0;
         }
         
@@ -66,6 +66,10 @@
         .item {
             border-bottom: 1px solid #F2F2F2;
             padding: 10px 0;
+            
+            > li {
+                list-style: none;
+            }
             
             > .msg {
                 margin-top: 10px;
@@ -150,6 +154,13 @@
         }
         
         .reply {
+            
+            > ul {
+                 > li {
+                    list-style: none;
+                }
+                
+            }
             
             .name, .msg, .date { 
                 margin-left: 32px; 
