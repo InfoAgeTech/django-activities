@@ -237,7 +237,10 @@ class Activity(AbstractUrlLinkModelMixin, AbstractActivity):
     objects = ActivityManager()
 
     class Meta:
-        index_together = (('about_content_type', 'about_id'),)
+        index_together = (
+            ('about_content_type', 'about_id'),
+            ('created_user', 'action', 'privacy', 'id')
+        )
 
     def get_absolute_url(self):
         if self.about and hasattr(self.about, 'get_activities_url'):

@@ -218,7 +218,8 @@ class ActivitiesViewMixin(object):
         if activities_about_object:
             activity_kwargs['obj'] = activities_about_object
 
-        queryset = Activity.objects.get_for_object(**activity_kwargs)
+        queryset = (Activity.objects.get_for_object(**activity_kwargs)
+                                    .order_by('-id'))
         return self.get_activities_common_queryset(queryset=queryset)
 
     def get_activities_about_object(self):
