@@ -15,6 +15,8 @@ show_comment_form: (optional) boolean indicating if the comment form should
     be shown at the top of the activities.  Default is True.
 show_activity_type_tabs: (optional) show the activity type tabs at the top of the
     activities so they can be sorted by type.  Default is True.
+is_infinite_scroll: (optional) boolean indicating if the activities should use
+    infinite scroll.
 {% endcomment %}
 
 {% load humanize activity_tags %}
@@ -22,7 +24,7 @@ show_activity_type_tabs: (optional) show the activity type tabs at the top of th
 
 {% with activities_object_list=activities_page.object_list %}
 
-<div class="activities-container" data-ajax="activities">
+<div class="activities-container" data-ajax="activities"{% if is_infinite_scroll %} data-infinite_scroll="true"{% endif %}>
 
   {% if not request.is_ajax %}
     {% if  show_comment_form != False %}
@@ -63,7 +65,7 @@ show_activity_type_tabs: (optional) show the activity type tabs at the top of th
   
   {% if activities_page.has_next %}
     <div class="activities-paging">
-        <a href="{{ activity_url }}?np={{ activities_page.next_page_number }}&nps={{ activities_page.paginator.per_page }}{% if activity_source %}&ns={{ activity_source.lower }}{% endif %}{% if activity_action %}&na={{ activity_action.lower }}{% endif %}" class="has-more">more</a>
+        <a href="{{ activity_url }}?np={{ activities_page.next_page_number }}&nps={{ activities_page.paginator.per_page }}{% if activity_source %}&ns={{ activity_source.lower }}{% endif %}{% if activity_action %}&na={{ activity_action.lower }}{% endif %}" class="has-more btn btn-default">more</a>
     </div>
   {% endif %}
    

@@ -8,20 +8,24 @@ register = Library()
 
 @register.simple_tag(takes_context=True)
 def render_activities(context, page, obj, activity_url, activity_source=None,
-                      show_comment_form=True, show_activity_type_tabs=True):
+                      show_comment_form=True, show_activity_type_tabs=True,
+                      is_infinite_scroll=True):
     """Renders an activities.
 
     :param page: the django page object of activities
     :param obj: the obj the activities are about
     :param activity_url: the url to use for the activities
     :param source: the activity source
+    :param is_infinite_scroll: boolean indicating if the activities should use
+        infinite scroll.
     """
     context.update({
         'activities_page': page,
         'obj': obj,
         'activity_url': activity_url,
         'show_activity_type_tabs': show_activity_type_tabs,
-        'show_comment_form': show_comment_form
+        'show_comment_form': show_comment_form,
+        'is_infinite_scroll': is_infinite_scroll
     })
 
     if activity_source is not None:

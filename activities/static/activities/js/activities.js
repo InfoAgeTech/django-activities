@@ -1,10 +1,38 @@
 // js handling for activities.
 $(document).ready(function(){
+    var $activitiesContainer = $('.activities-container');
     
+    /**
+     * Gets the loading html when the paging button is clicked.
+     */
     function getLoadingHtml(){
         return '<div class="progress progress-striped active"><div class="progress-bar progress-bar-info bar">Loading...</div></div>';
     }
 
+    
+    /**
+     * Add event listener for infinite scroll if the activity container needs it
+     * This only works with the jquery "inView()" plugin.  If that doesn't 
+     * exist, the infinite scroll won't work.
+     * 
+     * @see activities/static/activities/js/jquery.in-view.js
+     */
+    if ($activitiesContainer.is('[data-infinite_scroll="true"]') && 
+        typeof $().inView === 'function' &&
+        $activitiesContainer.find('> .activities-paging').length > 0) {
+        // add infinite scroll event listener
+        $(window).on('scroll', function(e) {
+            var $hasMoreButton = $activitiesContainer.find('> .activities-paging .has-more');
+            
+            if ($hasMoreButton.length > 0 && $hasMoreButton.inView()) {
+                $hasMoreButton.click();
+            } else if ($activitiesContainer.find('> .activities-paging').length === 0) {
+                // remove event listener since there's no more paging
+                $(window).off(e);
+            }
+        });
+    }
+    
     
     /**
      * This is for activities handling.
@@ -17,7 +45,7 @@ $(document).ready(function(){
      * 
      * <div data-ajax="activities">...</div>
      */
-    $('.activities-container').on('click', '.activity .delete-activity form button',  function(e){
+    $activitiesContainer.on('click', '.activity .delete-activity form button',  function(e){
         var $frm = $(this).closest('form'),
             form_data = $frm.serialize();
         
@@ -40,8 +68,12 @@ $(document).ready(function(){
         $this.replaceWith(getLoadingHtml());
         
         $.get(url, function(data){
+            var $data = $(data);
+            
             $('.activities-paging').remove();
-            $('ul.activities:last').after(data);
+            
+            $activitiesContainer.find('> ul.activities').append($data.find('> .activities > li'));
+            $activitiesContainer.append($data.find('> .activities-paging'));
         });
         
     }).on('click', 'ul.activity-type a', function(e){
