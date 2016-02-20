@@ -136,7 +136,8 @@ class ActivitiesViewMixin(object):
     You can further filter the activities by passing the following query
     string params:
 
-    * ns: activity source.  Can be one of .contants.Source.
+    * as: activity source.  Can be one of .contants.Source.
+    * aa: activity action.  Can be one of .contants.Action.
 
     Note: This mixin requires the django_core.mixins.paging.PagingViewMixin
     to be called before this view is called.
@@ -144,8 +145,8 @@ class ActivitiesViewMixin(object):
     activities_page_num = 1
     activities_page_size = 15
     activities_paginate_by = activities_page_size
-    activities_page_kwarg = 'np'
-    activities_page_size_kwarg = 'nps'
+    activities_page_kwarg = 'ap'
+    activities_page_size_kwarg = 'aps'
 
     def dispatch(self, *args, **kwargs):
 
@@ -184,12 +185,12 @@ class ActivitiesViewMixin(object):
     def get_activities_common_queryset(self, queryset):
         """Common filters to apply to a queryset."""
         activity_kwargs = {}
-        activity_source = Source.check(self.request.GET.get('ns'))
+        activity_source = Source.check(self.request.GET.get('as'))
 
         if activity_source:
             activity_kwargs['source'] = activity_source
 
-        activity_action = Action.check(self.request.GET.get('na'))
+        activity_action = Action.check(self.request.GET.get('aa'))
 
         if activity_action:
             activity_kwargs['action'] = activity_action
@@ -213,13 +214,9 @@ class ActivitiesViewMixin(object):
     def get_activities_queryset(self):
         """Get's the queryset for the activities."""
         activities_about_object = self.get_activities_about_object()
-        activity_kwargs = {'for_user': self.request.user}
-
-        if activities_about_object:
-            activity_kwargs['obj'] = activities_about_object
-
-        queryset = (Activity.objects.get_for_object(**activity_kwargs)
-                                    .order_by('-id'))
+        queryset = Activity.objects.get_about_object(
+            about=activities_about_object
+        ).order_by('-id')
         return self.get_activities_common_queryset(queryset=queryset)
 
     def get_activities_about_object(self):

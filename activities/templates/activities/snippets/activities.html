@@ -43,8 +43,8 @@ is_infinite_scroll: (optional) boolean indicating if the activities should use
     <ul class="nav nav-tabs activity-type">
       {% with action=activity_action.lower source=activity_source.lower %}
         <li{% if not activity_action == 'commented' and not activity_source == 'system' %} class="active"{% endif %}><a href="{{ activity_url }}">All</a></li>
-        <li{% if activity_action == 'commented' %} class="active"{% endif %}><a href="{{ activity_url }}?na=commented">Comments</a></li>
-        <li{% if activity_source == 'system' %} class="active"{% endif %}><a href="{{ activity_url }}?ns=system">Activity</a></li>
+        <li{% if activity_action == 'commented' %} class="active"{% endif %}><a href="{{ activity_url }}?aa=commented">Comments</a></li>
+        <li{% if activity_source == 'system' %} class="active"{% endif %}><a href="{{ activity_url }}?as=system">Activity</a></li>
       {% endwith %}
     </ul>
     {% endif %}
@@ -65,7 +65,7 @@ is_infinite_scroll: (optional) boolean indicating if the activities should use
   
   {% if activities_page.has_next %}
     <div class="activities-paging">
-        <a href="{{ activity_url }}?np={{ activities_page.next_page_number }}&nps={{ activities_page.paginator.per_page }}{% if activity_source %}&ns={{ activity_source.lower }}{% endif %}{% if activity_action %}&na={{ activity_action.lower }}{% endif %}" class="has-more btn btn-default">more</a>
+        <a href="{{ activity_url }}?ap={{ activities_page.next_page_number }}&aps={{ activities_page.paginator.per_page }}{% if activity_source %}&as={{ activity_source.lower }}{% endif %}{% if activity_action %}&aa={{ activity_action.lower }}{% endif %}" class="has-more btn btn-default">more</a>
     </div>
   {% endif %}
    

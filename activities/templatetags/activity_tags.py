@@ -1,6 +1,10 @@
+from activities.constants import Action
 from django.template import Library
 from django.template.loader import render_to_string
+from django.utils.html import linebreaks
+from django.utils.safestring import mark_safe
 from django_core.utils.loading import get_function_from_settings
+from django.utils.html import escape
 
 
 register = Library()
@@ -45,6 +49,23 @@ def render_activity(context, activity, activity_url, show_reference_obj=False):
 
     return render_to_string('activities/snippets/activity.html',
                             context=context)
+
+
+@register.simple_tag
+def render_activity_message(activity, user=None, **kwargs):
+    """Renders the activity message for the activity.
+
+    :param user: the current user viewing the activities.
+    """
+    kwargs['user'] = user
+
+    if activity.text:
+        if activity.action == Action.COMMENTED:
+            return mark_safe(linebreaks(escape(activity.text)))
+        else:
+            return mark_safe(linebreaks(activity.text))
+
+    return mark_safe(activity.get_html(**kwargs))
 
 
 @register.filter

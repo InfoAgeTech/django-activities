@@ -1,7 +1,6 @@
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext as _
 from django_core.db.models.mixins.base import AbstractBaseModel
 from django_core.db.models.mixins.generic import AbstractGenericObject
@@ -109,7 +108,7 @@ class AbstractActivity(AbstractBaseModel):
         object_name = self.about_content_type.model_class()._meta.verbose_name
         object_ref = object_name
         # these are common words that require "an" in the action text
-        an_words = ['image']
+        an_words = ['audio', 'image']
         a_or_an = 'a'
 
         if object_name.lower() in an_words:
@@ -150,12 +149,16 @@ class AbstractActivity(AbstractBaseModel):
             object=self.about
         )
 
-    def get_html(self):
+    def get_html(self, auth_user=None, **kwargs):
         """Does the same thing as ``get_text(...)`` but looks to see
         if the objects have the ``get_absolute_url`` method implemented.  If
         they do, then they will appear as links.  For example, if the user
         model implements the ``get_absolute_url`` the user's text will be
         hyperlinked to the user's absolute url.
+
+        :param auth_user: the authenticated user if one is known.
+        :param kwargs: the keyword args that will be passed to the "about"
+            object specific function.
         """
         if self.text:
             return self.text
@@ -168,7 +171,7 @@ class AbstractActivity(AbstractBaseModel):
         if hasattr(self.about, activity_html_func_name):
             # custom formatting function exists.  Use it.
             html_func = getattr(self.about, activity_html_func_name)
-            return html_func(self)
+            return html_func(self, auth_user=auth_user, **kwargs)
 
         action = Action.get_display(self.action) or self.action
 
@@ -238,7 +241,7 @@ class Activity(AbstractUrlLinkModelMixin, AbstractActivity):
 
     class Meta:
         index_together = (
-            ('about_content_type', 'about_id'),
+            ('about_id', 'about_content_type', 'id'),
             ('created_user', 'action', 'privacy', 'id')
         )
 
@@ -287,9 +290,11 @@ class ActivityReply(AbstractUrlLinkModelMixin, AbstractBaseModel):
         return '{0}/delete'.format(self.get_absolute_url())
 
 
-@python_2_unicode_compatible
 class ActivityFor(AbstractGenericObject):
     """Defines the generic object a activity is for."""
+
+    class Meta:
+        index_together = (('object_id', 'content_type'),)
 
     def __str__(self):
         return '{0} {1}'.format(self.content_type, self.object_id)

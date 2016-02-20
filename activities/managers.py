@@ -5,6 +5,7 @@ from django_core.db.models import CommonManager
 from .constants import Action
 from .constants import Privacy
 from .constants import Source
+from activities.constants import Action
 
 
 class ActivityManager(CommonManager):
@@ -74,8 +75,8 @@ class ActivityManager(CommonManager):
     def get_about_object(self, about, **kwargs):
         """Gets all activities about the "about" object."""
         content_type = ContentType.objects.get_for_model(about)
-        return self.filter(about_content_type=content_type,
-                           about_id=about.id)
+        return self.filter(about_id=about.id,
+                           about_content_type=content_type)
 
     def get_for_user(self, user, **kwargs):
         """Gets activities for a user.
@@ -109,7 +110,10 @@ class ActivityManager(CommonManager):
                                **kwargs)
 
         if for_user is None or not for_user.is_authenticated():
-            return queryset.filter(privacy=Privacy.PUBLIC).distinct()
+            if 'privacy' not in kwargs:
+                queryset = queryset.filter(privacy=Privacy.PUBLIC)
+
+            return queryset.distinct()
 
         if for_user and for_user == obj:
             return queryset

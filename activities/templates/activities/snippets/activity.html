@@ -19,7 +19,7 @@
 
 {% spaceless %}
 {% with user_timezone=user_timezone|default:'UTC' %}
-<li class="item-container activity-container" id="n-{{ activity.id }}">
+<li class="item-container activity-container{% if user and user.is_authenticated and user == activity.created_user %} created-by-user{% endif %}" id="n-{{ activity.id }}">
 
     <ul class="item activity clearfix">
         
@@ -32,10 +32,17 @@
         </li>
         <li class="actions">
             {% if activity.created_user_id == user.id %}
-                {% if activity.is_editable %}
-                <a href="{{ activity.get_edit_url }}"><i class="{{ ICON_EDIT_CLS }}"></i></a>
-                {% endif %}
-                <a href="{{ activity.get_delete_url }}"><i class="{{ ICON_DECLINE_CLS }}"></i></a>
+                <div class="dropdown">
+                    <button class="btn btn-default btn-nostyle dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        <span class="fa fa-chevron-down"></span>
+			        </button>
+			        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+			            {% if activity.is_editable %}
+	                    <li><a href="{{ activity.get_edit_url }}">Edit</a></li>
+	                    {% endif %}
+	                    <li><a href="{{ activity.get_delete_url }}">Delete</i></a></li>
+	                </ul>
+			    </div>
             {% endif %}
         </li>
         <li class="name">
@@ -50,15 +57,7 @@
         </li>
         <li class="date"><a href="{{ activity.get_absolute_url }}">{{ activity.created_dttm|timezone:user_timezone|naturaltime }}</a></li>
         <li class="msg">
-          {% if activity.text %}
-	          {% if activity.source == 'COMMENT' %}
-	            {{ activity.text|linebreaks }}
-	          {% else %}
-	            {{ activity.text|safe|linebreaks }}
-	          {% endif %}
-	      {% else %}
-	          {{ activity.get_html|safe }}
-	      {% endif %}
+            {% render_activity_message activity=activity user=user %}
         </li>
         {% with replies=activity.replies.all %}
         {% if replies or not replies and user.is_authenticated %}
@@ -76,8 +75,15 @@
                         </li>
                         <li class="actions">
                             {% if reply.created_user_id == user.id %}
-                                <a href="{{ reply.get_edit_url }}"><i class="{{ ICON_EDIT_CLS }}"></i></a>
-                                <a href="{{ reply.get_delete_url }}"><i class="{{ ICON_DECLINE_CLS }}"></i></a>
+                                <div class="dropdown">
+				                    <button class="btn btn-default btn-sm btn-nostyle dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+				                        <span class="fa fa-chevron-down"></span>
+				                    </button>
+				                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+				                        <li><a href="{{ reply.get_edit_url }}">Edit</a></li>
+				                        <li><a href="{{ reply.get_delete_url }}">Delete</a></li>
+				                    </ul>
+				                </div>
                             {% endif %}
                         </li>
                         <li class="name">
@@ -98,8 +104,11 @@
                     <input type="hidden" name="next" value="{{ request.path}}" />
                     <input type="hidden" name="pid" value="{{ activity.id }}" />
                     {% include 'activities/snippets/user_thumbnail.html' with user=user %}
-                    <div class="comment-holder">
+                    <div class="comment-holder input-group">
                         <input type="text" name="text" class="form-control" placeholder="Make a comment..." />
+                        <span class="input-group-btn">
+                            <button type="submit" class="btn btn-default btn-xs">Post</button>
+                        </span>
                     </div>
                 </form>
             </div>
