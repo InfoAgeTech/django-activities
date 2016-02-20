@@ -216,7 +216,7 @@ class ActivitiesViewMixin(object):
         activities_about_object = self.get_activities_about_object()
         queryset = Activity.objects.get_about_object(
             about=activities_about_object
-        ).order_by('-id')
+        ).order_by('-created_dttm')
         return self.get_activities_common_queryset(queryset=queryset)
 
     def get_activities_about_object(self):

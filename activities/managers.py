@@ -1,11 +1,10 @@
+from activities.constants import Action
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.query_utils import Q
 from django_core.db.models import CommonManager
 
-from .constants import Action
 from .constants import Privacy
 from .constants import Source
-from activities.constants import Action
 
 
 class ActivityManager(CommonManager):

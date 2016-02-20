@@ -241,8 +241,8 @@ class Activity(AbstractUrlLinkModelMixin, AbstractActivity):
 
     class Meta:
         index_together = (
-            ('about_id', 'about_content_type', 'id'),
-            ('created_user', 'action', 'privacy', 'id')
+            ('about_id', 'about_content_type', 'created_dttm'),
+            ('created_user', 'action', 'privacy', 'created_dttm')
         )
 
     def get_absolute_url(self):
