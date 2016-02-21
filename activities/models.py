@@ -1,6 +1,9 @@
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.db.models import F
+from django.db.models.signals import post_delete
+from django.db.models.signals import post_save
 from django.utils.translation import ugettext as _
 from django_core.db.models.mixins.base import AbstractBaseModel
 from django_core.db.models.mixins.generic import AbstractGenericObject
@@ -43,6 +46,7 @@ class AbstractActivity(AbstractBaseModel):
         'UPDATED', 'DELETED', 'COMMENTED', etc)
     * privacy: the privacy of the activity.  Can be either 'PUBLIC' or
         'PRIVATE'.
+    * reply_count: the denormalized number of replies to this activity
     """
     text = models.TextField(blank=True, null=True)
     about = GenericForeignKey(ct_field='about_content_type',
@@ -52,6 +56,7 @@ class AbstractActivity(AbstractBaseModel):
     replies = models.ManyToManyField('ActivityReply',
                                      related_name='replies',
                                      blank=True)
+    reply_count = models.IntegerField(default=0)
     for_objs = models.ManyToManyField('ActivityFor',
                                       related_name='for_objs',
                                       blank=True)
@@ -257,6 +262,23 @@ class Activity(AbstractUrlLinkModelMixin, AbstractActivity):
     def get_delete_url(self):
         return '{0}/delete'.format(self.get_absolute_url())
 
+    @classmethod
+    def post_save(cls, sender, instance, created, **kwargs):
+        """Post save signal that fires after saved."""
+
+        if (created and
+            instance.action == Action.SHARED and
+            instance.about and
+            hasattr(instance.about, 'share_count')):
+            # check to see if the share count has been denormalized on the
+            # about object.  If so, increment the value.
+            type(instance.about).objects.filter(id=instance.about.id).update(
+                reply_count=F('share_count') + 1
+            )
+
+
+post_save.connect(Activity.post_save, sender=Activity)
+
 
 class ActivityReply(AbstractUrlLinkModelMixin, AbstractBaseModel):
     """Represents a activity reply object.
@@ -288,6 +310,27 @@ class ActivityReply(AbstractUrlLinkModelMixin, AbstractBaseModel):
 
     def get_delete_url(self):
         return '{0}/delete'.format(self.get_absolute_url())
+
+    @classmethod
+    def post_save(cls, sender, instance, created, **kwargs):
+        """Post save signal that fires after saved."""
+
+        if created:
+            Activity.objects.filter(id=instance.activity.id).update(
+                reply_count=F('reply_count') + 1
+            )
+
+    @classmethod
+    def post_delete(cls, sender, instance, **kwargs):
+        """Post delete fires after the object is deleted."""
+        if instance.activity:
+            Activity.objects.filter(id=instance.activity.id).update(
+                reply_count=F('reply_count') - 1
+            )
+
+
+post_save.connect(ActivityReply.post_save, sender=ActivityReply)
+post_delete.connect(ActivityReply.post_delete, sender=ActivityReply)
 
 
 class ActivityFor(AbstractGenericObject):

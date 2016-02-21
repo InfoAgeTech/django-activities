@@ -7,10 +7,16 @@ from django.db import models
 class AbstractActivityModelMixin(models.Model):
     """Model mixin for objects that can create Activity objects about
     themselves.
+
+    Fields:
+
+    - share_count: the number of times this object has been shared (via
+        activities).
     """
     activities = GenericRelation('activities.Activity',
                                  object_id_field='about_id',
                                  content_type_field='about_content_type')
+    share_count = models.IntegerField(default=0)
 
     class Meta():
         abstract = True
