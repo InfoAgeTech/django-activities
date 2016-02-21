@@ -1,3 +1,5 @@
+@activity-header-link-color: #9B9B9B;
+
 .activities-container {
     
     .comment-form {
@@ -20,8 +22,8 @@
     }
     
     .activities {
-        @activity-header-link-color: #9B9B9B;
         @reply-input-height: 25px;
+        @reply-border: 1px solid rgba(0, 0, 0, 0.1);
         margin-bottom: 0;
         padding-left: 0;
         position: relative;
@@ -85,14 +87,6 @@
                 padding: 10px;
             }
             
-            .date {
-                font-size: .9em;    
-                
-                a {
-                    color: @activity-header-link-color;
-                }
-            }
-            
             .msg {
                 
                 img {
@@ -110,31 +104,10 @@
                     
                 }
             }
-            
-            .name {
-                 
-                .about-obj,
-                .action-text { 
-                    color: silver; 
-                    margin-left: 5px;
-                    
-                    a { 
-                        color: @activity-header-link-color;
-                    }
-                }
-                
-            }
-            
-            .date,
-            .name { 
-                display: block; 
-                margin-left: 40px;
-            }
              
         }
         
         .my-reply {
-            margin: -10px;
             padding: 10px;
             position: relative;
             z-index: 10;
@@ -146,29 +119,76 @@
         }
         
         .replies {
+            @replies-border: 1px solid #E2E2E2;
             background-color: white;
-            border-bottom: 1px solid rgba(0,0,0,.1);
-            border-right: 1px solid rgba(0,0,0,.1);
+            border: @replies-border;
             padding: 10px;
             max-height: 500px;
             overflow-y: scroll;
             margin-top: 20px;
+            
+            .reply-container {
+                max-height: 200px;
+                overflow-y: scroll;
+            }
+            
+            .see-more-replies {
+                border-bottom: @reply-border;
+                background-color: #F7F7F7;
+                
+                &:hover {
+                    background-color: #F3F3F3;
+                    
+                    a {
+                        color: #337ab7;
+                    }  
+                }
+                
+                a {
+                    color: #ADADAD;
+                    display: block;
+                    font-size: .9em;
+                    padding: 2px 0;
+                    text-align: center;
+                    text-decoration: none;
+                }
+            }
+            
         }
         
         .reply {
             font-size: .9em;
+            border-bottom: @reply-border;
+            padding: 0 10px 4px;
+            margin-top: 5px;
             
-            > ul {
-                 > li {
-                    list-style: none;
-                }
-                
+            &:last-child {
+                border-bottom: none;
             }
             
-            .name, .msg, .date { 
+             > li {
+                list-style: none;
+            }
+            
+            .activity-header, 
+            .msg,
+            .reply-header { 
                 margin-left: 32px; 
             }
-
+            
+            .msg {
+                > p {
+                    margin-bottom: 2px;
+                }
+            }
+            
+            .reply-header {
+                .date {
+                    margin-left: 5px;
+                    color: silver;
+                    font-size: .9em;
+                }
+            }
         }
         
     }
@@ -214,6 +234,48 @@
             
             .field-name, .field-value { 
                 font-weight: bold; 
+            }
+        }
+    }
+    
+    .activity-header {
+        min-height: 32px;
+        
+        .about-obj,
+        .action-text { 
+            color: silver; 
+            margin-left: 5px;
+            
+            a { 
+                color: @activity-header-link-color;
+            }
+        }
+        
+        .date {
+            margin-left: 4px;
+            
+            a {
+               color: @activity-header-link-color; 
+            }
+        }
+        
+    }
+    
+    .activity-header { 
+        display: block; 
+        margin-left: 40px;
+    }
+    
+}
+
+
+@media (min-width: 500px) {
+    .activity {
+        .activity-header {
+            .date {
+                display: block;
+                margin-left: 0;
+                font-size: .9em;
             }
         }
     }

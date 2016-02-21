@@ -341,6 +341,7 @@ class ActivityFormView(FormView):
         # if "pid" (parent_activity_id) exists, then this is a reply to a
         # activity.
         parent_activity_id = form.cleaned_data.get('pid')
+        activity_reply = None
 
         if parent_activity_id:
             # reply to an existing activity
@@ -351,7 +352,8 @@ class ActivityFormView(FormView):
             if not activity:
                 raise HttpResponse(status=400)
 
-            activity.add_reply(user=self.request.user, text=text)
+            activity_reply = activity.add_reply(user=self.request.user,
+                                                text=text)
 
         else:
             ensure_for_objs = []
@@ -371,7 +373,8 @@ class ActivityFormView(FormView):
             )
 
         if self.request.is_ajax():
-            return ActivityResponse(request=self.request, activity=activity)
+            return ActivityResponse(request=self.request,
+                                    activity=activity_reply or activity)
 
         # TODO: Where do I redirect to if it's not an ajax request?
         # return ''  # safe_redirect(self.request.POST.get('next') or '/')

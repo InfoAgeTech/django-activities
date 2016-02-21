@@ -31,3 +31,17 @@ def get_activity_html(request, activity):
 
     return render_to_string('activities/snippets/activity.html',
                             context=context).strip()
+
+
+def get_activity_reply_html(request, activity_reply):
+    """Gets the html for an activity reply.
+
+    :param activity_reply: the activity reply to render the html for.
+    """
+    context = {
+        'activity_reply': activity_reply,
+        'user': request.user
+    }
+
+    return render_to_string('activities/snippets/activity_reply.html',
+                            context=context).strip()

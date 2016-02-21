@@ -1,8 +1,8 @@
-from __future__ import unicode_literals
-
+from activities.models import Activity
 from django_core.views import JSONResponse
 
 from .utils import get_activity_html
+from .utils import get_activity_reply_html
 
 
 class ActivityResponse(JSONResponse):
@@ -30,7 +30,13 @@ class ActivityResponse(JSONResponse):
         else:
             content = {}
 
-        content['activity'] = get_activity_html(request=request,
-                                                activity=activity)
+        if isinstance(activity, Activity):
+            content['activity'] = get_activity_html(request=request,
+                                                    activity=activity)
+        else:
+            content['activity_reply'] = get_activity_reply_html(
+                request=request,
+                activity_reply=activity
+            )
         super(ActivityResponse, self).__init__(content=content, status=status,
                                                **kwargs)

@@ -1,0 +1,43 @@
+{% comment %}
+Reners an activity reply.
+
+Params:
+
+- activity_reply: the activity reply to render.
+- user_timezone: the user's timezone to render the datetimes for
+- user: the user viewing the activity reply
+{% endcomment %}
+{% spaceless %}
+{% load tz humanize %}
+{% with user_timezone=user_timezone|default:'UTC' %}
+<ul class="reply">
+    <li class="avatar">
+        <a href="{{ activity_reply.created_user.get_absolute_url }}">
+          {% with created_user=activity_reply.created_user  %} 
+            {% include 'activities/snippets/user_thumbnail.html' with user=created_user %}
+          {% endwith %}
+        </a>
+    </li>
+    <li class="actions">
+        {% if activity_reply.created_user_id == user.id %}
+            <div class="dropdown">
+                <button class="btn btn-default btn-sm btn-nostyle dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    <span class="fa fa-chevron-down"></span>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                    <li><a href="{{ activity_reply.get_edit_url }}">Edit</a></li>
+                    <li><a href="{{ activity_reply.get_delete_url }}">Delete</a></li>
+                </ul>
+            </div>
+        {% endif %}
+    </li>
+    <li class="reply-header">
+        <strong>
+            <a href="{{ activity_reply.created_user.get_absolute_url }}">{{ activity_reply.created_user.get_full_name }}</a>
+        </strong>
+        <span class="date">{{ activity_reply.created_dttm|timezone:user_timezone|naturaltime }}</span>
+    </li>
+    <li class="msg">{{ activity_reply.text|safe|linebreaks }}</li>
+</ul>
+{% endwith %}
+{% endspaceless %}

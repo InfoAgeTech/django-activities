@@ -45,7 +45,7 @@
 			    </div>
             {% endif %}
         </li>
-        <li class="name">
+        <li class="activity-header">
             <strong>
                 <a href="{{ activity.created_user.get_absolute_url }}">{{ activity.created_user.get_full_name }}</a>
             </strong>
@@ -54,49 +54,22 @@
                 <span class="action-text">{{ action_html|safe }}</span>
               {% endif %}
             {% endwith %}
+            <span class="date"><a href="{{ activity.get_absolute_url }}">{{ activity.created_dttm|timezone:user_timezone|naturaltime }}</a></span>
         </li>
-        <li class="date"><a href="{{ activity.get_absolute_url }}">{{ activity.created_dttm|timezone:user_timezone|naturaltime }}</a></li>
         <li class="msg">
             {% render_activity_message activity=activity user=user %}
         </li>
-        {% with replies=activity.replies.all %}
+        {% with replies=activity.replies.get_most_recent %}
         {% if replies or not replies and user.is_authenticated %}
         <li class="replies">
-            <ul>
-                {% for reply in replies %}
-                <li class="reply">
-                    <ul>
-                        <li class="avatar">
-                            <a href="{{ reply.created_user.get_absolute_url }}">
-                              {% with created_user=reply.created_user  %} 
-                                {% include 'activities/snippets/user_thumbnail.html' with user=created_user %}
-                              {% endwith %}
-                            </a>
-                        </li>
-                        <li class="actions">
-                            {% if reply.created_user_id == user.id %}
-                                <div class="dropdown">
-				                    <button class="btn btn-default btn-sm btn-nostyle dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-				                        <span class="fa fa-chevron-down"></span>
-				                    </button>
-				                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-				                        <li><a href="{{ reply.get_edit_url }}">Edit</a></li>
-				                        <li><a href="{{ reply.get_delete_url }}">Delete</a></li>
-				                    </ul>
-				                </div>
-                            {% endif %}
-                        </li>
-                        <li class="name">
-                            <strong>
-                                <a href="{{ reply.created_user.get_absolute_url }}">{{ reply.created_user.get_full_name }}</a>
-                            </strong>
-                            <span class="action-text">{{ reply.created_dttm|timezone:user_timezone|naturaltime }}</a>
-                        </li>
-                        <li class="msg">{{ reply.text|safe|linebreaks }}</li>
-                    </ul>
-                </li>
-                {% endfor %}
-            </ul>
+            {% if activity.reply_count > replies|length %}
+                <div class="see-more-replies"><a href="{{ activity.get_absolute_url }}">See more replies...</a></div>
+            {% endif %}
+            <div class="reply-container">
+            {% for reply in replies %}
+                {% include 'activities/snippets/activity_reply.html' with activity_reply=reply user_timezone=user_timezone %}
+            {% endfor %}
+            </div>
             {% if user.is_authenticated %}
             <div class="my-reply">
                 <form class="comment-reply-form" action="{{ activity_url }}" method="post">

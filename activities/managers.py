@@ -210,3 +210,13 @@ class ActivityReplyManager(CommonManager):
             return self.get(activity_id=activity_id)
         except self.model.DoesNotExist:
             return None
+
+    def get_most_recent(self, num=3, **kwargs):
+        """Gets the most recent x number of replies.  This is a helper method
+        for use in templates.
+
+        Important: This returns a list of objects and not a queryset.
+
+        :param num: the number of most recent replied to return.
+        """
+        return self.all().order_by('-created_dttm')[:num][::-1]

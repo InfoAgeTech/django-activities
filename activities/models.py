@@ -125,7 +125,7 @@ class AbstractActivity(AbstractBaseModel):
                 object_name
             )
 
-        return '{action} {a_or_an} {object_ref}.'.format(
+        return '{action} {a_or_an} {object_ref}'.format(
             action=self.action.lower(),
             a_or_an=a_or_an,
             object_ref=object_ref

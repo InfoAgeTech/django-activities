@@ -1,21 +1,12 @@
 {% extends 'activities/base_activity.html' %}
-{% load i18n tz %}
+{% load i18n tz activity_tags %}
 {% block page_title %}{% trans 'Activity' %} - {% endblock %}
 
 {% block activity_content %}
     <h1>Activity</h1>
-    {% with user_timezone=user_timezone|default:'UTC' %}
-    <dl class="dl-horizontal">
-        <dt>Created by</dt>
-        <dd>{{ activity.created_user.get_absolute_url_link }}</dd>
-        <dt>Created on</dt>
-        <dd>{{ activity.created_dttm|timezone:user_timezone|date:'DATETIME_FORMAT' }}</dd>
-        <dt>Last Modified by</dt>
-        <dd>{{ activity.last_modified_user.get_absolute_url_link }}</dd>
-        <dt>Last Modified on</dt>
-        <dd>{{ activity.last_modified_dttm|timezone:user_timezone|date:'DATETIME_FORMAT' }}</dd>
-        <dt>Activity</dt>
-        <dd>{{ activity.get_html|safe }}</dd>
-    </dl>
-    {% endwith %}
+    <div class="activities-container" data-ajax="activities">
+        <ul class="activities">
+            {% render_activity activity=activity activity_url=activity_url %}
+        </ul>
+    </div>
 {% endblock %}

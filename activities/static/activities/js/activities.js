@@ -158,17 +158,20 @@ $(document).ready(function(){
                 var $this = $(this),
                     form_data = $this.serialize(),
                     activity_id = $this.find('input[name="pid"]').val(),
-                    text = $.trim($this.find('input[name="text"]').val());
+                    $input = $this.find('input[name="text"]'),
+                    text = $.trim($input.val());
                 
                 if (!text) {
                     // No text in the comment.  Nothing to do.
                     return false;
                 }
                 
-                $.post($this.attr('action'), form_data, function(resp_text, success_fail, resp){
-                    
+                $.post($this.attr('action'), form_data, function(resp_text, success_fail, resp) {
+                    var $replyContainer = $('#n-' + activity_id + ' .reply-container'); 
                     if (resp.status === 200 || resp.status === 202){
-                        $('#n-' + activity_id).replaceWith(resp_text.activity);
+                        $replyContainer.append($(resp_text.activity_reply));
+                        $replyContainer.scrollTop($replyContainer.outerHeight());
+                        $input.val('');
                     } else if (window.console && window.console.log) {
                         window.console.log('There was an error adding the activity reply.');
                     }
