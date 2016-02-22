@@ -1,7 +1,9 @@
 from datetime import datetime
 from logging import getLogger
-from activities.cleanup import ActivityCleaner
+
 from django.core.management.base import BaseCommand
+
+from activities.cleanup import ActivityCleaner
 
 
 logging = getLogger(__name__)

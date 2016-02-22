@@ -219,4 +219,4 @@ class ActivityReplyManager(CommonManager):
 
         :param num: the number of most recent replied to return.
         """
-        return self.all().order_by('-created_dttm')[:num][::-1]
+        return self.all().order_by('-created_dttm')[:num]

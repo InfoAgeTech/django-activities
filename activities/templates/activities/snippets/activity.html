@@ -59,17 +59,14 @@
         <li class="msg">
             {% render_activity_message activity=activity user=user %}
         </li>
-        {% with replies=activity.replies.get_most_recent %}
+        {% with replies=activity_replies|default:activity.replies.get_most_recent %}
         {% if replies or not replies and user.is_authenticated %}
         <li class="replies">
             {% if activity.reply_count > replies|length %}
-                <div class="see-more-replies"><a href="{{ activity.get_absolute_url }}">See more replies...</a></div>
+                {% include 'activities/snippets/activity_replies.html' with activity_replies=replies activity_replies_has_more=True %}
+            {% else %}
+                {% include 'activities/snippets/activity_replies.html' with activity_replies=replies activity_replies_has_more=False %}
             {% endif %}
-            <div class="reply-container">
-            {% for reply in replies %}
-                {% include 'activities/snippets/activity_reply.html' with activity_reply=reply user_timezone=user_timezone %}
-            {% endfor %}
-            </div>
             {% if user.is_authenticated %}
             <div class="my-reply">
                 <form class="comment-reply-form" action="{{ activity_url }}" method="post">
@@ -78,7 +75,7 @@
                     <input type="hidden" name="pid" value="{{ activity.id }}" />
                     {% include 'activities/snippets/user_thumbnail.html' with user=user %}
                     <div class="comment-holder input-group">
-                        <input type="text" name="text" class="form-control" placeholder="Make a comment..." />
+                        <input type="text" name="text" class="form-control" placeholder="Make a comment..." autocomplete="off" />
                         <span class="input-group-btn">
                             <button type="submit" class="btn btn-default btn-xs">Post</button>
                         </span>

@@ -1,0 +1,24 @@
+{% comment %}
+Snippet for rendering comment replies.
+
+Param:
+
+- activity: the activity the replies are about
+- activity_replies: the activity replies iterable
+- user_timezone: the user's timezone to render the time for
+- activity_replies_next_url: (optional) the next url to use for getting activity
+    replies.
+- activity_replies_has_more: booelan indicating if the activity has more replies
+- activity_replies_page_size: the activity replies page size
+- activity_replies_page_num: the activity replies page number for the next page
+{% endcomment %}
+{% spaceless %}
+<div class="reply-container">
+    {% if activity_replies_has_more or activity_replies_next_url %}
+	    <div class="see-more-replies"><a href="{{ activity_replies_next_url|default:activity.get_absolute_url }}">See more replies...</a></div>
+	{% endif %}
+	{% for reply in activity_replies reversed %}
+	    {% include 'activities/snippets/activity_reply.html' with activity_reply=reply user_timezone=user_timezone %}
+	{% endfor %}
+</div>
+{% endspaceless %}

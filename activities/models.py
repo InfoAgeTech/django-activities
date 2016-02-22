@@ -263,6 +263,18 @@ class Activity(AbstractUrlLinkModelMixin, AbstractActivity):
         return '{0}/delete'.format(self.get_absolute_url())
 
     @classmethod
+    def post_delete(cls, sender, instance, **kwargs):
+        """Post delete fires after the object is deleted."""
+        if (instance.action == Action.SHARED and
+            instance.about and
+            hasattr(instance.about, 'share_count')):
+            # check to see if the share count has been denormalized on the
+            # about object.  If so, increment the value.
+            type(instance.about).objects.filter(id=instance.about.id).update(
+                reply_count=F('share_count') - 1
+            )
+
+    @classmethod
     def post_save(cls, sender, instance, created, **kwargs):
         """Post save signal that fires after saved."""
 
@@ -278,6 +290,7 @@ class Activity(AbstractUrlLinkModelMixin, AbstractActivity):
 
 
 post_save.connect(Activity.post_save, sender=Activity)
+post_delete.connect(Activity.post_delete, sender=Activity)
 
 
 class ActivityReply(AbstractUrlLinkModelMixin, AbstractBaseModel):
@@ -299,7 +312,7 @@ class ActivityReply(AbstractUrlLinkModelMixin, AbstractBaseModel):
     objects = ActivityReplyManager()
 
     class Meta:
-        ordering = ('id',)
+        index_together = (('activity', 'created_dttm'),)
 
     def get_absolute_url(self):
         return '{0}/replies/{1}'.format(self.activity.get_absolute_url(),

@@ -1,5 +1,7 @@
-from __future__ import unicode_literals
+from datetime import datetime
 
+from activities.mixins.views import ActivityViewMixin
+from activities.models import ActivityReply
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
@@ -8,7 +10,10 @@ from django.views.generic.base import TemplateView
 from django.views.generic.edit import DeleteView
 from django.views.generic.edit import FormView
 from django.views.generic.edit import UpdateView
+from django.views.generic.list import ListView
+from django_core.utils.urls import build_url
 from django_core.views import PagingViewMixin
+from django_core.views.mixins.ajax import AjaxViewMixin
 from django_core.views.mixins.generic import GenericObjectViewMixin
 
 from .forms import ActivityDeleteForm
@@ -46,9 +51,67 @@ class ActivitiesForUserView(PagingViewMixin, UserActivitiesViewMixin,
     template_name = 'activities/view_activities.html'
 
 
-class ActivityView(ActivitySingleObjectViewMixin, TemplateView):
+class ActivityView(PagingViewMixin, ActivityViewMixin, AjaxViewMixin, ListView):
+    """View for an activity.  The paging is for the activity replies.
 
+    Querystring params:
+
+    - ts: timestamp to ensure all replies are less than this value.  This helps
+        prevent duplicates show up in paging if new replies are added between
+        user paging.
+    """
     template_name = 'activities/view_activity.html'
+    ajax_template_name = 'activities/snippets/activity_replies.html'
+    model = ActivityReply
+    context_object_name = 'activity_replies'
+
+    def get_context_data(self, **kwargs):
+        context = super(ActivityView, self).get_context_data(**kwargs)
+        has_more = context['page_obj'].has_next()
+        context['activity_replies_has_more'] = has_more
+
+        if has_more:
+            querystring_params = {
+                'p': self.page_num + 1,
+                'ps': self.page_size
+            }
+
+            dt = self.get_query_timestamp_datetime()
+
+            if not dt and self.page_num == 1:
+                # it's the first page so add the timestamp to the url
+                dt = datetime.utcnow()
+
+            if dt:
+                querystring_params['ts'] = dt.timestamp()
+
+            context['activity_replies_next_url'] = build_url(
+                url=self.activity.get_absolute_url(),
+                querystring_params=querystring_params
+            )
+
+        return context
+
+    def get_queryset(self, **kwargs):
+        queryset = super(ActivityView, self).get_queryset(**kwargs)
+        filter_kwargs = {
+            'activity': self.activity
+        }
+
+        dt = self.get_query_timestamp_datetime()
+
+        if dt:
+            filter_kwargs['created_dttm__lte'] = dt
+
+        return queryset.filter(**filter_kwargs).order_by('-created_dttm')
+
+    def get_query_timestamp_datetime(self):
+        """Gets the timestamp from the url and converts it to a datetime."""
+        try:
+            timestamp = float(self.request.GET.get('ts'))
+            return datetime.fromtimestamp(timestamp)
+        except:
+            return None
 
 
 class ActivityEditView(ActivityCreatedUserRequiredViewMixin,

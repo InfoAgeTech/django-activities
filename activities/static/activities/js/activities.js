@@ -194,6 +194,27 @@ $(document).ready(function(){
                 });
             });
             
+            // add the single activity event listeners
+            if ($activitiesContainer.has('.single-activity').length > 0) {
+                $activitiesContainer.on('click', '.see-more-replies a', function(e) {
+                    // get more replies
+                    e.preventDefault();
+                    var $link = $(this);
+                    
+                    $.get($link.attr('href'), function(data){
+                        var $data= $(data),
+                            $replyContainer = $link.closest('.reply-container');
+                        
+                        // remove the see more replies link
+                        $link.closest('.see-more-replies').remove();
+                        
+                        if (data) {
+                            $replyContainer.prepend($data.html());
+                        }
+                        
+                    });
+                });
+            }
         });
         
     }

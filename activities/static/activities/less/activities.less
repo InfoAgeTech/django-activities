@@ -28,6 +28,20 @@
         padding-left: 0;
         position: relative;
         
+        &.single-activity {
+        
+            .replies {
+                max-height: none;
+                overflow-y: auto;
+                
+                .reply-container {
+                    max-height: none;
+                    overflow-y: auto;
+                }
+            }
+            
+        }
+        
         > li {
             list-style: none;
         }
