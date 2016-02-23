@@ -277,6 +277,7 @@ $(document).ready(function(){
                             $button.data('loadedReplies', true);
                         }
                         
+                        $commentReplyForm.find('input[name=text]').focus();
                     }
                     
                 });
