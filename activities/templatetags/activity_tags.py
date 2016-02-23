@@ -1,10 +1,10 @@
 from activities.constants import Action
 from django.template import Library
 from django.template.loader import render_to_string
+from django.utils.html import escape
 from django.utils.html import linebreaks
 from django.utils.safestring import mark_safe
 from django_core.utils.loading import get_function_from_settings
-from django.utils.html import escape
 
 
 register = Library()
@@ -60,12 +60,10 @@ def render_activity_message(activity, user=None, **kwargs):
     kwargs['user'] = user
 
     # add the social actions bar
-    comment_button = (
-        '<button class="btn btn-xs comment" type="button" title="Comment">'
-        '<i class="fa fa-comment-o"></i>&nbsp;'
-        '<span class="comment-count">{0}</span></button>'.format(
-        activity.reply_count
-    ))
+    comment_button = render_to_string(
+        'activities/snippets/activity_action_comment_button.html',
+        context={'activity': activity}
+    )
     social_actions_bar = '<div class="social-actions">{0}</div>'.format(
         comment_button
     )

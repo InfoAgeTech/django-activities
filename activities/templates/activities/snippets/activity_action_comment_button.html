@@ -1,0 +1,8 @@
+{% comment %}
+Snippet for rendering the activity comment button.
+
+Params:
+
+- activity: the activity the button is for
+{% endcomment %}
+<button class="btn btn-xs comment-on-activity" type="button" title="Reply"><i class="fa fa-comment-o"></i>&nbsp;<span class="reply-count">{{ activity.reply_count }}</span></button>
