@@ -31,9 +31,13 @@ is_infinite_scroll: (optional) boolean indicating if the activities should use
       {% if request.user.is_authenticated %}
 	    <form class="comment-form" action="{{ activity_url }}" method="post">{% csrf_token %}
 	        <input type="hidden" name="next" value="{{ request.path}}" />
-	        <textarea name="text" rows="2" cols="20" class="form-control" placeholder="Make a comment..."></textarea>
 	        <input type="hidden" name="action" value="COMMENTED" />
-	        <button class="btn btn-primary btn-sm" type="submit">Comment</button>
+            <div class="input-group">
+                <textarea name="text" rows="2" cols="20" class="form-control" placeholder="Make a comment..."></textarea>
+                <span class="input-group-btn">
+                    <button class="btn btn-primary btn-sm" type="submit">Comment</button>
+                </span>
+            </div>
 	    </form>
       {% else %}
         <div class="comment-form">Please log in to comment.</div>
@@ -53,11 +57,11 @@ is_infinite_scroll: (optional) boolean indicating if the activities should use
    
   
 	<ul class="activities">
-	{% for n in activities_object_list %}
-	  {% if obj == n.about %}
-	    {% render_activity activity=n activity_url=activity_url %}
+	{% for activity in activities_object_list %}
+	  {% if obj == activity.about %}
+	    {% render_activity activity=activity activity_url=activity_url %}
 	  {% else %}
-	    {% render_activity activity=n show_reference_obj=True activity_url=activity_url %}
+	    {% render_activity activity=activity show_reference_obj=True activity_url=activity_url %}
 	  {% endif %}
 	{% empty %}
 	    <li class="no-activities-found">No activities found.</li>

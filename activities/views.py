@@ -28,8 +28,12 @@ from .mixins.views import UserActivitiesViewMixin
 
 
 class ActivitiesView(PagingViewMixin, ActivitiesViewMixin, ActivityFormView):
-
     template_name = 'activities/view_activities.html'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(ActivitiesView, self).get_context_data(*args, **kwargs)
+        context['is_view_activities_page'] = True
+        return context
 
 
 class ActivitiesGenericObjectView(GenericObjectViewMixin, ActivitiesView):

@@ -57,15 +57,18 @@
         <li class="msg">
             {% render_activity_message activity=activity user=user user_shared_objects_by_content_type=user_shared_objects_by_content_type %}
         </li>
-        {% if replies or not replies and user.is_authenticated %}
         <li class="replies">
-            {% if activity.reply_count > activity_replies|length %}
+          {% if activity.reply_count == 0 and not user.is_authenticated %}
+            <div class="no-replies">There are no comments at this time. Please log in to comment.</div>
+          {% else %}
+            {% if activity_replies and activity.reply_count > activity_replies|length %}
                 {% include 'activities/snippets/activity_replies.html' with activity_replies=activity_replies activity_replies_has_more=True %}
             {% else %}
                 {% include 'activities/snippets/activity_replies.html' with activity_replies=activity_replies activity_replies_has_more=False %}
             {% endif %}
-            {% if user.is_authenticated %}
+            
             <div class="my-reply">
+              {% if user.is_authenticated %}
                 <form class="comment-reply-form" action="{{ activity_url }}" method="post">
                     {% csrf_token %}
                     <input type="hidden" name="next" value="{{ request.path}}" />
@@ -79,10 +82,13 @@
                         </span>
                     </div>
                 </form>
+              {% else %}
+                 <div class="login-required">Log in to comment.</div>
+              {% endif %}
             </div>
-            {% endif %}
-        </li>     
-        {% endif %}
+            
+          {% endif %}
+        </li>
     </ul>
     
 </li>

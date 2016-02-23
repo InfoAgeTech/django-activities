@@ -8,15 +8,10 @@
         margin-bottom: 7px; 
         
         textarea { 
-            display: inline-block;
             height: 31px; 
-            margin-right: @textarea-margin-right;
-            width: @textarea-width;
         }
         
-        button {
-            display: inline-block;
-            width: 100% - @textarea-width - @textarea-margin-right;
+        .input-group-btn {
             vertical-align: top;
         }
     }
@@ -122,6 +117,10 @@
             padding: 10px;
             position: relative;
             z-index: 10;
+            
+            .login-required {
+                text-align: center;
+            }
         }
         
         .no-activities-found {
@@ -138,6 +137,10 @@
             max-height: 500px;
             overflow-y: scroll;
             margin-top: 20px;
+            
+            .no-replies {
+                padding: 10px;
+            }
             
             .reply-container {
                 max-height: 200px;
