@@ -52,7 +52,7 @@
                 <span class="action-text">{{ action_html|safe }}</span>
               {% endif %}
             {% endwith %}
-            <span class="date"><a href="{{ activity.get_absolute_url }}">{{ activity.created_dttm|timezone:user_timezone|naturaltime }}</a></span>
+            <span class="date"><a href="{{ activity.get_absolute_url }}">{{ activity.created_dttm|timezone:user_timezone|naturaltime }}</a> - {% if activity.is_public %}<i class="fa fa-globe"></i>{% else %}<i class="fa fa-lock"></i>{% endif %}</span>
         </li>
         <li class="msg">
             {% render_activity_message activity=activity user=user user_shared_objects_by_content_type=user_shared_objects_by_content_type %}

@@ -149,11 +149,13 @@ class ActivityManagerTests(TestCase):
 
     def test_get_for_object_with_user_not_qualifying_private(self):
         """Test for getting all activities for an object with for_user
-        passed in who has access to a private activity. In other words, since
-        the notification is private, it's only visible to the created user.
+        passed in who has access to a private activity. A comment made on a
+        user's profile should be visible to the user who created the message
+        and the user who send the message.
         """
         user_1 = create_user()
         user_2 = create_user()
+        user_3 = create_user()
         Activity.objects.create(
             created_user=self.user,
             text='hello world',
@@ -165,6 +167,10 @@ class ActivityManagerTests(TestCase):
 
         activities = Activity.objects.get_for_object(obj=user_1,
                                                      for_user=user_2)
+        self.assertEqual(len(activities), 1)
+
+        activities = Activity.objects.get_for_object(obj=user_1,
+                                                     for_user=user_3)
         self.assertEqual(len(activities), 0)
 
     def test_get_for_object_with_user_qualifying_custom(self):

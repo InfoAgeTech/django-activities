@@ -143,7 +143,7 @@ class ActivityManager(CommonManager):
         user_content_type = ContentType.objects.get_for_model(for_user)
         return queryset.filter(Q(created_user=for_user) |
                                Q(privacy=Privacy.PUBLIC) |
-                               Q(privacy=Privacy.CUSTOM,
+                               Q(privacy__in=[Privacy.CUSTOM, Privacy.PRIVATE],
                                  for_objs__content_type=user_content_type,
                                  for_objs__object_id=for_user.id)).distinct()
 
