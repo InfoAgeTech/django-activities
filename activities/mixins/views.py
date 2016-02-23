@@ -11,7 +11,6 @@ from django.template.context import RequestContext
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.edit import FormView
 from django_core.views.mixins.auth import LoginRequiredViewMixin
-from rest_framework.status import HTTP_204_NO_CONTENT
 
 from .. import get_activity_model
 from ..constants import Action
@@ -391,7 +390,7 @@ class ActivityFormView(FormView):
             if activity_or_activity_reply is None:
                 # no activity or activity reply found.  This is likely beacuse
                 # it was a share or "repost" and was removed.
-                return HttpResponse(status=HTTP_204_NO_CONTENT)
+                return HttpResponse(status=204)
 
             return ActivityResponse(request=self.request,
                                     activity=activity_or_activity_reply)
