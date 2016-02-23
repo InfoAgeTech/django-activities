@@ -208,11 +208,18 @@ class ActivitiesViewMixin(object):
             else:
                 user_share_filters = queryset_filter
 
-        shared_objects = Activity.objects.filter(
-            user_share_filters,
-            action=Action.SHARED,
-            created_user=self.request.user,
-        ).values_list(
+        queryset_kwargs = {
+            'action':Action.SHARED,
+            'created_user': self.request.user
+        }
+
+        if user_share_filters:
+            shared_objects = Activity.objects.filter(user_share_filters,
+                                                     **queryset_kwargs)
+        else:
+            shared_objects = Activity.objects.filter(**queryset_kwargs)
+
+        shared_objects = shared_objects.values_list(
             'about_content_type', 'about_id'
         )
 
