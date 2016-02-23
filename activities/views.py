@@ -51,7 +51,6 @@ class ActivitiesGenericObjectView(GenericObjectViewMixin, ActivitiesView):
 # TODO: Is this view app specific?
 class ActivitiesForUserView(PagingViewMixin, UserActivitiesViewMixin,
                             ActivityFormView):
-
     template_name = 'activities/view_activities.html'
 
 
@@ -192,7 +191,6 @@ class ActivityReplyEditView(ActivityCreatedUserRequiredViewMixin,
 
 class ActivityReplyDeleteView(ActivityCreatedUserRequiredViewMixin,
                               ActivityReplySingleObjectViewMixin, DeleteView):
-
     template_name = 'activities/delete_activity_reply.html'
 
     def get_success_url(self):
