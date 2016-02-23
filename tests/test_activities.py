@@ -5,6 +5,7 @@ from activities.constants import Action
 from activities.constants import Source
 from django_testing.testcases.users import SingleUserTestCase
 from django_testing.user_utils import create_user
+from activities.constants import Privacy
 
 
 Activity = get_activity_model()
@@ -70,17 +71,20 @@ class ActivityManagerTests(SingleUserTestCase):
                                      text='Hello world 1',
                                      about=about_obj,
                                      action=Action.COMMENTED,
-                                     ensure_for_objs=[self.user, for_user])
+                                     ensure_for_objs=[self.user, for_user],
+                                     privacy=Privacy.PUBLIC)
         n2 = Activity.objects.create(created_user=self.user,
                                      text='Hello world 2',
                                      about=about_obj,
                                      action=Action.COMMENTED,
-                                     ensure_for_objs=[self.user, for_user])
+                                     ensure_for_objs=[self.user, for_user],
+                                     privacy=Privacy.PUBLIC)
         n3 = Activity.objects.create(created_user=self.user,
                                      text='Hello world 3',
                                      about=about_obj,
                                      action=Action.COMMENTED,
-                                     ensure_for_objs=[self.user, for_user])
+                                     ensure_for_objs=[self.user, for_user],
+                                     privacy=Privacy.PUBLIC)
 
         activities = Activity.objects.get_for_object(obj=for_user)
 

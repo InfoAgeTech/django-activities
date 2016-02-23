@@ -47,6 +47,7 @@ class ActivityManagerTests(TestCase):
 
         self.assertEqual(activity.about, self.user)
         self.assertEqual(activity.text, text)
+        self.assertEqual(activity.privacy, Privacy.PRIVATE)
         self.assertEqual(activity.source, source)
         self.assertEqual(activity.action, action)
         self.assertEqual(len(for_objs), 1)
@@ -99,10 +100,11 @@ class ActivityManagerTests(TestCase):
             created_user=self.user,
             text='hello world',
             about=user_1,
-            action=Action.COMMENTED,
+            action=Action.COMMENTED
         )
 
-        activities = Activity.objects.get_for_object(obj=user_1)
+        activities = Activity.objects.get_for_object(obj=user_1,
+                                                     for_user=user_1)
         self.assertEqual(len(activities), 1)
         self.assertEqual(activity, activities[0])
 
@@ -117,7 +119,8 @@ class ActivityManagerTests(TestCase):
             text='hello world',
             about=user_1,
             action=Action.COMMENTED,
-            ensure_for_objs=[user_2]
+            ensure_for_objs=[user_2],
+            privacy=Privacy.CUSTOM
         )
 
         activities = Activity.objects.get_for_object(obj=user_1,
@@ -135,7 +138,8 @@ class ActivityManagerTests(TestCase):
             created_user=self.user,
             text='hello world',
             about=user_1,
-            action=Action.COMMENTED
+            action=Action.COMMENTED,
+            privacy=Privacy.PUBLIC
         )
 
         activities = Activity.objects.get_for_object(obj=user_1,

@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from activities.constants import Action
 from activities.constants import Privacy
 from activities.constants import Source

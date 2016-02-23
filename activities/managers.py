@@ -51,6 +51,13 @@ class ActivityManager(CommonManager):
                 # an activity exist for this user criteria. Just return it.
                 return activity
 
+        if ('privacy' not in kwargs and
+            about and
+            hasattr(about, 'privacy') and
+            about.privacy in (Privacy.PRIVATE, Privacy.PUBLIC)):
+            # set the privacy to be the privacy of the "about" object
+            kwargs['privacy'] = about.privacy
+
         activity = super(ActivityManager, self).create(
             text=text.strip() if text else text,
             created_user=created_user,
@@ -99,7 +106,7 @@ class ActivityManager(CommonManager):
         :param user: the user to get the activities for
 
         """
-        return self.get_for_object(obj=user, **kwargs)
+        return self.get_for_object(obj=user, for_user=user, **kwargs)
 
     def get_for_object(self, obj, for_user=None, **kwargs):
         """Gets activities for a specific object.

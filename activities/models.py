@@ -63,7 +63,7 @@ class AbstractActivity(AbstractBaseModel):
     source = models.CharField(max_length=20, choices=Source.CHOICES)
     action = models.CharField(max_length=20, choices=Action.CHOICES)
     privacy = models.CharField(max_length=20, choices=Privacy.CHOICES,
-                               default=Privacy.PUBLIC)
+                               default=Privacy.PRIVATE)
     objects = ActivityManager()
 
     class Meta:
