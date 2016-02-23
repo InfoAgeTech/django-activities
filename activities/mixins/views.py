@@ -213,8 +213,6 @@ class ActivitiesViewMixin(object):
             user_share_filters,
             action=Action.SHARED,
             created_user=self.request.user,
-        ).distinct(
-            'about_content_type', 'about_id'
         ).values_list(
             'about_content_type', 'about_id'
         )
