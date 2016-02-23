@@ -35,9 +35,9 @@ class Command(BaseCommand):
         # get all content types that have object shares
         content_types_with_shares = (Activity.objects.filter(
             action=Action.SHARED
-        ).order_by('about_content_type')
-         .distinct('about_content_type')
-         .values_list('activity', flat=True))
+        ).order_by('about_content_type').distinct(
+            'about_content_type'
+        ).values_list('about_content_type_id', flat=True))
 
         total_objects_updated = 0
 
@@ -45,7 +45,7 @@ class Command(BaseCommand):
             content_type = ContentType.objects.get(id=content_type_id)
             model = content_type.model_class()
 
-            if not hasattr(model, 'share_count'):
+            if not hasattr(model(), 'share_count'):
                 logger.info('Model "{0}" does not have a "share_count" '
                             'attribute  Skipping this content type.'.format(
                                                                         model))
@@ -55,8 +55,8 @@ class Command(BaseCommand):
             model_ids_with_shares = Activity.objects.filter(
                 about_content_type=content_type,
                 action=Action.SHARED
-            ).order_by('about').distinct('about').values_list('about',
-                                                              flat=True)
+            ).order_by('about_id').distinct('about_id').values_list('about_id',
+                                                                    flat=True)
 
             total_objects_updated += len(model_ids_with_shares)
 
@@ -67,7 +67,8 @@ class Command(BaseCommand):
                     action=Action.SHARED
                 ).count()
 
-                logger.info('Updating {0} with share_count of {1}'.format(
+                logger.info('Updating {0} "{1}" with share_count of {2}'.format(
+                    obj.get_verbose_name(),
                     obj,
                     obj.share_count
                 ))

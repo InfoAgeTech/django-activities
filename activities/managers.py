@@ -34,7 +34,24 @@ class ActivityManager(CommonManager):
         if about is not None:
             kwargs['about'] = about
 
-        n = super(ActivityManager, self).create(
+        for_objs = set([about])
+
+        # if the action is SHARED, then first a check needs to be made to see
+        # if that user already shared the content since it can only be shared
+        # once per user.
+        if action == Action.SHARED:
+            for_objs.add(created_user)
+            activity = self.model.objects.get_about_object(
+                action=Action.SHARED,
+                created_user=created_user,
+                about=about
+            ).first()
+
+            if activity:
+                # an activity exist for this user criteria. Just return it.
+                return activity
+
+        activity = super(ActivityManager, self).create(
             text=text.strip() if text else text,
             created_user=created_user,
             last_modified_user=created_user,
@@ -42,8 +59,6 @@ class ActivityManager(CommonManager):
             action=action,
             **kwargs
         )
-
-        for_objs = set([about])
 
         if ensure_for_objs:
             if not isinstance(ensure_for_objs, (list, tuple, set)):
@@ -68,14 +83,15 @@ class ActivityManager(CommonManager):
                                                         content_object=obj)[0]
                     for obj in for_objs if obj is not None]
 
-        n.for_objs.add(*for_objs)
-        return n
+        activity.for_objs.add(*for_objs)
+        return activity
 
     def get_about_object(self, about, **kwargs):
         """Gets all activities about the "about" object."""
         content_type = ContentType.objects.get_for_model(about)
         return self.filter(about_id=about.id,
-                           about_content_type=content_type)
+                           about_content_type=content_type,
+                           **kwargs)
 
     def get_for_user(self, user, **kwargs):
         """Gets activities for a user.
@@ -210,13 +226,3 @@ class ActivityReplyManager(CommonManager):
             return self.get(activity_id=activity_id)
         except self.model.DoesNotExist:
             return None
-
-    def get_most_recent(self, num=3, **kwargs):
-        """Gets the most recent x number of replies.  This is a helper method
-        for use in templates.
-
-        Important: This returns a list of objects and not a queryset.
-
-        :param num: the number of most recent replied to return.
-        """
-        return self.all().order_by('-created_dttm')[:num]

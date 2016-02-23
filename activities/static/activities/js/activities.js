@@ -49,11 +49,11 @@ $(document).ready(function(){
             
             $activitiesContainer.on('click', '.activity .delete-activity form button',  function(e){
                 var $frm = $(this).closest('form'),
-                    form_data = $frm.serialize();
+                    formData = $frm.serialize();
                 
                 e.preventDefault(); 
                 
-                $.post($frm.attr('action'), form_data, function(resp_text, success_fail, resp){
+                $.post($frm.attr('action'), formData, function(resp_text, success_fail, resp){
                     if (resp.status === 200){
                         $frm.closest('.activity-container').remove();
                     } else if (window.console && window.console.log) {
@@ -156,8 +156,8 @@ $(document).ready(function(){
                 e.preventDefault();
                 
                 var $this = $(this),
-                    form_data = $this.serialize(),
-                    activity_id = $this.find('input[name="pid"]').val(),
+                    formData = $this.serialize(),
+                    activityId = $this.find('input[name="parent_activity"]').val(),
                     $input = $this.find('input[name="text"]'),
                     text = $.trim($input.val());
                 
@@ -166,12 +166,21 @@ $(document).ready(function(){
                     return false;
                 }
                 
-                $.post($this.attr('action'), form_data, function(resp_text, success_fail, resp) {
-                    var $replyContainer = $('#n-' + activity_id + ' .reply-container'); 
+                $.post($this.attr('action'), formData, function(resp_text, success_fail, resp) {
+                    var $activity = $('#n-' + activityId),
+                        $replyContainer = $activity.find('.reply-container'),
+                        $replyCount = $activity.find('.reply-count'),
+                        replyCount = parseInt($replyCount.text()) || 0;
+                    
                     if (resp.status === 200 || resp.status === 202){
                         $replyContainer.append($(resp_text.activity_reply));
                         $replyContainer.scrollTop($replyContainer.outerHeight());
                         $input.val('');
+                        
+                        // increment the comment count.
+                        if ($replyCount.length > 0) {
+                            $replyCount.text(replyCount + 1);
+                        }
                     } else if (window.console && window.console.log) {
                         window.console.log('There was an error adding the activity reply.');
                     }
@@ -181,18 +190,48 @@ $(document).ready(function(){
                 
                 e.preventDefault();
                 var $this = $(this),
-                    form_data = $this.serialize(),
-                    activity_id = $this.find('input[name="nid"]').val();
+                    formData = $this.serialize(),
+                    activityId = $this.find('input[name="nid"]').val();
                 
-                $.post($this.attr('action'), form_data, function(resp_text, success_fail, resp){
+                $.post($this.attr('action'), formData, function(resp_text, success_fail, resp){
                     
                     if (resp.status === 200){
-                        $('#n-' + activity_id).remove();
+                        $('#n-' + activityId).remove();
                     } else if (window.console && window.console.log) {
                         window.console.log('There was an error deleting the activity.');
                     }
                 });
             });
+            
+            
+            /**
+             * Gets the activity replies and loads via ajax.
+             * 
+             * @param $activity: the activity get the replies for
+             * @param url: the url to fetch the replies for.
+             * @param callback: function to run after the replies have been retrieved.
+             */
+            function getActivityReplies($activity, url, callback) {
+                if (url === undefined) {
+                    url = $activity.data('url');
+                }
+                
+                $.get(url, function(data){
+                    var $data= $(data),
+                        $replyContainer = $activity.find('.reply-container:first');
+                    
+                    // remove the see more replies link
+                    $replyContainer.find('.see-more-replies').remove();
+                    
+                    if (data) {
+                        $replyContainer.prepend($data.html());
+                    }
+                    
+                    if (typeof callback === 'function') {
+                        callback();
+                    }
+                });
+            }
             
             // add the single activity event listeners
             if ($activitiesContainer.has('.single-activity').length > 0) {
@@ -200,19 +239,46 @@ $(document).ready(function(){
                     // get more replies
                     e.preventDefault();
                     var $link = $(this);
+                    getActivityReplies($link.closest('.activity'), $link.attr('href'));
+                });
+            } else {
+                // activities specific to non-single activities
+                $activitiesContainer.on('click', '.social-actions .comment-on-activity', function() {
+                    var $button = $(this),
+                        replyCount = parseInt($button.find('.reply-count').text()) || 0,
+                        $activity = $button.closest('.activity'),
+                        $replies = $activity.find('.replies'),
+                        $commentReplyForm = $activity.find('.comment-reply-form'),
+                        repliesUrl = $commentReplyForm.attr('action'),
+                        $seeMore;
                     
-                    $.get($link.attr('href'), function(data){
-                        var $data= $(data),
-                            $replyContainer = $link.closest('.reply-container');
+                    if ($replies.is(':visible')) {
+                        $replies.hide();
+                    } else {
+                        $replies.show();
                         
-                        // remove the see more replies link
-                        $link.closest('.see-more-replies').remove();
-                        
-                        if (data) {
-                            $replyContainer.prepend($data.html());
+                        if (replyCount === 0) {
+                            // no replies to load
+                            $button.data('loadedReplies', true);
                         }
                         
-                    });
+                        if ($button.data('loadedReplies') === undefined) {
+                            // load the activities then remove the event listener since
+                            // we only want to load the first page.
+                            getActivityReplies($activity, $activity.data('url') + '?ps=5', function() {
+                                // update the show more url to not have querystring params
+                                $seeMore = $replies.find('.see-more-replies a');
+                                
+                                if ($seeMore.length > 0) {
+                                    $seeMore.attr('href', $seeMore.attr('href').split('?')[0]);
+                                }
+                            });
+                            
+                            $button.data('loadedReplies', true);
+                        }
+                        
+                    }
+                    
                 });
             }
         });

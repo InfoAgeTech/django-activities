@@ -32,6 +32,7 @@ is_infinite_scroll: (optional) boolean indicating if the activities should use
 	    <form class="comment-form" action="{{ activity_url }}" method="post">{% csrf_token %}
 	        <input type="hidden" name="next" value="{{ request.path}}" />
 	        <textarea name="text" rows="2" cols="20" class="form-control" placeholder="Make a comment..."></textarea>
+	        <input type="hidden" name="action" value="COMMENTED" />
 	        <button class="btn btn-primary btn-sm" type="submit">Comment</button>
 	    </form>
       {% else %}

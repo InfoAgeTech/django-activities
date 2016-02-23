@@ -31,6 +31,7 @@
         &.single-activity {
         
             .replies {
+                display: block;
                 max-height: none;
                 overflow-y: auto;
                 
@@ -109,10 +110,6 @@
                     height: auto;
                 }
                 
-                ul li {
-                    list-style: disc;
-                }
-                
                 ul, ol { 
                     margin-left: 20px;
                     
@@ -136,6 +133,7 @@
             @replies-border: 1px solid #E2E2E2;
             background-color: white;
             border: @replies-border;
+            display: none;
             padding: 10px;
             max-height: 500px;
             overflow-y: scroll;

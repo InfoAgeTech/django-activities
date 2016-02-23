@@ -1,5 +1,5 @@
-from __future__ import unicode_literals
-
+from activities.constants import Action
+from activities.constants import Source
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
@@ -11,13 +11,99 @@ from .models import Activity
 from .models import ActivityReply
 
 
-class BasicCommentForm(forms.Form):
-    """Basic form for commenting."""
+ACTIVITY_ACTION_CHOICES = (
+    (Action.COMMENTED, Action.COMMENTED),
+    (Action.SHARED, Action.SHARED)
+)
 
-    text = CharFieldStripped(max_length=500, widget=forms.Textarea())
-    # Parent id of the comment or activity
-    pid = forms.IntegerField(required=False, widget=forms.HiddenInput())
+
+class ActivityActionForm(UserFormMixin, forms.Form):
+    """Basic form for creating an action about an activity.
+
+    Fields:
+
+    - parent_activity: the parent activity.  If one exists, this is a a reply
+        to that activity.
+    """
+
+    text = CharFieldStripped(max_length=500, widget=forms.Textarea(),
+                             required=False)
+    parent_activity = forms.ModelChoiceField(queryset=Activity.objects.all(),
+                                             required=False,
+                                             widget=forms.HiddenInput)
     next = CharFieldStripped(max_length=999999, required=False)
+    action = forms.ChoiceField(choices=ACTIVITY_ACTION_CHOICES,
+                               widget=forms.HiddenInput)
+
+    def __init__(self, about, *args, **kwargs):
+        """
+        :param about: the object that this form is about.
+        """
+        super(ActivityActionForm, self).__init__(*args, **kwargs)
+        self.about = about
+
+    def clean(self, *args, **kwargs):
+        cleaned_data = super(ActivityActionForm, self).clean(*args, **kwargs)
+
+        text = cleaned_data.get('text')
+        action = cleaned_data.get('action')
+
+        if action == Action.COMMENTED and not text:
+            # text field is required for comment actions
+            self.add_error('text', _('This field is required.'))
+
+        return cleaned_data
+
+    def save(self, *args, **kwargs):
+        """Saves a new Activity or ActivityReply depending on if the parent id
+        exists in the form.
+        """
+        # TODO: Need to make sure the user has the ability to comment on this
+        #       object (they are sharing or authorized to do so.  Also,
+        #       probably want to require ajax here?
+        text = self.cleaned_data.get('text')
+        parent_activity = self.cleaned_data.get('parent_activity')
+        action = self.cleaned_data.get('action')
+
+        if not action and text:
+            action = Action.COMMENTED
+
+        if parent_activity:
+            # reply to an existing activity
+            return parent_activity.add_reply(user=self.user, text=text)
+
+        if action == Action.SHARED:
+            # if the object share already exists, then it needs to be removed
+            # since an object can only be shared once per user
+
+            activity = Activity.objects.get_about_object(
+                action=Action.SHARED,
+                created_user=self.user,
+                about=self.about
+            )
+
+            if activity:
+                # activity exists already.  So delete it since this works as a
+                # toggle (share/remove share).
+                activity.delete()
+                return None
+
+        ensure_for_objs = []
+        about = self.about
+
+        if about == self.user or action == Action.SHARED:
+            # user commenting on own wall
+            ensure_for_objs.append(self.user)
+
+        # New activity for an object
+        return Activity.objects.create(
+            created_user=self.user,
+            text=text,
+            about=about,
+            source=Source.USER,
+            action=action,
+            ensure_for_objs=ensure_for_objs or None
+        )
 
 
 class BaseActivityEditForm(UserFormMixin, forms.ModelForm):

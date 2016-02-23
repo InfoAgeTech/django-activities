@@ -99,8 +99,21 @@ class AbstractActivity(AbstractBaseModel):
         # self.activityfor_set.get_or_create_generic(content_object=user)
         return reply
 
-    def get_action_html(self):
+    def get_shared_action_display_text(self):
+        """Get the display text used for the "shared" action in case the system
+        wants different working (i.e. "reposted" instead of "shared").
+        """
+        if hasattr(self.about, 'get_activity_shared_action_display_text'):
+            return self.about.get_activity_shared_action_display_text()
 
+        return Action.SHARED.lower()
+
+    def get_action_html(self, force=False):
+        """Gets the action text in the activity header.
+
+        :param force: boolean indicating if the "about" object should be ignored
+            when rendering this text.
+        """
         if self.action not in (Action.ADDED, Action.CREATED, Action.SHARED,
                                Action.UPLOADED):
             # no activity text to return
@@ -125,8 +138,16 @@ class AbstractActivity(AbstractBaseModel):
                 object_name
             )
 
+        action_display = self.action.lower()
+
+        # add any icon prefixes
+        if self.action == Action.SHARED:
+            action_display = '<i class="fa fa-retweet"></i> {0}'.format(
+                self.get_shared_action_display_text()
+            )
+
         return '{action} {a_or_an} {object_ref}'.format(
-            action=self.action.lower(),
+            action=action_display,
             a_or_an=a_or_an,
             object_ref=object_ref
         )
@@ -270,8 +291,14 @@ class Activity(AbstractUrlLinkModelMixin, AbstractActivity):
             hasattr(instance.about, 'share_count')):
             # check to see if the share count has been denormalized on the
             # about object.  If so, increment the value.
+            if instance.about.share_count > 0:
+                share_count = F('share_count') - 1
+            else:
+                # can't have a negative share count
+                share_count = 0
+
             type(instance.about).objects.filter(id=instance.about.id).update(
-                reply_count=F('share_count') - 1
+                share_count=share_count
             )
 
     @classmethod
@@ -285,7 +312,7 @@ class Activity(AbstractUrlLinkModelMixin, AbstractActivity):
             # check to see if the share count has been denormalized on the
             # about object.  If so, increment the value.
             type(instance.about).objects.filter(id=instance.about.id).update(
-                reply_count=F('share_count') + 1
+                share_count=F('share_count') + 1
             )
 
 
@@ -336,7 +363,7 @@ class ActivityReply(AbstractUrlLinkModelMixin, AbstractBaseModel):
     @classmethod
     def post_delete(cls, sender, instance, **kwargs):
         """Post delete fires after the object is deleted."""
-        if instance.activity:
+        if instance.activity and instance.activity.reply_count > 0:
             Activity.objects.filter(id=instance.activity.id).update(
                 reply_count=F('reply_count') - 1
             )

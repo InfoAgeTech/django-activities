@@ -103,7 +103,9 @@ class ActivityView(PagingViewMixin, ActivityViewMixin, AjaxViewMixin, ListView):
         if dt:
             filter_kwargs['created_dttm__lte'] = dt
 
-        return queryset.filter(**filter_kwargs).order_by('-created_dttm')
+        return queryset.filter(
+            **filter_kwargs
+        ).order_by('-created_dttm').prefetch_related('activity', 'created_user')
 
     def get_query_timestamp_datetime(self):
         """Gets the timestamp from the url and converts it to a datetime."""

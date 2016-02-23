@@ -2,18 +2,21 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import EmptyPage
 from django.core.paginator import Paginator
+from django.db.models import Q
 from django.http.response import Http404
 from django.http.response import HttpResponse
+from django.http.response import HttpResponseForbidden
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.edit import FormView
 from django_core.views.mixins.auth import LoginRequiredViewMixin
+from rest_framework.status import HTTP_204_NO_CONTENT
 
 from .. import get_activity_model
 from ..constants import Action
 from ..constants import Source
-from ..forms import BasicCommentForm
+from ..forms import ActivityActionForm
 from ..http import ActivityResponse
 from ..models import ActivityReply
 
@@ -174,13 +177,57 @@ class ActivitiesViewMixin(object):
         except EmptyPage:
             context['activities_page'] = paginator.page(paginator.num_pages)
 
-        context['activities_about_object'] = \
-            self.get_activities_about_object()
+        about = self.get_activities_about_object()
+        context['activities_about_object'] = about
+
+        self.get_user_shared_objects(context=context)
 
         if 'activity_url' not in context:
             context['activity_url'] = self.get_activity_url()
 
         return context
+
+    def get_user_shared_objects(self, context):
+        """Gets the dict of object shares by content type so the user can know
+        if they have already shared that object.
+        """
+        if not self.request.user.is_authenticated():
+            # no updates to make for unauthenticated users
+            return
+
+        # get the list of objects this user has shares to
+        user_share_filters = None
+
+        for activity in context['activities_page'].object_list:
+            queryset_filter = Q(
+                about_content_type_id=activity.about_content_type_id,
+                about_id=activity.about_id
+            )
+
+            if user_share_filters:
+                user_share_filters |= queryset_filter
+            else:
+                user_share_filters = queryset_filter
+
+        shared_objects = Activity.objects.filter(
+            user_share_filters,
+            action=Action.SHARED,
+            created_user=self.request.user,
+        ).distinct(
+            'about_content_type', 'about_id'
+        ).values_list(
+            'about_content_type', 'about_id'
+        )
+
+        shares_by_content_type = {}
+        for content_type_id, obj_id in shared_objects:
+
+            if content_type_id not in shares_by_content_type:
+                shares_by_content_type[content_type_id] = set([obj_id])
+            else:
+                shares_by_content_type[content_type_id].add(obj_id)
+
+        context['user_shared_objects_by_content_type'] = shares_by_content_type
 
     def get_activities_common_queryset(self, queryset):
         """Common filters to apply to a queryset."""
@@ -205,11 +252,13 @@ class ActivitiesViewMixin(object):
 
     def get_activity_prefetch_related_fields(self):
         """Returns a list of the activity fields to prefetch."""
-        return ['about',
-                'about_content_type',
-                'replies',
-                'replies__created_user',
-                'created_user']
+        return [
+            'about',
+            'about_content_type',
+            'replies',
+            'replies__created_user',
+            'created_user'
+        ]
 
     def get_activities_queryset(self):
         """Get's the queryset for the activities."""
@@ -307,7 +356,13 @@ class ActivityFormView(FormView):
     activities.mixins.ActivitiesViewMixin so this mixin has access
     to the `activities_about_object` attribute.
     """
-    form_class = BasicCommentForm
+    form_class = ActivityActionForm
+
+    def get_form_kwargs(self, **kwargs):
+        form_kwargs = super(ActivityFormView, self).get_form_kwargs(**kwargs)
+        form_kwargs['user'] = self.request.user
+        form_kwargs['about'] = self.get_activities_about_object()
+        return form_kwargs
 
     def get(self, request, *args, **kwargs):
         # TODO: do I need to make an additional check here to make sure this is
@@ -332,54 +387,23 @@ class ActivityFormView(FormView):
         return context
 
     def form_valid(self, form):
-
-        # TODO: Need to make sure the user has the ability to comment on this
-        #       object (they are sharing or authorized to do so.  Also,
-        #       probably want to require ajax here?
-        text = form.cleaned_data.get('text').strip()
-
-        # if "pid" (parent_activity_id) exists, then this is a reply to a
-        # activity.
-        parent_activity_id = form.cleaned_data.get('pid')
-        activity_reply = None
-
-        if parent_activity_id:
-            # reply to an existing activity
-            activity = Activity.objects.get_by_id(
-                id=parent_activity_id
-            )
-
-            if not activity:
-                raise HttpResponse(status=400)
-
-            activity_reply = activity.add_reply(user=self.request.user,
-                                                text=text)
-
-        else:
-            ensure_for_objs = []
-            about = self.get_activities_about_object()
-            if about == self.request.user:
-                # user commenting on own wall
-                ensure_for_objs.append(self.request.user)
-
-            # New activity for an object
-            activity = Activity.objects.create(
-                created_user=self.request.user,
-                text=text,
-                about=about,
-                source=Source.USER,
-                action=Action.COMMENTED,
-                ensure_for_objs=ensure_for_objs or None
-            )
+        activity_or_activity_reply = form.save()
 
         if self.request.is_ajax():
+            if activity_or_activity_reply is None:
+                # no activity or activity reply found.  This is likely beacuse
+                # it was a share or "repost" and was removed.
+                return HttpResponse(status=HTTP_204_NO_CONTENT)
+
             return ActivityResponse(request=self.request,
-                                    activity=activity_reply or activity)
+                                    activity=activity_or_activity_reply)
 
         # TODO: Where do I redirect to if it's not an ajax request?
         # return ''  # safe_redirect(self.request.POST.get('next') or '/')
         return super(ActivityFormView, self).form_valid(form=form)
 
     def form_invalid(self, form):
-        # TODO: what do I want to do here?
+        if self.request.is_ajax():
+            return HttpResponseForbidden(content=form.errors)
+
         return super(ActivityFormView, self).form_invalid(form=form)

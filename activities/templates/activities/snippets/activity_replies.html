@@ -14,11 +14,13 @@ Param:
 {% endcomment %}
 {% spaceless %}
 <div class="reply-container">
+  {% if activity_replies %}
     {% if activity_replies_has_more or activity_replies_next_url %}
 	    <div class="see-more-replies"><a href="{{ activity_replies_next_url|default:activity.get_absolute_url }}">See more replies...</a></div>
 	{% endif %}
 	{% for reply in activity_replies reversed %}
 	    {% include 'activities/snippets/activity_reply.html' with activity_reply=reply user_timezone=user_timezone %}
 	{% endfor %}
+  {% endif %}
 </div>
 {% endspaceless %}

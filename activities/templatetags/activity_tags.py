@@ -59,13 +59,31 @@ def render_activity_message(activity, user=None, **kwargs):
     """
     kwargs['user'] = user
 
+    # add the social actions bar
+    comment_button = (
+        '<button class="btn btn-xs comment" type="button" title="Comment">'
+        '<i class="fa fa-comment-o"></i>&nbsp;'
+        '<span class="comment-count">{0}</span></button>'.format(
+        activity.reply_count
+    ))
+    social_actions_bar = '<div class="social-actions">{0}</div>'.format(
+        comment_button
+    )
+
     if activity.text:
         if activity.action == Action.COMMENTED:
-            return mark_safe(linebreaks(escape(activity.text)))
+            message = mark_safe(linebreaks(escape(activity.text)))
         else:
-            return mark_safe(linebreaks(activity.text))
+            message = mark_safe(linebreaks(activity.text))
 
-    return mark_safe(activity.get_html(**kwargs))
+        return mark_safe('{0}{1}'.format(message, social_actions_bar))
+
+    message = mark_safe(activity.get_html(**kwargs))
+
+    if 'social-actions' not in message:
+        return '{0}{1}'.format(message, social_actions_bar)
+
+    return message
 
 
 @register.filter

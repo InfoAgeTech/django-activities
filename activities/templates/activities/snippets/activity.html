@@ -14,14 +14,12 @@
         Default is 'False'.
     
 {% endcomment %}
-
 {% load collection_tags humanize i18n activity_tags url_tags tz %}
-
 {% spaceless %}
 {% with user_timezone=user_timezone|default:'UTC' %}
 <li class="item-container activity-container{% if user and user.is_authenticated and user == activity.created_user %} created-by-user{% endif %}" id="n-{{ activity.id }}">
 
-    <ul class="item activity clearfix">
+    <ul class="item activity clearfix" data-url="{{ activity.get_absolute_url }}">
         
         <li class="avatar">
             <a href="{{ activity.created_user.get_absolute_url }}">
@@ -57,22 +55,22 @@
             <span class="date"><a href="{{ activity.get_absolute_url }}">{{ activity.created_dttm|timezone:user_timezone|naturaltime }}</a></span>
         </li>
         <li class="msg">
-            {% render_activity_message activity=activity user=user %}
+            {% render_activity_message activity=activity user=user user_shared_objects_by_content_type=user_shared_objects_by_content_type %}
         </li>
-        {% with replies=activity_replies|default:activity.replies.get_most_recent %}
         {% if replies or not replies and user.is_authenticated %}
         <li class="replies">
-            {% if activity.reply_count > replies|length %}
-                {% include 'activities/snippets/activity_replies.html' with activity_replies=replies activity_replies_has_more=True %}
+            {% if activity.reply_count > activity_replies|length %}
+                {% include 'activities/snippets/activity_replies.html' with activity_replies=activity_replies activity_replies_has_more=True %}
             {% else %}
-                {% include 'activities/snippets/activity_replies.html' with activity_replies=replies activity_replies_has_more=False %}
+                {% include 'activities/snippets/activity_replies.html' with activity_replies=activity_replies activity_replies_has_more=False %}
             {% endif %}
             {% if user.is_authenticated %}
             <div class="my-reply">
                 <form class="comment-reply-form" action="{{ activity_url }}" method="post">
                     {% csrf_token %}
                     <input type="hidden" name="next" value="{{ request.path}}" />
-                    <input type="hidden" name="pid" value="{{ activity.id }}" />
+                    <input type="hidden" name="parent_activity" value="{{ activity.id }}" />
+                    <input type="hidden" name="action" value="COMMENTED" />
                     {% include 'activities/snippets/user_thumbnail.html' with user=user %}
                     <div class="comment-holder input-group">
                         <input type="text" name="text" class="form-control" placeholder="Make a comment..." autocomplete="off" />
@@ -85,7 +83,6 @@
             {% endif %}
         </li>     
         {% endif %}
-        {% endwith %}
     </ul>
     
 </li>
