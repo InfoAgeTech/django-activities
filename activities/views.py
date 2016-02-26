@@ -142,14 +142,18 @@ class ActivityDeleteView(ActivityCreatedUserRequiredViewMixin,
 
     def form_valid(self, form):
 
-        if self.activity.is_comment() and \
-           self.activity.created_user == self.request.user:
+        if self.activity.created_user == self.request.user:
             # The user created this comment.  They can delete it for all.
             self.activity.delete()
         else:
             # Isn't this users comment, but they don't want this comment
             # showing up in the feed.  Remove it.
-            self.activity.for_objs.remove(self.request.user)
+            activity_for = self.activity.for_objs.get_for_object(
+                obj=self.request.user
+            ).first()
+
+            if activity_for:
+                self.activity.for_objs.remove(activity_for)
 
         if self.request.is_ajax():
             return HttpResponse('success', status=200)

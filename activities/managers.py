@@ -5,6 +5,7 @@ from django_core.db.models import CommonManager
 
 from .constants import Privacy
 from .constants import Source
+from django_core.db.models.managers import GenericManager
 
 
 class ActivityManager(CommonManager):
@@ -233,3 +234,20 @@ class ActivityReplyManager(CommonManager):
             return self.get(activity_id=activity_id)
         except self.model.DoesNotExist:
             return None
+
+
+class ActivityForManager(GenericManager, CommonManager):
+    """Model manager for the ActivityFor model."""
+
+    def get_for_object(self, obj, **kwargs):
+        """Gets instance for the obj.
+
+        :param obj: the object to get the ActivityFor instances for.
+        """
+        content_type = ContentType.objects.get_for_model(obj)
+
+        return self.filter(
+            content_type=content_type,
+            object_id=obj.id,
+            **kwargs
+        )

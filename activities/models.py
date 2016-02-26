@@ -12,6 +12,7 @@ from django_core.db.models.mixins.urls import AbstractUrlLinkModelMixin
 from .constants import Action
 from .constants import Privacy
 from .constants import Source
+from .managers import ActivityForManager
 from .managers import ActivityManager
 from .managers import ActivityReplyManager
 
@@ -375,6 +376,7 @@ post_delete.connect(ActivityReply.post_delete, sender=ActivityReply)
 
 class ActivityFor(AbstractGenericObject):
     """Defines the generic object a activity is for."""
+    objects = ActivityForManager()
 
     class Meta:
         index_together = (('object_id', 'content_type'),)
