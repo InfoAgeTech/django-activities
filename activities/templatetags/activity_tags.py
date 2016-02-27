@@ -13,8 +13,8 @@ register = Library()
 @register.simple_tag(takes_context=True)
 def render_activities(context, page, obj, activity_url, activity_source=None,
                       show_comment_form=True, show_activity_type_tabs=True,
-                      is_infinite_scroll=True):
-    """Renders an activities.
+                      is_infinite_scroll=True, **kwargs):
+    """Renders a activities to html.
 
     :param page: the django page object of activities
     :param obj: the obj the activities are about
@@ -23,7 +23,7 @@ def render_activities(context, page, obj, activity_url, activity_source=None,
     :param is_infinite_scroll: boolean indicating if the activities should use
         infinite scroll.
     """
-    context.update({
+    kwargs.update({
         'activities_page': page,
         'obj': obj,
         'activity_url': activity_url,
@@ -31,6 +31,8 @@ def render_activities(context, page, obj, activity_url, activity_source=None,
         'show_comment_form': show_comment_form,
         'is_infinite_scroll': is_infinite_scroll
     })
+
+    context.update(kwargs)
 
     if activity_source is not None:
         context['activity_source'] = activity_source
@@ -40,12 +42,15 @@ def render_activities(context, page, obj, activity_url, activity_source=None,
 
 
 @register.simple_tag(takes_context=True)
-def render_activity(context, activity, activity_url, show_reference_obj=False):
-    context.update({
+def render_activity(context, activity, activity_url, show_reference_obj=False,
+                    **kwargs):
+    """Renders an activity to html."""
+    kwargs.update({
         'activity': activity,
         'show_reference_obj': show_reference_obj,
         'activity_url': activity_url
     })
+    context.update(kwargs)
 
     return render_to_string('activities/snippets/activity.html',
                             context=context)
@@ -55,6 +60,7 @@ def render_activity(context, activity, activity_url, show_reference_obj=False):
 def render_activity_message(activity, user=None, **kwargs):
     """Renders the activity message for the activity.
 
+    :param activity: the activity to render
     :param user: the current user viewing the activities.
     """
     kwargs['user'] = user
