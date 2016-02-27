@@ -1,18 +1,17 @@
 {% comment %}
-    This snippet represents an individual user activities or activity.
-    
-    Variables:
-    
-    activity: activity object
-    activity_url: the url for the object's activities
-    user_timezone: will display the dates in this timezone if provided.  If not,
-        will default to 'UTC' time.  Possible values are 'America/Denver', 
-        'America/Chicago', etc.
-    show_reference_obj: boolean string whether to show the line about which obj  
-        the activity is referencing. This has to be a string because of how 
-        variables are passed to the snippet.  Should be 'True' or 'False'. 
-        Default is 'False'.
-    
+This snippet represents an individual user activities or activity.
+
+Variables:
+
+activity: activity object
+activity_url: the url for the object's activities
+user_timezone: will display the dates in this timezone if provided.  If not,
+    will default to 'UTC' time.  Possible values are 'America/Denver', 
+    'America/Chicago', etc.
+show_reference_obj: boolean string whether to show the line about which obj  
+    the activity is referencing. This has to be a string because of how 
+    variables are passed to the snippet.  Should be 'True' or 'False'. 
+    Default is 'False'.
 {% endcomment %}
 {% load collection_tags humanize i18n activity_tags url_tags tz %}
 {% spaceless %}
