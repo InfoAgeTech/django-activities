@@ -12,6 +12,8 @@ show_reference_obj: boolean string whether to show the line about which obj
     the activity is referencing. This has to be a string because of how 
     variables are passed to the snippet.  Should be 'True' or 'False'. 
     Default is 'False'.
+show_replies: (optional) boolean indicating if the replies section should be
+    shown.  Default is True.
 user_cache: (optional) a dict of users keyed by their user id. This can be 
     useful to prevent user queries on activity "about" objects where 
     select_related and prefetch_related can't be used on the "about" fields 
@@ -59,6 +61,7 @@ user_cache: (optional) a dict of users keyed by their user id. This can be
         <li class="msg">
             {% render_activity_message activity=activity user=user user_shared_objects_by_content_type=user_shared_objects_by_content_type user_cache=user_cache %}
         </li>
+        {% if show_replies != False %}
         <li class="replies">
           {% if activity.reply_count == 0 and not user.is_authenticated %}
             <div class="no-replies">There are no comments at this time. Please log in to comment.</div>
@@ -91,6 +94,7 @@ user_cache: (optional) a dict of users keyed by their user id. This can be
             
           {% endif %}
         </li>
+        {% endif %}
     </ul>
     
 </li>

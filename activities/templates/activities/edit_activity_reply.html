@@ -8,7 +8,7 @@
 
 {% block activity_content %}
     <h1>Edit Activity Reply</h1>
-    <form method="post" action="{{ request.path }}">
+    <form method="post" action="{{ request.path }}" class="form-horizontal">
         {% csrf_token %}
         {{ form|render_activity_form }}
         <div class="form-group">

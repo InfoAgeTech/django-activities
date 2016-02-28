@@ -111,16 +111,23 @@ class BaseActivityEditForm(UserFormMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(BaseActivityEditForm, self).__init__(*args, **kwargs)
 
-        self.fields['created_user'].label = 'Created by'
-        self.fields['created_user'].widget.attrs['value'] = \
-            self.instance.created_user.get_full_name()
-        self.fields['created_dttm'].label = 'Created'
-        self.fields['created_dttm'].widget.attrs['readonly'] = 'readonly'
-        self.fields['last_modified_user'].label = 'Last Modified by'
-        self.fields['last_modified_user'].widget.attrs['value'] = \
-            self.instance.last_modified_user.get_full_name()
-        self.fields['last_modified_dttm'].label = 'Last Modified'
-        self.fields['last_modified_dttm'].widget.attrs['readonly'] = 'readonly'
+        if 'created_user' in self.fields:
+            self.fields['created_user'].label = 'Created by'
+            self.fields['created_user'].widget.attrs['value'] = \
+                self.instance.created_user.get_full_name()
+
+        if 'created_dttm' in self.fields:
+            self.fields['created_dttm'].label = 'Created'
+            self.fields['created_dttm'].widget.attrs['readonly'] = 'readonly'
+
+        if 'last_modified_user' in self.fields:
+            self.fields['last_modified_user'].label = 'Last Modified by'
+            self.fields['last_modified_user'].widget.attrs['value'] = \
+                self.instance.last_modified_user.get_full_name()
+
+        if 'last_modified_dttm' in self.fields:
+            self.fields['last_modified_dttm'].label = 'Last Modified'
+            self.fields['last_modified_dttm'].widget.attrs['readonly'] = 'readonly'
 
     def clean_created_dttm(self):
         return self.instance.created_dttm
@@ -151,27 +158,27 @@ class BaseActivityEditForm(UserFormMixin, forms.ModelForm):
 
 
 class ActivityEditForm(BaseActivityEditForm):
+    """Form for editing an activity."""
 
     class Meta:
         model = Activity
-        fields = ('created_user', 'created_dttm', 'last_modified_user',
-                  'last_modified_dttm', 'text')
-        widgets = {
-            'created_user': ReadonlyWidget(),
-            'last_modified_user': ReadonlyWidget()
-        }
+        fields = ('text',)
+
+    def clean(self, **kwargs):
+        cleaned_data = super(ActivityEditForm, self).clean(**kwargs)
+
+        if self.instance.action != Action.COMMENTED:
+            self.add_error(None, 'Only comments can be edited.')
+
+        return cleaned_data
 
 
 class ActivityReplyEditForm(BaseActivityEditForm):
+    """Form for editing an activity reply."""
 
     class Meta:
         model = ActivityReply
-        fields = ('created_user', 'created_dttm', 'last_modified_user',
-                  'last_modified_dttm', 'text')
-        widgets = {
-            'created_user': ReadonlyWidget(),
-            'last_modified_user': ReadonlyWidget()
-        }
+        fields = ('text',)
 
 
 class ActivityDeleteForm(forms.Form):

@@ -8,6 +8,7 @@
 
 {% block activity_content %}
     <h1>Edit Activity</h1>
+    {% if activity.action == 'COMMENTED' %}
     <form method="post" action="{{ activity.get_edit_url }}" class="form-horizontal">
         {% csrf_token %}
         {{ form|render_activity_form }}
@@ -18,4 +19,7 @@
             </div>
         </div>
     </form>
+    {% else %}
+    <p>Only comments can be edited.</p>
+    {% endif %}
 {% endblock %}
