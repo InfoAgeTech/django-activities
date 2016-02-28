@@ -109,20 +109,21 @@ class AbstractActivity(AbstractBaseModel):
 
         return Action.SHARED.lower()
 
-    def get_action_html(self, force=False):
+    def get_action_html(self, force=False, **kwargs):
         """Gets the action text in the activity header.
 
         :param force: boolean indicating if the "about" object should be ignored
-            when rendering this text.
+            when rendering this text.  This can be leveraged when things just
+            want to be appended to the action html.  Force will get the original
+            action html message.
         """
         if self.action not in (Action.ADDED, Action.CREATED, Action.SHARED,
                                Action.UPLOADED):
             # no activity text to return
             return ''
 
-        if self.action == Action.CREATED and \
-           hasattr(self.about, 'get_activity_action_html'):
-            return self.about.get_activity_action_html(self)
+        if hasattr(self.about, 'get_activity_action_html') and force != True:
+            return self.about.get_activity_action_html(self, **kwargs)
 
         object_name = self.about_content_type.model_class()._meta.verbose_name
         object_ref = object_name

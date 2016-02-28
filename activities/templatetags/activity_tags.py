@@ -63,7 +63,9 @@ def render_activity_message(activity, user=None, **kwargs):
     :param activity: the activity to render
     :param user: the current user viewing the activities.
     """
-    kwargs['user'] = user
+    kwargs.update({
+        'user': user
+    })
 
     # add the social actions bar
     comment_button = render_to_string(
@@ -88,6 +90,16 @@ def render_activity_message(activity, user=None, **kwargs):
         return '{0}{1}'.format(message, social_actions_bar)
 
     return message
+
+
+@register.simple_tag
+def render_action_html(activity, user=None, **kwargs):
+    """Renders the action html (the top header html) on the activity.
+
+    :param activity: the activity the action is about.
+    :param user: the current user viewing the activities.
+    """
+    return activity.get_action_html(user=user, **kwargs)
 
 
 @register.filter

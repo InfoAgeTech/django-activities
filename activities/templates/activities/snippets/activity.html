@@ -12,6 +12,10 @@ show_reference_obj: boolean string whether to show the line about which obj
     the activity is referencing. This has to be a string because of how 
     variables are passed to the snippet.  Should be 'True' or 'False'. 
     Default is 'False'.
+user_cache: (optional) a dict of users keyed by their user id. This can be 
+    useful to prevent user queries on activity "about" objects where 
+    select_related and prefetch_related can't be used on the "about" fields 
+    since it's a generic foreign key field.
 {% endcomment %}
 {% load collection_tags humanize i18n activity_tags url_tags tz %}
 {% spaceless %}
@@ -46,24 +50,23 @@ show_reference_obj: boolean string whether to show the line about which obj
             <strong>
                 <a href="{{ activity.created_user.get_absolute_url }}">{{ activity.created_user.get_full_name }}</a>
             </strong>
-            {% with action_html=activity.get_action_html %}
+              {% render_action_html activity=activity user=user user_cache=user_cache as action_html %}
               {% if action_html %}
                 <span class="action-text">{{ action_html|safe }}</span>
               {% endif %}
-            {% endwith %}
             <span class="date"><a href="{{ activity.get_absolute_url }}">{{ activity.created_dttm|timezone:user_timezone|naturaltime }}</a> - {% if activity.is_public %}<i class="fa fa-globe"></i>{% else %}<i class="fa fa-lock"></i>{% endif %}</span>
         </li>
         <li class="msg">
-            {% render_activity_message activity=activity user=user user_shared_objects_by_content_type=user_shared_objects_by_content_type %}
+            {% render_activity_message activity=activity user=user user_shared_objects_by_content_type=user_shared_objects_by_content_type user_cache=user_cache %}
         </li>
         <li class="replies">
           {% if activity.reply_count == 0 and not user.is_authenticated %}
             <div class="no-replies">There are no comments at this time. Please log in to comment.</div>
           {% else %}
             {% if activity_replies and activity.reply_count > activity_replies|length %}
-                {% include 'activities/snippets/activity_replies.html' with activity_replies=activity_replies activity_replies_has_more=True %}
+                {% include 'activities/snippets/activity_replies.html' with activity_replies=activity_replies activity_replies_has_more=True user_cache=user_cache %}
             {% else %}
-                {% include 'activities/snippets/activity_replies.html' with activity_replies=activity_replies activity_replies_has_more=False %}
+                {% include 'activities/snippets/activity_replies.html' with activity_replies=activity_replies activity_replies_has_more=False user_cache=user_cache %}
             {% endif %}
             
             <div class="my-reply">

@@ -17,6 +17,10 @@ show_activity_type_tabs: (optional) show the activity type tabs at the top of th
     activities so they can be sorted by type.  Default is True.
 is_infinite_scroll: (optional) boolean indicating if the activities should use
     infinite scroll.
+user_cache: (optional) a dict of users keyed by their user id. This can be 
+    useful to prevent user queries on activity "about" objects where 
+    select_related and prefetch_related can't be used on the "about" fields 
+    since it's a generic foreign key field.
 {% endcomment %}
 
 {% load humanize activity_tags %}
@@ -59,9 +63,9 @@ is_infinite_scroll: (optional) boolean indicating if the activities should use
 	<ul class="activities">
 	{% for activity in activities_object_list %}
 	  {% if obj == activity.about %}
-	    {% render_activity activity=activity activity_url=activity_url %}
+	    {% render_activity activity=activity activity_url=activity_url user_cache=user_cache %}
 	  {% else %}
-	    {% render_activity activity=activity show_reference_obj=True activity_url=activity_url %}
+	    {% render_activity activity=activity show_reference_obj=True activity_url=activity_url user_cache=user_cache %}
 	  {% endif %}
 	{% empty %}
 	    <li class="no-activities-found">No activities found.</li>
