@@ -99,7 +99,7 @@ def render_action_html(activity, user=None, **kwargs):
     :param activity: the activity the action is about.
     :param user: the current user viewing the activities.
     """
-    return activity.get_action_html(user=user, **kwargs)
+    return mark_safe(activity.get_action_html(user=user, **kwargs))
 
 
 @register.filter

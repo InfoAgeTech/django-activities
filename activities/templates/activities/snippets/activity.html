@@ -52,10 +52,7 @@ user_cache: (optional) a dict of users keyed by their user id. This can be
             <strong>
                 <a href="{{ activity.created_user.get_absolute_url }}">{{ activity.created_user.get_full_name }}</a>
             </strong>
-              {% render_action_html activity=activity user=user user_cache=user_cache as action_html %}
-              {% if action_html %}
-                <span class="action-text">{{ action_html|safe }}</span>
-              {% endif %}
+            <span class="action-text">{% render_action_html activity=activity user=user user_cache=user_cache %}</span>
             <span class="date"><a href="{{ activity.get_absolute_url }}">{{ activity.created_dttm|timezone:user_timezone|naturaltime }}</a> - {% if activity.is_public %}<i class="fa fa-globe"></i>{% else %}<i class="fa fa-lock"></i>{% endif %}</span>
         </li>
         <li class="msg">
