@@ -2,6 +2,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models import F
+from django.db.models.deletion import SET_NULL
 from django.db.models.signals import post_delete
 from django.db.models.signals import post_save
 from django.utils.translation import ugettext as _
@@ -47,6 +48,11 @@ class AbstractActivity(AbstractBaseModel):
         'UPDATED', 'DELETED', 'COMMENTED', etc)
     * privacy: the privacy of the activity.  Can be either 'PUBLIC' or
         'PRIVATE'.
+    * group: the activity group.  This represents a group of activities that
+        may have happened at the same time or should be grouped for some reason.
+        For example, uploading 100 images as once probably only needs one
+        reference when listing out activities instead of listing 100 out
+        individually.
     * reply_count: the denormalized number of replies to this activity
     """
     text = models.TextField(blank=True, null=True)
@@ -54,9 +60,6 @@ class AbstractActivity(AbstractBaseModel):
                               fk_field='about_id')
     about_content_type = models.ForeignKey(ContentType, null=True, blank=True)
     about_id = models.PositiveIntegerField(null=True, blank=True)
-    replies = models.ManyToManyField('ActivityReply',
-                                     related_name='replies',
-                                     blank=True)
     reply_count = models.IntegerField(default=0)
     for_objs = models.ManyToManyField('ActivityFor',
                                       related_name='for_objs',
@@ -65,6 +68,9 @@ class AbstractActivity(AbstractBaseModel):
     action = models.CharField(max_length=20, choices=Action.CHOICES)
     privacy = models.CharField(max_length=20, choices=Privacy.CHOICES,
                                default=Privacy.PRIVATE)
+    group = models.ForeignKey('self', blank=True, null=True,
+                              related_name='grouping',
+                              on_delete=SET_NULL)
     objects = ActivityManager()
 
     class Meta:
@@ -244,13 +250,9 @@ class AbstractActivity(AbstractBaseModel):
                 for obj in self.for_objs.all().prefetch_related(
                                                             'content_object')]
 
-    def get_replies(self):
-        """Gets the activity reply objects for this activity."""
-        return self.activityreply_set.all()
-
     def get_reply_by_id(self, reply_id):
         """Gets the reply for a activity by it's id."""
-        return self.activityreply_set.get(id=reply_id)
+        return self.replies.get(id=reply_id)
 
     def delete_reply(self, reply_id):
         """Delete an individual activity reply.
@@ -258,7 +260,7 @@ class AbstractActivity(AbstractBaseModel):
         :param activity_id: ID of the activity reply to delete
 
         """
-        self.activityreply_set.filter(id=reply_id).delete()
+        self.replies.filter(id=reply_id).delete()
         return True
 
 
@@ -336,7 +338,7 @@ class ActivityReply(AbstractUrlLinkModelMixin, AbstractBaseModel):
 
     """
     text = models.TextField(max_length=500)
-    activity = models.ForeignKey('Activity')
+    activity = models.ForeignKey('Activity', related_name='replies')
     reply_to = models.ForeignKey('self', blank=True, null=True)
     objects = ActivityReplyManager()
 

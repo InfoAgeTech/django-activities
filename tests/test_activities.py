@@ -117,7 +117,7 @@ class ActivityTests(SingleUserTestCase):
         self.assertEqual(reply.created_user, reply_user)
         self.assertEqual(reply.last_modified_user, reply_user)
 
-        replies = n.get_replies()
+        replies = n.replies.all()
         self.assertEqual(len(replies), 1)
         self.assertEqual(replies[0], reply)
 
@@ -166,7 +166,7 @@ class ActivityTests(SingleUserTestCase):
         reply3 = n.add_reply(user=create_user(), text='Some reply comment.')
         reply4 = n.add_reply(user=create_user(), text='Some reply comment.')
 
-        replies = list(n.get_replies())
+        replies = list(n.replies.all())
 
         self.assertEqual(len(replies), 4)
         self.assertTrue(reply1 in replies)
@@ -188,7 +188,7 @@ class ActivityTests(SingleUserTestCase):
 
         n.delete_reply(reply_id=reply3.id)
 
-        replies = list(n.get_replies())
+        replies = list(n.replies.all())
 
         self.assertEqual(len(replies), 3)
         self.assertTrue(reply1 in replies)
@@ -207,7 +207,7 @@ class ActivityTests(SingleUserTestCase):
                              reply_to=reply1,
                              text='Some reply comment.')
 
-        replies = list(n.get_replies())
+        replies = list(n.replies.all())
 
         self.assertEqual(len(replies), 2)
         self.assertTrue(replies[1], reply2)
