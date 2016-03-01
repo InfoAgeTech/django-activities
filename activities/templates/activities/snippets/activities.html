@@ -11,7 +11,7 @@ activity_source: the source of the activities (optional).  Default
 activity_action: the action of the activity (optional). Defaults
     to show all actions.  Can be one of an action values ("CREATED", 
     "COMMENTED", "UPDATED", "DELETED", etc.)
-show_comment_form: (optional) boolean indicating if the comment form should
+show_activity_comment_form: (optional) boolean indicating if the comment form should
     be shown at the top of the activities.  Default is True.
 show_activity_type_tabs: (optional) show the activity type tabs at the top of the
     activities so they can be sorted by type.  Default is True.
@@ -31,7 +31,7 @@ user_cache: (optional) a dict of users keyed by their user id. This can be
 <div class="activities-container" data-ajax="activities"{% if is_infinite_scroll %} data-infinite_scroll="true"{% endif %}>
 
   {% if not request.is_ajax %}
-    {% if  show_comment_form != False %}
+    {% if  show_activity_comment_form != False %}
       {% if request.user.is_authenticated %}
 	    <form class="comment-form" action="{{ activity_url }}" method="post">{% csrf_token %}
 	        <input type="hidden" name="next" value="{{ request.path}}" />

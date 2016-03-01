@@ -12,7 +12,8 @@ register = Library()
 
 @register.simple_tag(takes_context=True)
 def render_activities(context, page, obj, activity_url, activity_source=None,
-                      show_comment_form=True, show_activity_type_tabs=True,
+                      show_activity_comment_form=True,
+                      show_activity_type_tabs=True,
                       is_infinite_scroll=True, **kwargs):
     """Renders a activities to html.
 
@@ -22,13 +23,14 @@ def render_activities(context, page, obj, activity_url, activity_source=None,
     :param source: the activity source
     :param is_infinite_scroll: boolean indicating if the activities should use
         infinite scroll.
+
     """
     kwargs.update({
         'activities_page': page,
         'obj': obj,
         'activity_url': activity_url,
         'show_activity_type_tabs': show_activity_type_tabs,
-        'show_comment_form': show_comment_form,
+        'show_activity_comment_form': show_activity_comment_form,
         'is_infinite_scroll': is_infinite_scroll
     })
 
