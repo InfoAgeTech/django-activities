@@ -197,11 +197,32 @@ class ActivitiesViewMixin(object):
         # get the list of objects this user has shares to
         user_share_filters = None
 
+        about_objects_by_content_type_ids = {}
+
+        # group the objects by content type
         for activity in context['activities_page'].object_list:
-            queryset_filter = Q(
-                about_content_type_id=activity.about_content_type_id,
-                about_id=activity.about_id
-            )
+            content_type_id = activity.about_content_type_id
+            about_id = activity.about_id
+
+            if content_type_id not in about_objects_by_content_type_ids:
+                about_objects_by_content_type_ids[content_type_id] = set([])
+
+            about_objects_by_content_type_ids[content_type_id].add(about_id)
+
+        # create the filters from the grouped objects content types
+        for content_type_id, about_ids in about_objects_by_content_type_ids.items():
+            queryset_filter_kwargs = {
+                'about_content_type_id':content_type_id
+            }
+
+            about_ids = list(about_ids)
+
+            if len(about_ids) == 1:
+                queryset_filter_kwargs['about_id'] = about_ids[0]
+            else:
+                queryset_filter_kwargs['about_id__in'] = about_ids
+
+            queryset_filter = Q(**queryset_filter_kwargs)
 
             if user_share_filters:
                 user_share_filters |= queryset_filter
