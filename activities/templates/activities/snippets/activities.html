@@ -15,6 +15,8 @@ show_activity_comment_form: (optional) boolean indicating if the comment form sh
     be shown at the top of the activities.  Default is True.
 show_activity_type_tabs: (optional) show the activity type tabs at the top of the
     activities so they can be sorted by type.  Default is True.
+activities_css_class: (optional) an extra css class string to add to the activities
+    container.
 is_infinite_scroll: (optional) boolean indicating if the activities should use
     infinite scroll.
 user_cache: (optional) a dict of users keyed by their user id. This can be 
@@ -28,7 +30,7 @@ user_cache: (optional) a dict of users keyed by their user id. This can be
 
 {% with activities_object_list=activities_page.object_list %}
 
-<div class="activities-container" data-ajax="activities"{% if is_infinite_scroll %} data-infinite_scroll="true"{% endif %}>
+<div class="activities-container{% if activities_css_class %} {{ activities_css_class }}{% endif %}" data-ajax="activities"{% if is_infinite_scroll %} data-infinite_scroll="true"{% endif %}>
 
   {% if not request.is_ajax %}
     {% if  show_activity_comment_form != False %}
