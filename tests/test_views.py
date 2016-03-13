@@ -3,7 +3,7 @@ from activities.constants import Privacy
 from activities.constants import Source
 from activities.mixins.views import ActivityViewMixin
 from activities.models import Activity
-from django.http.response import Http404
+from django.core.exceptions import PermissionDenied
 from django.test import TestCase
 from django_testing.user_utils import create_user
 from mock import MagicMock
@@ -71,8 +71,8 @@ class ActivityViewMixinTests(TestCase):
 
         self.assertEqual(activity, view_activity)
 
-    def test_activity_view_mixin_fail_404_private(self):
-        """Test ActivityViewMixin returns a 404 since the user doesn't have
+    def test_activity_view_mixin_fail_403_private(self):
+        """Test ActivityViewMixin returns a 403 since the user doesn't have
         access to the activity."""
         user_2 = create_user()
         user_3 = create_user()
@@ -87,7 +87,7 @@ class ActivityViewMixinTests(TestCase):
         mixin = ActivityViewMixin()
         mixin.request = MagicMock(user=user_3)
 
-        with self.assertRaises(Http404):
+        with self.assertRaises(PermissionDenied):
             mixin.get_activity(**{
                 mixin.activity_pk_url_kwarg: activity.id
             })
