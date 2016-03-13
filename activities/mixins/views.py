@@ -3,7 +3,6 @@ from django.core.exceptions import PermissionDenied
 from django.core.paginator import EmptyPage
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.http.response import Http404
 from django.http.response import HttpResponse
 from django.http.response import HttpResponseForbidden
 from django.shortcuts import render_to_response
@@ -51,11 +50,16 @@ class ActivityViewMixin(object):
            self.activity.created_user == self.request.user:
             return self.activity
 
-        # Check to ensure the user has permission to view the activity
-        user_ct = ContentType.objects.get_for_model(self.request.user)
-        if not self.activity.for_objs.filter(content_type=user_ct,
-                                             object_id=self.request.user.id):
-            raise Http404
+        # Check to ensure the user has permission to view the activity since the
+        # activity is private.
+        user = self.request.user
+
+        if (not user.is_authenticated() or
+            not self.activity.for_objs.filter(
+                content_type=ContentType.objects.get_for_model(user),
+                object_id=user.id
+            ).exists()):
+            raise PermissionDenied
 
         return self.activity
 
