@@ -36,14 +36,14 @@ user_cache: (optional) a dict of users keyed by their user id. This can be
         <li class="actions">
             {% if activity.created_user_id == user.id %}
                 <div class="dropdown">
-                    <button class="btn btn-default btn-nostyle dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    <button class="btn btn-default btn-nostyle dropdown-toggle" type="button" id="adm{{ activity.id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                         <span class="fa fa-chevron-down"></span>
 			        </button>
-			        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+			        <ul class="dropdown-menu" aria-labelledby="adm{{ activity.id }}">
 			            {% if activity.is_editable %}
 	                    <li><a href="{{ activity.get_edit_url }}">Edit</a></li>
 	                    {% endif %}
-	                    <li><a href="{{ activity.get_delete_url }}">Delete</i></a></li>
+	                    <li><a href="{{ activity.get_delete_url }}">Delete</a></li>
 	                </ul>
 			    </div>
             {% endif %}
