@@ -134,7 +134,7 @@ class AbstractActivity(AbstractBaseModel):
         object_name = self.about_content_type.model_class()._meta.verbose_name
         object_ref = object_name
         # these are common words that require "an" in the action text
-        an_words = ['audio', 'image']
+        an_words = ['album', 'audio', 'image']
         a_or_an = 'a'
 
         if object_name.lower() in an_words:
