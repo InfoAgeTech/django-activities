@@ -30,7 +30,7 @@ user_cache: (optional) a dict of users keyed by their user id. This can be
 
 {% with activities_object_list=activities_page.object_list %}
 
-<div class="activities-container{% if activities_css_class %} {{ activities_css_class }}{% endif %}" data-ajax="activities"{% if is_infinite_scroll %} data-infinite_scroll="true"{% endif %}>
+<div class="activities-container{% if activities_css_class %} {{ activities_css_class }}{% endif %}{% if show_activity_comment_form == False %} no-comment-form{% endif %}" data-ajax="activities"{% if is_infinite_scroll %} data-infinite_scroll="true"{% endif %}>
 
   {% if not request.is_ajax %}
     {% if  show_activity_comment_form != False %}
